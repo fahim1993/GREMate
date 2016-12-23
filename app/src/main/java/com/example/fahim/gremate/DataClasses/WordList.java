@@ -4,22 +4,33 @@ package com.example.fahim.gremate.DataClasses;
  * Created by fahim on 12/15/16.
  */
 
-public class WordSet {
-    private String name, owner;
+public class WordList {
+    private String wordSet, name;
+    private boolean deletable;
     private int wordCount, learned;
 
-    public WordSet() {
+    public WordList() {
+        this.wordSet = "";
         this.name = "";
-        this.owner = "";
+        this.deletable = true;
         this.wordCount = 0;
         this.learned = 0;
     }
 
-    public WordSet(String name, String owner, int wordCount, int learned) {
+    public WordList(String wordSet, String name, boolean deletable, int wordCount, int learned) {
+        this.wordSet = wordSet;
         this.name = name;
-        this.owner = owner;
+        this.deletable = deletable;
         this.wordCount = wordCount;
         this.learned = learned;
+    }
+
+    public String getWordSet() {
+        return wordSet;
+    }
+
+    public void setWordSet(String wordSet) {
+        this.wordSet = wordSet;
     }
 
     public String getName() {
@@ -30,12 +41,12 @@ public class WordSet {
         this.name = name;
     }
 
-    public String getOwner() {
-        return owner;
+    public boolean isDeletable() {
+        return deletable;
     }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
+    public void setDeletable(boolean deletable) {
+        this.deletable = deletable;
     }
 
     public int getWordCount() {

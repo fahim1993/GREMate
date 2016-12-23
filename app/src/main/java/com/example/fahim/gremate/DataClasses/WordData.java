@@ -1,56 +1,45 @@
 package com.example.fahim.gremate.DataClasses;
 
 /**
- * Created by fahim on 12/15/16.
+ * Created by fahim on 12/23/16.
  */
 
 public class WordData {
-    String name, wordInListId, mnemonic, description;
+    private String word, des, mn;
 
     public WordData() {
-        this.name = "";
-        this.wordInListId = "";
-        this.mnemonic = "";
-        this.description = "";
+        this.word = "";
+        this.des = "";
+        this.mn = "";
     }
 
-
-    public WordData(String name, String wordInListId, String mnemonic, String description) {
-        this.name = name;
-        this.wordInListId = wordInListId;
-        this.mnemonic = mnemonic;
-        this.description = description;
+    public WordData(String word, String des, String mn) {
+        this.word = word;
+        this.des = des;
+        this.mn = mn;
     }
 
-    public String getName() {
-        return name;
+    public String getWord() {
+        return word;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setWord(String word) {
+        this.word = word;
     }
 
-    public String getWordInListId() {
-        return wordInListId;
+    public String getDes() {
+        return des;
     }
 
-    public void setWordInListId(String wordInListId) {
-        this.wordInListId = wordInListId;
+    public void setDes(String des) {
+        this.des = des;
     }
 
-    public String getMnemonic() {
-        return mnemonic;
+    public String getMn() {
+        return mn;
     }
 
-    public void setMnemonic(String mnemonic) {
-        this.mnemonic = mnemonic;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setMn(String mn) {
+        this.mn = mn;
     }
 }

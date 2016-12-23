@@ -1,18 +1,18 @@
 package com.example.fahim.gremate.DataClasses;
 
 /**
- * Created by fahim on 12/16/16.
+ * Created by fahim on 12/23/16.
  */
 
-public class Sentence {
+public class WordDefP {
     private String word, value;
 
-    public Sentence() {
-        word = "";
-        value = "";
+    public WordDefP() {
+        this.word = "";
+        this.value = "";
     }
 
-    public Sentence(String word, String value) {
+    public WordDefP(String word, String value) {
         this.word = word;
         this.value = value;
     }

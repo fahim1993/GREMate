@@ -1,6 +1,7 @@
-UsersWords:
+UserWords:
    WordSet:
       id:
+         name:
          wordCount:
          learned:
    
@@ -58,7 +59,7 @@ UsersWords:
          time:
 
                      
-UsersData:
+UserData:
 	ID:
 		userEmail:
 		userName:

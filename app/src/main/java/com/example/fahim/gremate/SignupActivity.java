@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -16,7 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.fahim.gremate.DataClasses.User;
+import com.example.fahim.gremate.DataClasses.UserData;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -105,7 +104,7 @@ public class SignupActivity extends AppCompatActivity {
                             suSpinner.setVisibility(View.GONE);
                         }
                         else{
-                            User u = new User(uname, uemail);
+                            UserData u = new UserData(uname, uemail);
                             ref.child(task.getResult().getUser().getUid()).setValue(u);
                             Toast.makeText(SignupActivity.this, "Sign up successful!", Toast.LENGTH_LONG).show();
                             SignupActivity.this.finish();
