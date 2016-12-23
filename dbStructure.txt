@@ -1,0 +1,65 @@
+UsersWords:
+   WordSet:
+      id:
+         wordCount:
+         learned:
+   
+   WordList:
+      id:
+         wordSet: (WordSetID)
+         name:
+         deletable:
+         wordCount:
+         learned:
+
+   Word:
+      id:
+         wordSet: 
+         wordList: 
+         value:
+         shadow: 
+         learned:
+         appeared:
+         correct:
+         practicable: 
+   
+   WordDefP:
+      id:
+         word:(WordId)
+         value:
+         
+   WordDefV:
+      id:
+         word:
+         title:   
+         syn:
+         ant:
+         
+   WordData:
+      id:
+         word:
+         value:
+         des:
+         mn:
+
+   Sentence:
+      id:
+         word:
+         value:
+
+   RecentViews:
+      id:
+         word:
+         time:
+
+   RecentLearned:
+      id:
+         word:
+         time:
+
+                     
+UsersData:
+	ID:
+		userEmail:
+		userName:
+      

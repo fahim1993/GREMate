@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.fahim.gremate.DataClasses.FetchDataAsync;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -49,6 +50,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        new myData().execute("abase");
+        new myData().execute("abash");
+
+
         logout = (Button) findViewById(R.id.logout);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,5 +65,13 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.finish();
             }
         });
+    }
+
+    private class myData extends FetchDataAsync{
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            name.setText(lng);
+        }
     }
 }

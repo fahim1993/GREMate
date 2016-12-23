@@ -32,6 +32,8 @@ public class LoginActivity extends AppCompatActivity {
     private TextView loginFail;
     private EditText email, password;
 
+    private static boolean persist = false;
+
     private FirebaseAuth auth;
 
     @Override
@@ -40,6 +42,11 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         auth = FirebaseAuth.getInstance();
+        if(!persist) {
+            FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+            persist = true;
+        }
+
 
         if(auth.getCurrentUser()!=null){
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);

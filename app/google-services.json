@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "599524318210",
+    "firebase_url": "https://gremate-d4bfe.firebaseio.com",
+    "project_id": "gremate-d4bfe",
+    "storage_bucket": "gremate-d4bfe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599524318210:android:a3f4bd7c5c1023d6",
+        "android_client_info": {
+          "package_name": "com.example.fahim.gremate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599524318210-0m1ptqkkebd9oso3enun2g5vvl398mq2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZvs5oRdc-uZvyCIpCacYIIuLCPhcg_u8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
