@@ -10,9 +10,12 @@
     card_view:cardCornerRadius="3dp"
     card_view:cardElevation="3dp"
     card_view:contentPadding="4dp"
-    android:clickable="true" >
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    >
 
     <RelativeLayout
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -30,6 +33,7 @@
             android:textColor="#000"
             android:id="@+id/wordSetData"
             android:layout_below="@id/wordSetName"/>
+
 
     </RelativeLayout>
 

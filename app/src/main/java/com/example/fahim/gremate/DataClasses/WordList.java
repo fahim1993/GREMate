@@ -25,6 +25,16 @@ public class WordList {
         this.learned = learned;
     }
 
+    public static WordList getAllList(String wordSetKey){
+        return new WordList(wordSetKey, "All", false, 0, 0);
+    }
+    public static WordList getLearnedList(String wordSetKey){
+        return new WordList(wordSetKey, "Learned", false, 0, 0);
+    }
+    public static WordList getNotLearnedList(String wordSetKey){
+        return new WordList(wordSetKey, "Not Learned", false, 0, 0);
+    }
+
     public String getWordSet() {
         return wordSet;
     }
