@@ -14,16 +14,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/mUserName"
-        android:textSize="15sp"
+        android:text="HOME CONTENTS"
+        android:textSize="25dp"
         android:textColor="#000"
-        />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/mUserName"
-        android:text="logout"
-        android:id="@+id/logout"
         />
 
 </RelativeLayout>

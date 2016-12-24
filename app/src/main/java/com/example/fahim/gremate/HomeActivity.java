@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.fahim.gremate.DataClasses.FetchDataAsync;
+import com.example.fahim.gremate.DataClasses.UserData;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -16,13 +17,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends NavDrawerActivity {
 
     private FirebaseAuth auth;
     private FirebaseDatabase db;
     private DatabaseReference ref;
 
-    private TextView name;
+
+
     private Button logout;
 
     @Override
@@ -30,18 +32,17 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        name = (TextView) findViewById(R.id.mUserName);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseDatabase.getInstance();
         String uid = auth.getCurrentUser().getUid();
         Log.d("----------------ID: ", uid);
-        ref = db.getReference("UsersData/"+uid+"/userName");
+        ref = db.getReference("UserData/"+uid+"/userName");
 
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                name.setText(dataSnapshot.getValue().toString());
+
             }
 
             @Override
@@ -50,28 +51,17 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+
         new myData().execute("abase");
         new myData().execute("abash");
 
 
-        logout = (Button) findViewById(R.id.logout);
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                auth.signOut();
-                Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                HomeActivity.this.finish();
-            }
-        });
     }
 
     private class myData extends FetchDataAsync{
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            name.setText(lng);
         }
     }
 }

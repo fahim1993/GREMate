@@ -41,7 +41,7 @@ public class SignupActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseDatabase.getInstance();
-        ref = db.getReference("UsersData");
+        ref = db.getReference("UserData");
 
         suSpinner = (ProgressBar) findViewById(R.id.suSpinner);
         suSpinner.setVisibility(View.GONE);
