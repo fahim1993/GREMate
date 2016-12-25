@@ -22,6 +22,10 @@ public class WordSet {
         this.learned = learned;
     }
 
+    public static WordSet newWordSet (String name, String owner){
+        return new WordSet(name, owner, 0, 0);
+    }
+
     public String getName() {
         return name;
     }

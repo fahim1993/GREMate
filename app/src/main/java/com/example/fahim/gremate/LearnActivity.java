@@ -1,11 +1,16 @@
 package com.example.fahim.gremate;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.fahim.gremate.Adapters.WordSetAdapter;
 import com.example.fahim.gremate.DataClasses.DB;
@@ -45,19 +50,35 @@ public class LearnActivity extends NavDrawerActivity {
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(user==null)return;
-                WordSet s = new WordSet("MY WORDSET", user.getUserName() ,0,0);
-                DatabaseReference mRef = UWORD.child(uid).child(DB.WORDSET);
-                String key = mRef.push().getKey();
-                mRef.child(key).setValue(s);
 
-                DatabaseReference mRef1 = UWORD.child(uid).child(DB.WORDLIST);
+                AlertDialog.Builder builder = new AlertDialog.Builder(LearnActivity.this);
+                builder.setTitle("WORDSET NAME");
 
-                mRef1.push().setValue(WordList.getAllList(key));
-                mRef1.push().setValue(WordList.getLearnedList(key));
-                mRef1.push().setValue(WordList.getNotLearnedList(key));
+                final EditText input = new EditText(LearnActivity.this);
 
-                Log.d("key ", key);
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                builder.setView(input);
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String wsname = input.getText().toString();
+                        if(wsname.length()<3){
+                            Toast.makeText(LearnActivity.this, "Failed! Name must be at least 3 characters long.", Toast.LENGTH_LONG).show();
+                        }
+                        else{
+                            DB.newWordSet(wsname);
+                        }
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
             }
         });
 
@@ -103,7 +124,7 @@ public class LearnActivity extends NavDrawerActivity {
                     WordSetwID wg = new WordSetwID(w, id);
                     wordSets.add(wg);
                 }
-                wsRecyclerView.setAdapter(new WordSetAdapter(wordSets ));
+                wsRecyclerView.setAdapter(new WordSetAdapter(wordSets, LearnActivity.this));
             }
 
             @Override

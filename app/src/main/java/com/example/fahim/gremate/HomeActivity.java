@@ -32,28 +32,28 @@ public class HomeActivity extends NavDrawerActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-
-        auth = FirebaseAuth.getInstance();
-        db = FirebaseDatabase.getInstance();
-        String uid = auth.getCurrentUser().getUid();
-        Log.d("----------------ID: ", uid);
-        ref = db.getReference("UserData/"+uid+"/userName");
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-        new myData().execute("abase");
-        new myData().execute("abash");
+//
+//        auth = FirebaseAuth.getInstance();
+//        db = FirebaseDatabase.getInstance();
+//        String uid = auth.getCurrentUser().getUid();
+//        Log.d("----------------ID: ", uid);
+//        ref = db.getReference("UserData/"+uid+"/userName");
+//
+//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//
+//        new myData().execute("abase");
+//        new myData().execute("abash");
 
 
     }

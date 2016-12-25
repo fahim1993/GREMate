@@ -1,6 +1,7 @@
 package com.example.fahim.gremate.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.fahim.gremate.DataClasses.WordSetwID;
 import com.example.fahim.gremate.R;
+import com.example.fahim.gremate.WordSetActivity;
 
 import java.util.ArrayList;
 
@@ -23,9 +25,11 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
 
 
     private static ArrayList<WordSetwID> wsList;
+    private static Context context;
 
-    public WordSetAdapter(ArrayList<WordSetwID> wordSetList ) {
+    public WordSetAdapter(ArrayList<WordSetwID> wordSetList, Context context ) {
         this.wsList = wordSetList;
+        this.context = context;
     }
 
     @Override
@@ -71,6 +75,9 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
             cv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Intent intent = new Intent(context, WordSetActivity.class);
+                    intent.putExtra("wordset_key", wsList.get(getAdapterPosition()).getId());
+                    context.startActivity(intent);
                     Log.d("Wordset", "Clicked");
                 }
             });
