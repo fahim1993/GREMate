@@ -22,7 +22,8 @@
             android:name=".SignupActivity"
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".LearnActivity" />
-        <activity android:name=".NavDrawerActivity"></activity>
+        <activity android:name=".NavDrawerActivity" />
+        <activity android:name=".WordSetActivity"></activity>
     </application>
 
 </manifest>

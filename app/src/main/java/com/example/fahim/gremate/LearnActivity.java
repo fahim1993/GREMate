@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.fahim.gremate.Adapters.RecyclerItemClickListener;
 import com.example.fahim.gremate.Adapters.WordSetAdapter;
 import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.UserData;
@@ -86,24 +85,9 @@ public class LearnActivity extends NavDrawerActivity {
 
     }
 
-    private class OnItemClickListener extends RecyclerItemClickListener.SimpleOnItemClickListener {
-
-        @Override
-        public void onItemClick(View childView, int position) {
-            Log.d("click", ""+ wordSets.get(position).getId());
-        }
-
-        @Override
-        public void onItemLongPress(View childView, int position) {
-            super.onItemLongPress(childView, position);
-            Log.d("long click", ""+wordSets.get(position).getId());
-        }
-    }
-
     private void setWordSet(){
 
         wsRecyclerView = (RecyclerView)findViewById(R.id.rvWordSet);
-        wsRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, new OnItemClickListener()));
 
         wsRecyclerView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);

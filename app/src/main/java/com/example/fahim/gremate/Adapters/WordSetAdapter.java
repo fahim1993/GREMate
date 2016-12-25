@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.fahim.gremate.DataClasses.WordSetwID;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHolder>{
 
 
-    private ArrayList<WordSetwID> wsList;
+    private static ArrayList<WordSetwID> wsList;
 
     public WordSetAdapter(ArrayList<WordSetwID> wordSetList ) {
         this.wsList = wordSetList;
@@ -51,7 +52,7 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
         CardView cv;
         TextView wordSet;
         TextView wordSetData;
-
+        ImageButton delbtn;
 
         public WSViewHolder(View itemView) {
             super(itemView);
@@ -59,7 +60,22 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
             cv = (CardView) itemView.findViewById(R.id.wordSetCardView);
             wordSet = (TextView) itemView.findViewById(R.id.wordSetName);
             wordSetData = (TextView) itemView.findViewById(R.id.wordSetData);
+            delbtn = (ImageButton) itemView.findViewById(R.id.delwordset);
+
+            delbtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("Del Btn", "Clicked");
+                }
+            });
+            cv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("Wordset", "Clicked");
+                }
+            });
         }
+
 
     }
 }
