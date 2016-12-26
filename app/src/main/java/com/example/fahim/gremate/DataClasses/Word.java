@@ -9,6 +9,10 @@ public class Word {
     private boolean practicable, shadow, learned;
     private int appeared, correct;
 
+    public static Word newWord(String val, String listId, String wsId){
+        return new Word(wsId, listId, val, false, true, false, 0, 0);
+    }
+
     public Word() {
         this.wordSet = "";
         this.wordList = "";

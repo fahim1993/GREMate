@@ -48,10 +48,10 @@
                     android:text="List: ALL"
                     android:textColor="#000"
                     android:maxLines="1"
-                    android:id="@+id/listName"/>
+                    android:id="@+id/listTitle"/>
 
                 <ImageButton
-                    android:id="@+id/listSettings"
+                    android:id="@+id/listOptions"
                     android:layout_alignParentRight="true"
                     android:layout_gravity="right"
                     android:padding="8dp"

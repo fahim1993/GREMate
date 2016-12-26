@@ -26,6 +26,7 @@ public class DB {
     public static String USER_WORD = "UserWord";
     public static String WORDSET = "WordSet";
     public static String WORDLIST = "WordList";
+    public static String WORD = "Word";
 
     private static String username = "-1";
     private static String userid = "-1";
@@ -33,6 +34,9 @@ public class DB {
     private static String wordSet;
     private static String wordSetId;
     private static String wordList;
+    private static String wordListId;
+    private static String wordVal;
+
 
 
     private static void initDB(){
@@ -55,6 +59,9 @@ public class DB {
                             break;
                         case 2:
                             newList(wordList, wordSetId);
+                            break;
+                        case 3:
+                            newWord(wordVal, wordListId, wordSetId);
                             break;
                     }
                 }
@@ -88,7 +95,19 @@ public class DB {
         if(username.equals("-1")) getUserName(2);
         else {
             ref = db.getReference().child(USER_WORD).child(userid).child(WORDLIST);
-            ref.push().setValue(WordList.getNewList(wordSetId, wordList));
+            ref.push().setValue(WordList.getNewList(wsId, listname));
+        }
+    }
+
+    public static void newWord(String word, String listId, String wsId){
+        wordVal = word;
+        wordListId = listId;
+        wordSetId = wsId;
+
+        if(username.equals("-1")) getUserName(3);
+        else {
+            ref = db.getReference().child(USER_WORD).child(userid).child(WORD);
+            ref.push().setValue(Word.newWord(word, listId, wsId));
         }
     }
 }

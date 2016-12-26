@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,9 +34,10 @@ import java.util.ArrayList;
 
 public class WordSetActivity extends NavDrawerActivity {
 
-    String wordSetID;
-    String userid;
-    String title;
+    private String wordSetID;
+    private String userid;
+    private String title;
+    private String currentListId;
 
     private static FirebaseAuth auth;
     private static FirebaseDatabase db;
@@ -43,6 +45,7 @@ public class WordSetActivity extends NavDrawerActivity {
 
     private ArrayList<WordListwID> wordLists;
 
+    private ImageButton listOptions;
     private Button changeList;
     private Button addWord;
     private TextView listTitle;
@@ -61,8 +64,16 @@ public class WordSetActivity extends NavDrawerActivity {
 
         getWordList_list(wordSetID);
         setTitle(title);
+        listOptions = (ImageButton)findViewById(R.id.listOptions);
+        listOptions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                registerForContextMenu(listOptions);
+                openContextMenu(listOptions);
+            }
+        });
 
-//        listTitle = (TextView)findViewById(R.id.listTitle);
+        listTitle = (TextView)findViewById(R.id.listTitle);
 //
 //        changeList = (Button)findViewById(R.id.changeList);
 //        changeList.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +120,7 @@ public class WordSetActivity extends NavDrawerActivity {
                 builder.setTitle("LIST NAME");
 
                 final EditText input = new EditText(WordSetActivity.this);
-
+                input.setHint("List name");
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 builder.setView(input);
 
@@ -133,16 +144,79 @@ public class WordSetActivity extends NavDrawerActivity {
                 });
 
                 builder.show();
+                return true;
             default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.listnamescontextmenu, menu);
+        inflater.inflate(R.menu.listoptions, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.changeList: {
+                AlertDialog.Builder builder = new AlertDialog.Builder(WordSetActivity.this);
+                if(wordLists == null)return true;
+                builder.setTitle("Select a list");
+                CharSequence [] listNames = new CharSequence[wordLists.size()];
+                for(int i=0; i<wordLists.size(); i++){
+                    listNames[i] = wordLists.get(i).getName();
+                }
+                builder.setItems(listNames, new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        currentListId = wordLists.get(i).getId();
+                        listTitle.setText("List: "+wordLists.get(i).getName());
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+                return true;
+            }
+            case R.id.addWordToList:{
+                AlertDialog.Builder builder = new AlertDialog.Builder(WordSetActivity.this);
+                builder.setTitle("ADD WORD");
+
+                final EditText input = new EditText(WordSetActivity.this);
+
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                input.setHint("Word");
+                builder.setView(input);
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String word = input.getText().toString();
+                        if(word.length()<1){
+                            Toast.makeText(WordSetActivity.this, "Failed! Word must be at least 1 characters long.", Toast.LENGTH_LONG).show();
+                        }
+                        else{
+                            DB.newWord(word,currentListId, wordSetID);
+                        }
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+                return true;
+            }
+
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 
     public  void getWordList_list (final String wsid){
@@ -161,6 +235,9 @@ public class WordSetActivity extends NavDrawerActivity {
                     WordList wl = ds.getValue(WordList.class);
                     WordListwID wlid = new WordListwID(wl, ds.getKey());
                     wordLists.add(wlid);
+                }
+                if(currentListId == null){
+                    currentListId = wordLists.get(0).getId();
                 }
             }
             @Override
