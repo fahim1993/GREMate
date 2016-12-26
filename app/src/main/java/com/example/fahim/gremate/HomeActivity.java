@@ -58,10 +58,10 @@ public class HomeActivity extends NavDrawerActivity {
 
     }
 
-    private class myData extends FetchDataAsync{
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-        }
-    }
+//    private class myData extends FetchDataAsync{
+//        @Override
+//        protected void onPostExecute(String s) {
+//            super.onPostExecute(s);
+//        }
+//    }
 }

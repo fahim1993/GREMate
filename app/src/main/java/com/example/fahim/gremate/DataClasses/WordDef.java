@@ -4,21 +4,32 @@ package com.example.fahim.gremate.DataClasses;
  * Created by fahim on 12/23/16.
  */
 
-public class WordDefV {
-    private String word, title, syn, ant;
+public class WordDef {
+    private String word, title, syn, ant, def;
 
-    public WordDefV() {
+    public WordDef() {
         this.word = "";
         this.title = "";
         this.syn = "";
         this.ant = "";
+        this.def = "";
     }
 
-    public WordDefV(String word, String title, String syn, String ant) {
+    public WordDef(String word, String title, String syn, String ant, String def) {
         this.word = word;
         this.title = title;
         this.syn = syn;
         this.ant = ant;
+        this.def = def;
+
+    }
+
+    public String getDef() {
+        return def;
+    }
+
+    public void setDef(String def) {
+        this.def = def;
     }
 
     public String getWord() {

@@ -9,6 +9,7 @@ public class WordList {
     private boolean deletable;
     private int wordCount, learned;
 
+
     public WordList() {
         this.wordSet = "";
         this.name = "";
