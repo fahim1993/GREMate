@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "599524318210-52q9fcamjtb5jjcmn9cdsv28bvsdbocn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.fahim.gremate",
+            "certificate_hash": "7523B9CC98DEDA9E16512F81C0AA124079C03341"
+          }
+        },
+        {
           "client_id": "599524318210-0m1ptqkkebd9oso3enun2g5vvl398mq2.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599524318210-0m1ptqkkebd9oso3enun2g5vvl398mq2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

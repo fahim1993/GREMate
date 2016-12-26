@@ -30,12 +30,16 @@ public class DB {
     private static String username = "-1";
     private static String userid = "-1";
 
+    private static String wordSet;
+    private static String wordSetId;
+    private static String wordList;
+
 
     private static void initDB(){
         auth = FirebaseAuth.getInstance();
         db = FirebaseDatabase.getInstance();
     }
-    private static void getUserName(final String wsname){
+    private static void getUserName(final int fncNo){
         if(username.equals("-1")) {
             initDB();
             userid = auth.getCurrentUser().getUid();
@@ -45,7 +49,14 @@ public class DB {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     UserData user = dataSnapshot.getValue(UserData.class);
                     username = user.getUserName();
-                    newWordSet(wsname);
+                    switch (fncNo){
+                        case 1:
+                            newWordSet(wordSet);
+                            break;
+                        case 2:
+                            newList(wordList, wordSetId);
+                            break;
+                    }
                 }
 
                 @Override
@@ -56,7 +67,8 @@ public class DB {
         }
     }
     public static void newWordSet(String wsname){
-        if(username.equals("-1")) getUserName(wsname);
+        wordSet = wsname;
+        if(username.equals("-1")) getUserName(1);
         else {
             ref = db.getReference().child(USER_WORD).child(userid).child(WORDSET);
             String wskey = ref.push().getKey();
@@ -66,6 +78,17 @@ public class DB {
             ref.push().setValue(WordList.getAllList(wskey));
             ref.push().setValue(WordList.getLearnedList(wskey));
             ref.push().setValue(WordList.getNotLearnedList(wskey));
+        }
+    }
+
+    public static void newList(String listname, String wsId){
+        wordList = listname;
+        wordSetId = wsId;
+
+        if(username.equals("-1")) getUserName(2);
+        else {
+            ref = db.getReference().child(USER_WORD).child(userid).child(WORDLIST);
+            ref.push().setValue(WordList.getNewList(wordSetId, wordList));
         }
     }
 }

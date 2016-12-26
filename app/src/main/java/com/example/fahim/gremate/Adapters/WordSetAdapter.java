@@ -77,6 +77,7 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
                 public void onClick(View view) {
                     Intent intent = new Intent(context, WordSetActivity.class);
                     intent.putExtra("wordset_key", wsList.get(getAdapterPosition()).getId());
+                    intent.putExtra("wordset_title", wsList.get(getAdapterPosition()).getName());
                     context.startActivity(intent);
                     Log.d("Wordset", "Clicked");
                 }

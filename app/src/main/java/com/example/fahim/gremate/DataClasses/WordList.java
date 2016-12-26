@@ -26,6 +26,10 @@ public class WordList {
         this.learned = learned;
     }
 
+    public static WordList getNewList(String wordSetKey, String listName){
+        return new WordList(wordSetKey, listName, true, 0, 0);
+    }
+
     public static WordList getAllList(String wordSetKey){
         return new WordList(wordSetKey, "All", false, 0, 0);
     }
