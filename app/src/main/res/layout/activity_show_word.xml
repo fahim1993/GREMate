@@ -4,10 +4,191 @@
     android:id="@+id/activity_show_word"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.fahim.gremate.ShowWordActivity">
+
+    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?attr/actionBarSize"
+    android:background="?attr/colorPrimary"
+    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <ScrollView
+        android:layout_below="@id/toolbar"
+        android:layout_width="match_parent"
+        android:id="@+id/showWordSv"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:background="@drawable/bottomline"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_margin="5dp"
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+
+                    <TextView android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:id="@+id/showWordDescription"
+                        android:layout_width="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:textSize="20sp"
+                        android:text="Description"
+                        android:textStyle="bold"
+                        android:textColor="#000000"
+                        />
+                    <ImageButton
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:scaleType="centerInside"
+                        android:id="@+id/showWordDescriptionButton"
+                        android:background="@color/cardviewItem"
+                        android:src="@drawable/up"
+                        android:onClick="toggleDescription"
+                        />
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:id="@+id/showWordDescriptionText"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="-6dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="14dp"
+                    android:textSize="14sp"
+                    android:textIsSelectable="true"
+                    android:textColor="#000000"
+                    />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:background="@drawable/bottomline"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_margin="5dp"
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:clickable="true"
+                        android:id="@+id/showWordDefinition"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:text="Definitions"
+                        android:textColor="#000000"
+                        />
+                    <ImageButton
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:scaleType="centerInside"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:id="@+id/showWordDefinitionButton"
+                        android:background="@color/cardviewItem"
+                        android:src="@drawable/up"
+                        android:onClick="toggleDefinition"
+                        />
+
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:id="@+id/showWordDefinitionText"
+                    android:clickable="true"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="-6dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="14dp"
+                    android:textSize="14sp"
+                    android:textIsSelectable="true"
+                    android:textColor="#000000"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:background="@drawable/bottomline"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_margin="5dp"
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content">
+
+                    <TextView android:layout_height="wrap_content"
+                        android:id="@+id/showWordSentence"
+                        android:clickable="true"
+                        android:layout_width="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="10dp"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:text="Sentences"
+                        android:textColor="#000000"
+                        />
+                    <ImageButton
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        android:scaleType="centerInside"
+                        android:id="@+id/showWordSentenceButton"
+                        android:background="@color/cardviewItem"
+                        android:src="@drawable/up"
+                        android:onClick="toggleSentence"
+                        />
+
+                </RelativeLayout>
+
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:id="@+id/showWordSentenceText"
+                    android:clickable="true"
+                    android:textIsSelectable="true"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="-6dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginBottom="10dp"
+                    android:textSize="14sp"
+                    android:textColor="#000000"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </RelativeLayout>

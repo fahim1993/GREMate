@@ -21,8 +21,9 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
     private final String url1 = "http://www.synonym.com/synonyms/";
     private final String url2 = "https://www.vocabulary.com/dictionary/";
     private final String url3 = "http://www.dictionary.com/browse/";
+    private final String url4 = "http://www.mnemonicdictionary.com/?word=";
 
-    private WordAllData wordAllData;
+    protected WordAllData wordAllData;
 
     private boolean error = true;
 
@@ -36,8 +37,9 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
             Document doc = Jsoup.connect(url1 + word).get();
             Document doc1 = Jsoup.connect(url2 + word).get();
             Document doc2 = Jsoup.connect(url3 + word).get();
+            Document doc3 = Jsoup.connect(url4 + word).get();
 
-            Elements[] elems = new Elements[7];
+            Elements[] elems = new Elements[8];
 
             elems[0] = doc.select("h3.term");
             elems[1] = doc.select("p.definition");
@@ -46,10 +48,9 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
             elems[4] = doc1.select("p.short");
             elems[5] = doc1.select("p.long");
             elems[6] = doc2.select("p.partner-example-text");
+            elems[7] = doc3.select("div.span9");
 
-            for (int j = 0; j < 7; j++) {
-                if (elems[j].hasText()) error = false;
-            }
+            if (elems[0].hasText()) error = false;
 
             String[] titles;
             String[] defs;
@@ -121,9 +122,15 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                 }
                 ArrayList<Sentence> sentences = new ArrayList<>();
                 for(int j=0; j<i; j++){
-                    sentences.add(new Sentence(wordId, sens[i]));
+                    sentences.add(new Sentence(wordId, sens[j]));
                 }
                 wordAllData.setSentences(sentences);
+
+                for(Element e: elems[7]){
+                    String mns = e.text();
+                    wordAllData.getWordData().setMn(mns);
+                    break;
+                }
             }
 
         } catch (Throwable t) {
