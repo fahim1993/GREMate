@@ -2,10 +2,10 @@ package com.example.fahim.gremate;
 
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,9 +17,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.fahim.gremate.Adapters.WordAdapter;
 import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordList;
 import com.example.fahim.gremate.DataClasses.WordListwID;
+import com.example.fahim.gremate.DataClasses.WordwID;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,27 +31,29 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 public class WordSetActivity extends NavDrawerActivity {
 
     private String wordSetID;
-    private String userid;
+    private String uid;
     private String title;
     private String currentListId;
 
     private static FirebaseAuth auth;
     private static FirebaseDatabase db;
     private static DatabaseReference ref;
+    private static DatabaseReference wordsRef;
 
     private ArrayList<WordListwID> wordLists;
+    private ArrayList<WordwID> wordwIDs;
 
     private ImageButton listOptions;
     private Button changeList;
     private Button addWord;
     private TextView listTitle;
+
+    private  RecyclerView wordsInListRV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +67,8 @@ public class WordSetActivity extends NavDrawerActivity {
         wordSetID = extras.getString("wordset_key");
         title = extras.getString("wordset_title");
 
-        getWordList_list(wordSetID);
+
+
         setTitle(title);
         listOptions = (ImageButton)findViewById(R.id.listOptions);
         listOptions.setOnClickListener(new View.OnClickListener() {
@@ -74,6 +80,18 @@ public class WordSetActivity extends NavDrawerActivity {
         });
 
         listTitle = (TextView)findViewById(R.id.listTitle);
+
+        wordsInListRV = (RecyclerView) findViewById(R.id.wordInListRV);
+        wordsInListRV.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        wordsInListRV.setLayoutManager(llm);
+
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseDatabase.getInstance();
+
+        uid = auth.getCurrentUser().getUid();
+
+        getWordSet_list(wordSetID);
 //
 //        changeList = (Button)findViewById(R.id.changeList);
 //        changeList.setOnClickListener(new View.OnClickListener() {
@@ -175,6 +193,7 @@ public class WordSetActivity extends NavDrawerActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         currentListId = wordLists.get(i).getId();
                         listTitle.setText("List: "+wordLists.get(i).getName());
+                        setListWords();
                     }
                 });
                 AlertDialog alert = builder.create();
@@ -219,12 +238,9 @@ public class WordSetActivity extends NavDrawerActivity {
         }
     }
 
-    public  void getWordList_list (final String wsid){
-        auth = FirebaseAuth.getInstance();
-        db = FirebaseDatabase.getInstance();
+    public  void getWordSet_list(final String wsid){
 
-        userid = auth.getCurrentUser().getUid();
-        ref = db.getReference().child(DB.USER_WORD).child(userid).child(DB.WORDLIST);
+        ref = db.getReference().child(DB.USER_WORD).child(uid).child(DB.WORDLIST);
         Query q = ref.orderByChild("wordSet").equalTo(wsid);
 
         q.addValueEventListener(new ValueEventListener() {
@@ -238,8 +254,30 @@ public class WordSetActivity extends NavDrawerActivity {
                 }
                 if(currentListId == null){
                     currentListId = wordLists.get(0).getId();
+                    setListWords();
                 }
             }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void setListWords(){
+
+        db.getReference(DB.USER_WORD).child(uid).child(DB.WORD).orderByChild("wordList").equalTo(currentListId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                wordwIDs = new ArrayList<WordwID>();
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    Word word = ds.getValue(Word.class);
+                    WordwID wordwID = new WordwID(word, ds.getKey());
+                    wordwIDs.add(wordwID);
+                }
+                wordsInListRV.setAdapter(new WordAdapter(wordwIDs, WordSetActivity.this));
+            }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 

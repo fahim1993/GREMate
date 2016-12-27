@@ -4,7 +4,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/wordSetCardView"
+    android:id="@+id/wordCV"
     android:layout_margin="2dp"
     card_view:cardBackgroundColor="@color/cardviewItem"
     card_view:cardCornerRadius="3dp"
@@ -31,29 +31,20 @@
                 android:textSize="18dp"
                 android:textColor="#000"
                 android:maxLines="1"
-                android:id="@+id/wordSetName"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="10dp"
-                android:textColor="#000"
-                android:id="@+id/wordSetData"
-                android:layout_below="@id/wordSetName"/>
-
+                android:id="@+id/wordValue"/>
 
         </RelativeLayout>
 
         <ImageButton
-            android:id="@+id/delwordset"
+            android:id="@+id/delWord"
             android:padding="8dp"
-            android:src="@drawable/deltbtn"
+            android:src="@drawable/deltbtn2"
             android:scaleType="fitCenter"
             android:backgroundTint="@color/cardviewItem"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
-            android:layout_width="40dp"
-            android:layout_height="50dp" />
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
 
     </RelativeLayout>
 

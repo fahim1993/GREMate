@@ -22,47 +22,43 @@ import java.util.ArrayList;
 public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder>{
 
 
-    private static ArrayList<WordwID> wsList;
+    private static ArrayList<WordwID> wordList;
     private static Context context;
 
-    public WordAdapter(ArrayList<WordwID> wordSetList, Context context ) {
-        this.wsList = wordSetList;
+    public WordAdapter(ArrayList<WordwID> wordList, Context context ) {
+        this.wordList = wordList;
         this.context = context;
     }
 
     @Override
     public WordViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.wordsetcard, parent, false);
-        WordViewHolder wsv = new WordViewHolder(v );
-        return wsv;
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.wordcard, parent, false);
+        WordViewHolder wv = new WordViewHolder(v );
+        return wv;
     }
 
     @Override
     public void onBindViewHolder(WordViewHolder holder, int position) {
-//        WordSetwID ws = wsList.get(position);
-//        holder.wordSet.setText(ws.getName());
-//        holder.wordSetData.setText( "" + ws.getLearned() + " learned out of " + ws.getWordCount() );
+        holder.wordValue.setText(wordList.get(position).getValue());
     }
 
     @Override
     public int getItemCount() {
-        return wsList.size();
+        return wordList.size();
     }
 
 
     public static class WordViewHolder extends RecyclerView.ViewHolder{
         CardView cv;
-        TextView wordSet;
-        TextView wordSetData;
+        TextView wordValue;
         ImageButton delbtn;
 
         public WordViewHolder(View itemView) {
             super(itemView);
 
-            cv = (CardView) itemView.findViewById(R.id.wordSetCardView);
-            wordSet = (TextView) itemView.findViewById(R.id.wordSetName);
-            wordSetData = (TextView) itemView.findViewById(R.id.wordSetData);
-            delbtn = (ImageButton) itemView.findViewById(R.id.delwordset);
+            cv = (CardView) itemView.findViewById(R.id.wordCV);
+            wordValue = (TextView) itemView.findViewById(R.id.wordValue);
+            delbtn = (ImageButton) itemView.findViewById(R.id.delWord);
 
             delbtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -73,10 +69,10 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
             cv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, WordSetActivity.class);
-                    intent.putExtra("wordset_key", wsList.get(getAdapterPosition()).getId());
-                    intent.putExtra("wordset_title", wsList.get(getAdapterPosition()).getName());
-                    context.startActivity(intent);
+//                    Intent intent = new Intent(context, WordSetActivity.class);
+//                    intent.putExtra("wordset_key", wsList.get(getAdapterPosition()).getId());
+//                    intent.putExtra("wordset_title", wsList.get(getAdapterPosition()).getName());
+//                    context.startActivity(intent);
                     Log.d("Wordset", "Clicked");
                 }
             });
