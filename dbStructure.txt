@@ -19,28 +19,29 @@ UserWords:
          wordSet: 
          wordList: 
          value:
-         shadow: 
+		 practicable: 
          learned:
          appeared:
          correct:
-         practicable: 
+		 validity: 0=Fetch Data, 1=Data is set, 2=Bad Word
+         
    
    WordDefP:
       id:
          word:(WordId)
          value:
          
-   WordDefV:
+   WordDef:
       id:
          word:
-         title:   
+         title:
+         def:
          syn:
          ant:
          
    WordData:
       id:
-         word:
-         value:
+         word: (WordID)
          des:
          mn:
 

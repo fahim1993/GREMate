@@ -46,41 +46,41 @@ public class LearnActivity extends NavDrawerActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
 
-//        Button b = (Button) findViewById(R.id.addWordset);
-//        b.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                AlertDialog.Builder builder = new AlertDialog.Builder(LearnActivity.this);
-//                builder.setTitle("WORDSET NAME");
-//
-//                final EditText input = new EditText(LearnActivity.this);
-//
-//                input.setInputType(InputType.TYPE_CLASS_TEXT);
-//                builder.setView(input);
-//
-//                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        String wsname = input.getText().toString();
-//                        if(wsname.length()<3){
-//                            Toast.makeText(LearnActivity.this, "Failed! Name must be at least 3 characters long.", Toast.LENGTH_LONG).show();
-//                        }
-//                        else{
-//                            DB.newWordSet(wsname);
-//                        }
-//                    }
-//                });
-//                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//                    }
-//                });
-//
-//                builder.show();
-//            }
-//        });
+        Button b = (Button) findViewById(R.id.addWordset);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(LearnActivity.this);
+                builder.setTitle("WORDSET NAME");
+
+                final EditText input = new EditText(LearnActivity.this);
+
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                builder.setView(input);
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String wsname = input.getText().toString();
+                        if(wsname.length()<3){
+                            Toast.makeText(LearnActivity.this, "Failed! Name must be at least 3 characters long.", Toast.LENGTH_LONG).show();
+                        }
+                        else{
+                            DB.newWordSet(wsname);
+                        }
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+            }
+        });
 
         auth = FirebaseAuth.getInstance();
         FBDB = FirebaseDatabase.getInstance();

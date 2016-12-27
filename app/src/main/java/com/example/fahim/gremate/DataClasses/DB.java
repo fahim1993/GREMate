@@ -27,6 +27,10 @@ public class DB {
     public static String WORDSET = "WordSet";
     public static String WORDLIST = "WordList";
     public static String WORD = "Word";
+    public static String WORDDATA = "WordData";
+    public static String WORDDEF = "WordDef";
+    public static String WORDDEFP = "WordDefP";
+    public static String SENTENCE = "Sentence";
 
     private static String username = "-1";
     private static String userid = "-1";
@@ -38,15 +42,14 @@ public class DB {
     private static String wordVal;
 
 
-
     private static void initDB(){
         auth = FirebaseAuth.getInstance();
         db = FirebaseDatabase.getInstance();
+        userid = auth.getCurrentUser().getUid();
     }
     private static void getUserName(final int fncNo){
         if(username.equals("-1")) {
             initDB();
-            userid = auth.getCurrentUser().getUid();
             DatabaseReference mref = db.getReference().child(USER_DATA).child(userid);
             mref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -59,9 +62,6 @@ public class DB {
                             break;
                         case 2:
                             newList(wordList, wordSetId);
-                            break;
-                        case 3:
-                            newWord(wordVal, wordListId, wordSetId);
                             break;
                     }
                 }
@@ -104,10 +104,35 @@ public class DB {
         wordListId = listId;
         wordSetId = wsId;
 
-        if(username.equals("-1")) getUserName(3);
-        else {
-            ref = db.getReference().child(USER_WORD).child(userid).child(WORD);
-            ref.push().setValue(Word.newWord(word, listId, wsId));
+        if(userid.equals("-1")) initDB();
+
+        ref = db.getReference().child(USER_WORD).child(userid).child(WORD);
+        ref.push().setValue(Word.newWord(word, listId, wsId));
+
+    }
+
+    public static void updateWord(Word word, String wordId){
+        if(userid.equals("-1")) initDB();
+
+        ref = db.getReference().child(USER_WORD).child(userid).child(WORD);
+        ref.child(wordId).setValue(word);
+
+    }
+
+    public static void setWordData(WordAllData wordAllData, String wordId){
+        if(userid.equals("-1")){
+            initDB();
+        }
+        db.getReference().child(USER_WORD).child(userid).child(WORD).child(wordId).setValue(wordAllData.getWord());
+        db.getReference().child(USER_WORD).child(userid).child(WORDDATA).push().setValue(wordAllData.getWord());
+        for(WordDef def: wordAllData.getWordDefs()){
+            db.getReference().child(USER_WORD).child(userid).child(WORDDEF).push().setValue(def);
+        }
+        for(WordDefP defp: wordAllData.getWordDefPs()){
+            db.getReference().child(USER_WORD).child(userid).child(WORDDEFP).push().setValue(defp);
+        }
+        for(Sentence s: wordAllData.getSentences()){
+            db.getReference().child(USER_WORD).child(userid).child(SENTENCE).push().setValue(s);
         }
     }
 }

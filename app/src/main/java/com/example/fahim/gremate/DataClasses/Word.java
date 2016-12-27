@@ -1,16 +1,23 @@
 package com.example.fahim.gremate.DataClasses;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
 /**
  * Created by fahim on 12/23/16.
  */
 
-public class Word {
+public class Word implements Parcelable{
+
+
     private String wordSet, wordList, value;
-    private boolean practicable, shadow, learned;
-    private int appeared, correct;
+    private boolean practicable, learned;
+    private int appeared, correct, validity;
 
     public static Word newWord(String val, String listId, String wsId){
-        return new Word(wsId, listId, val, false, true, false, 0, 0);
+        return new Word(wsId, listId, val, false, false, 0, 0, 0);
     }
 
     public Word() {
@@ -18,21 +25,20 @@ public class Word {
         this.wordList = "";
         this.value = "";
         this.practicable = false;
-        this.shadow = true;
         this.learned = false;
         this.appeared = 0;
         this.correct = 0;
+        this.validity = 0;
     }
-
-    public Word(String wordSet, String wordList, String value, boolean practicable, boolean shadow, boolean learned, int appeared, int correct) {
+    public Word(String wordSet, String wordList, String value, boolean practicable, boolean learned, int appeared, int correct, int validity) {
         this.wordSet = wordSet;
         this.wordList = wordList;
         this.value = value;
         this.practicable = practicable;
-        this.shadow = shadow;
         this.learned = learned;
         this.appeared = appeared;
         this.correct = correct;
+        this.validity = validity;
     }
 
     public String getWordSet() {
@@ -67,14 +73,6 @@ public class Word {
         this.practicable = practicable;
     }
 
-    public boolean isShadow() {
-        return shadow;
-    }
-
-    public void setShadow(boolean shadow) {
-        this.shadow = shadow;
-    }
-
     public boolean isLearned() {
         return learned;
     }
@@ -98,4 +96,54 @@ public class Word {
     public void setCorrect(int correct) {
         this.correct = correct;
     }
+
+    public int getValidity() {
+        return validity;
+    }
+
+    public void setValidity(int validity) {
+        this.validity = validity;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(wordSet);
+        parcel.writeString(wordList);
+        parcel.writeString(value);
+        parcel.writeValue(practicable);
+        parcel.writeValue(learned);
+        parcel.writeInt(appeared);
+        parcel.writeInt(correct);
+        parcel.writeInt(validity);
+    }
+
+    private Word(Parcel in) {
+        wordSet = in.readString();
+        wordList = in.readString();
+        value = in.readString();
+        practicable = (Boolean) in.readValue( null );
+        learned = (Boolean) in.readValue( null );
+        appeared = in.readInt();
+        correct = in.readInt();
+        validity = in.readInt();
+    }
+
+    public static final Parcelable.Creator<Word> CREATOR
+            = new Parcelable.Creator<Word>() {
+
+        @Override
+        public Word createFromParcel(Parcel in) {
+            return new Word(in);
+        }
+
+        @Override
+        public Word[] newArray(int size) {
+            return new Word[size];
+        }
+    };
 }

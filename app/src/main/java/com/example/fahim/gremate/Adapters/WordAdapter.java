@@ -73,11 +73,9 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
                     Intent intent = new Intent(context, ShowWordActivity.class);
                     intent.putExtra("word_key", wordList.get(getAdapterPosition()).getId());
-                    intent.putExtra("word_value", wordList.get(getAdapterPosition()).getValue());
-                    intent.putExtra("is_shadow", wordList.get(getAdapterPosition()).isShadow());
+                    intent.putExtra("Word",wordList.get(getAdapterPosition()));
 
                     context.startActivity(intent);
-                    Log.d("Wordset", "Clicked");
                 }
             });
         }
