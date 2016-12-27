@@ -64,7 +64,7 @@
                     android:padding="8dp"
                     android:src="@drawable/more"
                     android:scaleType="fitCenter"
-                    android:backgroundTint="#f8f8f8"
+                    android:backgroundTint="@color/cardviewBackground"
                     android:layout_width="40dp"
                     android:layout_height="50dp" />
 

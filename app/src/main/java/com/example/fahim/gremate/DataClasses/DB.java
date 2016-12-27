@@ -124,7 +124,7 @@ public class DB {
             initDB();
         }
         db.getReference().child(USER_WORD).child(userid).child(WORD).child(wordId).setValue(wordAllData.getWord());
-        db.getReference().child(USER_WORD).child(userid).child(WORDDATA).push().setValue(wordAllData.getWord());
+        db.getReference().child(USER_WORD).child(userid).child(WORDDATA).push().setValue(wordAllData.getWordData());
         for(WordDef def: wordAllData.getWordDefs()){
             db.getReference().child(USER_WORD).child(userid).child(WORDDEF).push().setValue(def);
         }
