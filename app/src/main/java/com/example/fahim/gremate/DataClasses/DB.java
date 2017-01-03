@@ -83,8 +83,6 @@ public class DB {
 
             ref = db.getReference().child(USER_WORD).child(userid).child(WORDLIST);
             ref.push().setValue(WordList.getAllList(wskey));
-            ref.push().setValue(WordList.getLearnedList(wskey));
-            ref.push().setValue(WordList.getNotLearnedList(wskey));
         }
     }
 

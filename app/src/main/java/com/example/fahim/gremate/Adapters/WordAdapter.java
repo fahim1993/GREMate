@@ -41,6 +41,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     @Override
     public void onBindViewHolder(WordViewHolder holder, int position) {
         holder.wordValue.setText(wordList.get(position).getValue());
+
     }
 
     @Override

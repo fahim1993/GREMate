@@ -3,28 +3,31 @@ UserWords:
    WordSet:
       id:
          name:
+		 owner:
          wordCount:
-         learned:
+         lastOpen:
    
    WordList:
       id:
          wordSet: (WordSetID)
          name:
-         deletable:
          wordCount:
-         learned:
 
+    WordInList:
+		wordID:
+			listId
+
+	ListWords:
+		listID:
+			wordId
+		 
    Word:
       id:
-         wordSet: 
-         wordList: 
          value:
 		 practicable: 
-         learned:
-         appeared:
-         correct:
-		 validity: 0=Fetch Data, 1=Data is set, 2=Bad Word
-         
+		 validity: 0=Fetch Data, 1=Data is set, 2=Data Fetched with Error
+         lastOpen:
+		 level:
    
    WordDefP:
       id:
@@ -54,12 +57,6 @@ UserWords:
       id:
          word:
          time:
-
-   RecentLearned:
-      id:
-         word:
-         time:
-
                      
 UserData:
 	ID:

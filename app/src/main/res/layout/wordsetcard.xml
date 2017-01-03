@@ -17,11 +17,16 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/img"
+            android:src="@drawable/ic_green2"
+            android:layout_width="40dp"
+            android:layout_height="50dp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="50dp"
+            android:layout_toRightOf="@+id/img"
             android:layout_centerVertical="true"
             android:id="@+id/rl1">
 

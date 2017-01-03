@@ -12,49 +12,35 @@ import java.io.Serializable;
 public class Word implements Parcelable{
 
 
-    private String wordSet, wordList, value;
-    private boolean practicable, learned;
-    private int appeared, correct, validity;
+    private String value;
+    private boolean practicable;
+    private int validity, lastOpen, level;
 
-    public static Word newWord(String val, String listId, String wsId){
-        return new Word(wsId, listId, val, false, false, 0, 0, 0);
+    public static Word newWord(String val) {
+        return new Word(val, false, 0, 0, 1);
     }
 
     public Word() {
-        this.wordSet = "";
-        this.wordList = "";
         this.value = "";
         this.practicable = false;
-        this.learned = false;
-        this.appeared = 0;
-        this.correct = 0;
+        this.lastOpen = 0;
         this.validity = 0;
+        this.level = 0;
     }
-    public Word(String wordSet, String wordList, String value, boolean practicable, boolean learned, int appeared, int correct, int validity) {
-        this.wordSet = wordSet;
-        this.wordList = wordList;
+    public Word(String value, boolean practicable, int validity, int lastOpen, int level) {
         this.value = value;
         this.practicable = practicable;
-        this.learned = learned;
-        this.appeared = appeared;
-        this.correct = correct;
         this.validity = validity;
+        this.lastOpen = lastOpen;
+        this.level = level;
     }
 
-    public String getWordSet() {
-        return wordSet;
+    public int getLevel() {
+        return level;
     }
 
-    public void setWordSet(String wordSet) {
-        this.wordSet = wordSet;
-    }
-
-    public String getWordList() {
-        return wordList;
-    }
-
-    public void setWordList(String wordList) {
-        this.wordList = wordList;
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     public String getValue() {
@@ -73,28 +59,12 @@ public class Word implements Parcelable{
         this.practicable = practicable;
     }
 
-    public boolean isLearned() {
-        return learned;
+    public int getLastOpen() {
+        return lastOpen;
     }
 
-    public void setLearned(boolean learned) {
-        this.learned = learned;
-    }
-
-    public int getAppeared() {
-        return appeared;
-    }
-
-    public void setAppeared(int appeared) {
-        this.appeared = appeared;
-    }
-
-    public int getCorrect() {
-        return correct;
-    }
-
-    public void setCorrect(int correct) {
-        this.correct = correct;
+    public void setLastOpen(int lastOpen) {
+        this.lastOpen = lastOpen;
     }
 
     public int getValidity() {
@@ -112,25 +82,19 @@ public class Word implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(wordSet);
-        parcel.writeString(wordList);
         parcel.writeString(value);
         parcel.writeValue(practicable);
-        parcel.writeValue(learned);
-        parcel.writeInt(appeared);
-        parcel.writeInt(correct);
         parcel.writeInt(validity);
+        parcel.writeValue(lastOpen);
+        parcel.writeValue(level);
     }
 
     private Word(Parcel in) {
-        wordSet = in.readString();
-        wordList = in.readString();
         value = in.readString();
         practicable = (Boolean) in.readValue( null );
-        learned = (Boolean) in.readValue( null );
-        appeared = in.readInt();
-        correct = in.readInt();
         validity = in.readInt();
+        lastOpen = in.readInt();
+        level = in.readInt();
     }
 
     public static final Parcelable.Creator<Word> CREATOR

@@ -6,38 +6,27 @@ package com.example.fahim.gremate.DataClasses;
 
 public class WordList {
     private String wordSet, name;
-    private boolean deletable;
-    private int wordCount, learned;
+    private int wordCount;
 
 
     public WordList() {
         this.wordSet = "";
         this.name = "";
-        this.deletable = true;
         this.wordCount = 0;
-        this.learned = 0;
     }
 
-    public WordList(String wordSet, String name, boolean deletable, int wordCount, int learned) {
+    public WordList(String wordSet, String name, int wordCount) {
         this.wordSet = wordSet;
         this.name = name;
-        this.deletable = deletable;
         this.wordCount = wordCount;
-        this.learned = learned;
     }
 
     public static WordList getNewList(String wordSetKey, String listName){
-        return new WordList(wordSetKey, listName, true, 0, 0);
+        return new WordList(wordSetKey, listName, 0);
     }
 
     public static WordList getAllList(String wordSetKey){
-        return new WordList(wordSetKey, "All", false, 0, 0);
-    }
-    public static WordList getLearnedList(String wordSetKey){
-        return new WordList(wordSetKey, "Learned", false, 0, 0);
-    }
-    public static WordList getNotLearnedList(String wordSetKey){
-        return new WordList(wordSetKey, "Not Learned", false, 0, 0);
+        return new WordList(wordSetKey, "All", 0);
     }
 
     public String getWordSet() {
@@ -56,14 +45,6 @@ public class WordList {
         this.name = name;
     }
 
-    public boolean isDeletable() {
-        return deletable;
-    }
-
-    public void setDeletable(boolean deletable) {
-        this.deletable = deletable;
-    }
-
     public int getWordCount() {
         return wordCount;
     }
@@ -72,11 +53,4 @@ public class WordList {
         this.wordCount = wordCount;
     }
 
-    public int getLearned() {
-        return learned;
-    }
-
-    public void setLearned(int learned) {
-        this.learned = learned;
-    }
 }

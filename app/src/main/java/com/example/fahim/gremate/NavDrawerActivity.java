@@ -36,7 +36,6 @@ public class NavDrawerActivity extends AppCompatActivity {
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
 
-        Log.d("HERE", "HERE");
         context = this;
 
         mDrawerLayout= (DrawerLayout) getLayoutInflater().inflate(R.layout.activity_nav_drawer, null);

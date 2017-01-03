@@ -7,12 +7,12 @@ package com.example.fahim.gremate.DataClasses;
 public class WordSetwID extends WordSet {
     private String id;
 
-    public WordSetwID(String name, String owner, int wordCount, int learned, String id) {
-        super(name, owner, wordCount, learned);
+    public WordSetwID(String name, String owner, int wordCount, int lastOpen, String id) {
+        super(name, owner, wordCount, lastOpen);
         this.id = id;
     }
     public WordSetwID(WordSet ws, String id) {
-        super(ws.getName(), ws.getOwner(), ws.getWordCount(), ws.getLearned());
+        super(ws.getName(), ws.getOwner(), ws.getWordCount(), ws.getLastOpen());
         this.id = id;
     }
     public WordSetwID() {

@@ -6,20 +6,20 @@ package com.example.fahim.gremate.DataClasses;
 
 public class WordSet {
     private String name, owner;
-    private int wordCount, learned;
+    private int wordCount, lastOpen;
 
     public WordSet() {
         this.name = "";
         this.owner = "";
         this.wordCount = 0;
-        this.learned = 0;
+        this.lastOpen = 0;
     }
 
     public WordSet(String name, String owner, int wordCount, int learned) {
         this.name = name;
         this.owner = owner;
         this.wordCount = wordCount;
-        this.learned = learned;
+        this.lastOpen = learned;
     }
 
     public static WordSet newWordSet (String name, String owner){
@@ -50,11 +50,11 @@ public class WordSet {
         this.wordCount = wordCount;
     }
 
-    public int getLearned() {
-        return learned;
+    public int getLastOpen() {
+        return lastOpen;
     }
 
-    public void setLearned(int learned) {
-        this.learned = learned;
+    public void setLastOpen(int learned) {
+        this.lastOpen = learned;
     }
 }

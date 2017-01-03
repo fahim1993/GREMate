@@ -2,6 +2,8 @@ package com.example.fahim.gremate;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -12,7 +14,10 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
@@ -67,6 +72,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
         getWindow().setLayout(width, height);
 
+
         Bundle extras = getIntent().getExtras();
         if(extras == null) {
             finish();
@@ -79,7 +85,13 @@ public class ShowWordActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle(WORD.getValue());
+        //setTitle(WORD.getValue().toUpperCase());
+        setTitle("Dialog Activity");
+
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
         switch (WORD.getValidity()){
             case 0:
@@ -444,4 +456,15 @@ public class ShowWordActivity extends AppCompatActivity {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 }

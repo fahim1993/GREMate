@@ -7,13 +7,13 @@ package com.example.fahim.gremate.DataClasses;
 public class WordListwID extends WordList {
     String id;
 
-    public WordListwID(String wordSet, String name, boolean deletable, int wordCount, int learned, String id) {
-        super(wordSet, name, deletable, wordCount, learned);
+    public WordListwID(String wordSet, String name, int wordCount, String id) {
+        super(wordSet, name, wordCount);
         this.id = id;
     }
 
     public WordListwID(WordList wordList, String id) {
-        super(wordList.getWordSet(), wordList.getName(), wordList.isDeletable(), wordList.getWordCount(), wordList.getLearned());
+        super(wordList.getWordSet(), wordList.getName(), wordList.getWordCount());
         this.id = id;
     }
 
