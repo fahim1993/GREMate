@@ -11,6 +11,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by Fahim on 24-Dec-16.
@@ -31,6 +32,9 @@ public class DB {
     public static String WORDDEF = "WordDef";
     public static String WORDDEFP = "WordDefP";
     public static String SENTENCE = "Sentence";
+    public static String LISTWORDS = "ListWords";
+    public static String WORDINLIST = "WordInList";
+
 
     private static String username = "-1";
     private static String userid = "-1";
@@ -78,7 +82,7 @@ public class DB {
         if(username.equals("-1")) getUserName(1);
         else {
             ref = db.getReference().child(USER_WORD).child(userid).child(WORDSET);
-            String wskey = ref.push().getKey();
+            String wskey = ref.push().getKey();                                    // Important
             ref.child(wskey).setValue(WordSet.newWordSet(wsname, username));
 
             ref = db.getReference().child(USER_WORD).child(userid).child(WORDLIST);
@@ -97,16 +101,15 @@ public class DB {
         }
     }
 
-    public static void newWord(String word, String listId, String wsId){
+    public static void newWord(String word, String listId){
         wordVal = word;
         wordListId = listId;
-        wordSetId = wsId;
 
         if(userid.equals("-1")) initDB();
 
-        ref = db.getReference().child(USER_WORD).child(userid).child(WORD);
-        ref.push().setValue(Word.newWord(word, listId, wsId));
-
+        DatabaseReference ref1 = db.getReference().child(USER_WORD).child(userid).child(WORD);
+        String wordId = ref1.push().getKey();
+        ref1.push().setValue(Word.newWord(listId, word));
     }
 
     public static void updateWord(Word word, String wordId){
@@ -115,6 +118,14 @@ public class DB {
         ref = db.getReference().child(USER_WORD).child(userid).child(WORD);
         ref.child(wordId).setValue(word);
 
+    }
+
+    public static void setWordSetLastOpen(String wsid){
+        if(userid.equals("-1")){
+            initDB();
+        }
+        db.getReference().child(USER_WORD).child(userid).child(WORDSET).child(wsid).child("lastOpen").
+                setValue(System.currentTimeMillis()/60000);
     }
 
     public static void setWordData(WordAllData wordAllData, String wordId){

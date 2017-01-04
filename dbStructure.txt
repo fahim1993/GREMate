@@ -23,6 +23,8 @@ UserWords:
 		 
    Word:
       id:
+	     copyOf:
+		 listId:
          value:
 		 practicable: 
 		 validity: 0=Fetch Data, 1=Data is set, 2=Data Fetched with Error

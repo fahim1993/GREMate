@@ -12,22 +12,26 @@ import java.io.Serializable;
 public class Word implements Parcelable{
 
 
-    private String value;
+    private String copyOf, listId, value;
     private boolean practicable;
     private int validity, lastOpen, level;
 
-    public static Word newWord(String val) {
-        return new Word(val, false, 0, 0, 1);
+    public static Word newWord(String listId, String val) {
+        return new Word(listId, val, false, 0, 0, 1);
     }
 
     public Word() {
+        this.copyOf = "";
+        this.listId = "";
         this.value = "";
         this.practicable = false;
         this.lastOpen = 0;
         this.validity = 0;
         this.level = 0;
     }
-    public Word(String value, boolean practicable, int validity, int lastOpen, int level) {
+    public Word(String listId, String value, boolean practicable, int validity, int lastOpen, int level) {
+        this.copyOf = "";
+        this.listId = listId;
         this.value = value;
         this.practicable = practicable;
         this.validity = validity;
@@ -80,8 +84,26 @@ public class Word implements Parcelable{
         return 0;
     }
 
+    public String getCopyOf() {
+        return copyOf;
+    }
+
+    public void setCopyOf(String copyOf) {
+        this.copyOf = copyOf;
+    }
+
+    public String getListId() {
+        return listId;
+    }
+
+    public void setListId(String listId) {
+        this.listId = listId;
+    }
+
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(copyOf);
+        parcel.writeString(listId);
         parcel.writeString(value);
         parcel.writeValue(practicable);
         parcel.writeInt(validity);
@@ -90,6 +112,8 @@ public class Word implements Parcelable{
     }
 
     private Word(Parcel in) {
+        copyOf = in.readString();
+        listId = in.readString();
         value = in.readString();
         practicable = (Boolean) in.readValue( null );
         validity = in.readInt();

@@ -15,11 +15,11 @@ public class WordSet {
         this.lastOpen = 0;
     }
 
-    public WordSet(String name, String owner, int wordCount, int learned) {
+    public WordSet(String name, String owner, int wordCount, int lastOpen) {
         this.name = name;
         this.owner = owner;
         this.wordCount = wordCount;
-        this.lastOpen = learned;
+        this.lastOpen = lastOpen;
     }
 
     public static WordSet newWordSet (String name, String owner){

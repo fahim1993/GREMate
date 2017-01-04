@@ -12,13 +12,13 @@ public class WordwID extends Word {
         this.id = "";
     }
 
-    public WordwID(String value, boolean practicable, int validity, int lastOpen, int level, String id) {
-        super(value, practicable, validity, lastOpen, level);
+    public WordwID(String listId, String value, boolean practicable, int validity, int lastOpen, int level, String id) {
+        super(listId, value, practicable, validity, lastOpen, level);
         this.id = id;
     }
 
     public WordwID(Word word, String id){
-        super(word.getValue(), word.isPracticable(), word.getValidity(),
+        super(word.getListId(), word.getValue(), word.isPracticable(), word.getValidity(),
                 word.getLastOpen(), word.getLevel());
 
         this.id = id;

@@ -43,7 +43,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class ShowWordActivity extends AppCompatActivity {
 
@@ -441,13 +443,13 @@ public class ShowWordActivity extends AppCompatActivity {
             super.onPostExecute(s);
             if(wordAllData != null){
                 wordAllData_ = wordAllData;
-                wordAllData_.setWord(new Word(WORD.getWordSet(), WORD.getWordList(), WORD.getValue(), true, false, 0, 0, 1));
+                wordAllData_.setWord(new Word(WORD.getListId(), WORD.getValue(), true, 1, Calendar.getInstance().get(Calendar.MINUTE), 1));
                 setContents();
                 DB.setWordData(wordAllData_, wordId);
             }
             else {
-                DB.updateWord(new Word(WORD.getWordSet(), WORD.getWordList(), WORD.getValue(), WORD.isPracticable(), WORD.isLearned(), WORD.getAppeared(),
-                        WORD.getCorrect(), 2), wordId);
+                DB.updateWord(new Word(WORD.getListId(), WORD.getValue(), WORD.isPracticable(), 2,
+                        Calendar.getInstance().get(Calendar.MINUTE), WORD.getLevel() ), wordId);
             }
         }
     }

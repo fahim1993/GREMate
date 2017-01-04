@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ public class WordSetActivity extends NavDrawerActivity {
     private String title;
     private String currentListId;
 
+
     private static FirebaseAuth auth;
     private static FirebaseDatabase db;
     private static DatabaseReference ref;
@@ -59,6 +61,7 @@ public class WordSetActivity extends NavDrawerActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_word_set);
+
 
         Bundle extras = getIntent().getExtras();
         if(extras == null) {
@@ -147,7 +150,8 @@ public class WordSetActivity extends NavDrawerActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         String listname = input.getText().toString();
                         if(listname.length()<3){
-                            Toast.makeText(WordSetActivity.this, "Failed! Name must be at least 3 characters long.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(WordSetActivity.this,
+                                    "Failed! Name must be at least 3 characters long.", Toast.LENGTH_LONG).show();
                         }
                         else{
                             DB.newList(listname, wordSetID);
@@ -178,7 +182,6 @@ public class WordSetActivity extends NavDrawerActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case R.id.changeList: {
                 AlertDialog.Builder builder = new AlertDialog.Builder(WordSetActivity.this);
@@ -215,10 +218,11 @@ public class WordSetActivity extends NavDrawerActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         String word = input.getText().toString();
                         if(word.length()<1){
-                            Toast.makeText(WordSetActivity.this, "Failed! Word must be at least 1 characters long.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(WordSetActivity.this,
+                                    "Failed! Word must be at least 1 characters long.", Toast.LENGTH_LONG).show();
                         }
                         else{
-                            DB.newWord(word,currentListId, wordSetID);
+                            DB.newWord(word,currentListId);
                         }
                     }
                 });
@@ -266,7 +270,8 @@ public class WordSetActivity extends NavDrawerActivity {
 
     public void setListWords(){
 
-        db.getReference(DB.USER_WORD).child(uid).child(DB.WORD).orderByChild("wordList").equalTo(currentListId).addValueEventListener(new ValueEventListener() {
+        db.getReference(DB.USER_WORD).child(uid).child(DB.WORD).orderByChild("listId")
+                .equalTo(currentListId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 wordwIDs = new ArrayList<WordwID>();
