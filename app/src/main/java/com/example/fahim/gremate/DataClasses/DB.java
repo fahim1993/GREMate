@@ -77,6 +77,15 @@ public class DB {
             });
         }
     }
+
+    public static void deleteWordSet(String wsId){
+        if(userid.equals("-1")){
+            initDB();
+        }
+        ref = db.getReference().child(USER_WORD).child(userid).child(WORDSET).child(wsId);
+        ref.removeValue();
+    }
+
     public static void newWordSet(String wsname){
         wordSet = wsname;
         if(username.equals("-1")) getUserName(1);
@@ -128,6 +137,21 @@ public class DB {
                 setValue(System.currentTimeMillis()/60000);
     }
 
+    public static void setWordLastOpen(String wordId){
+        if(userid.equals("-1")){
+            initDB();
+        }
+        db.getReference().child(USER_WORD).child(userid).child(WORD).child(wordId).child("lastOpen").
+                setValue(getCurrentMin());
+    }
+
+    public static void  setWordLevel(String wordId, int level){
+        if(userid.equals("-1")){
+            initDB();
+        }
+        db.getReference().child(USER_WORD).child(userid).child(WORD).child(wordId).child("level").setValue(level);
+    }
+
     public static void setWordData(WordAllData wordAllData, String wordId){
         if(userid.equals("-1")){
             initDB();
@@ -143,5 +167,9 @@ public class DB {
         for(Sentence s: wordAllData.getSentences()){
             db.getReference().child(USER_WORD).child(userid).child(SENTENCE).push().setValue(s);
         }
+    }
+
+    public static int getCurrentMin(){
+        return (int)(System.currentTimeMillis()/60000);
     }
 }

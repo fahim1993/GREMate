@@ -1,16 +1,21 @@
 package com.example.fahim.gremate.Adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.WordSetwID;
@@ -64,9 +69,9 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
                 Log.d("Wordset", "Clicked");
             }
         });
-        long time= System.currentTimeMillis();
-        time /= (60000);
-        int min_diff = (int)time - wsList.get(position).getLastOpen() ;
+        int time = DB.getCurrentMin();
+
+        int min_diff = time - wsList.get(position).getLastOpen() ;
 
         if(min_diff <= 10080){
             holder.img.setImageResource(R.drawable.ic_green1);
@@ -77,6 +82,38 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
         else {
             holder.img.setImageResource(R.drawable.ic_gray);
         }
+
+        holder.delbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(context);
+
+                alert.setTitle("Delete Word Set ");
+                alert.setMessage("Are you sure to delete word set "+wsList.get(position).getName()+"?");
+                alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DB.deleteWordSet(wsList.get(position).getId());
+                        dialog.dismiss();
+
+                    }
+                });
+                alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+                    }
+                });
+
+                alert.show();
+
+
+
+            }
+        });
     }
 
     @Override

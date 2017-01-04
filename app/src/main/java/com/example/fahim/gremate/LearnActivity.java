@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fahim.gremate.Adapters.WordSetAdapter;
@@ -38,8 +39,11 @@ public class LearnActivity extends NavDrawerActivity {
     private ArrayList<WordSetwID> wordSets;
 
     private String uid;
+    private String userName;
 
     private RecyclerView wsRecyclerView;
+
+    private TextView wordSetTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,13 +86,16 @@ public class LearnActivity extends NavDrawerActivity {
             }
         });
 
+        wordSetTitle = (TextView) findViewById(R.id.wordSetTitle);
+
+
         auth = FirebaseAuth.getInstance();
         FBDB = FirebaseDatabase.getInstance();
 
+        setTitle();
+
         UDATA = FBDB.getReference(DB.USER_DATA);
         UWORD = FBDB.getReference(DB.USER_WORD);
-
-        uid = auth.getCurrentUser().getUid();
 
         UDATA.child(uid).addValueEventListener(new ValueEventListener() {
             @Override
@@ -104,6 +111,23 @@ public class LearnActivity extends NavDrawerActivity {
 
         setWordSet();
 
+    }
+
+    private void setTitle(){
+        uid = auth.getCurrentUser().getUid();
+        DatabaseReference mref = FBDB.getReference().child(DB.USER_DATA).child(uid);
+        mref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserData user = dataSnapshot.getValue(UserData.class);
+                wordSetTitle.setText(user.getUserName() + "'s Word Set");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void setWordSet(){

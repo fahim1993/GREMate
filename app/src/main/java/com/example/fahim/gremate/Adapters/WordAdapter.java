@@ -2,6 +2,7 @@ package com.example.fahim.gremate.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -9,8 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.WordSetwID;
 import com.example.fahim.gremate.DataClasses.WordwID;
 import com.example.fahim.gremate.R;
@@ -23,8 +26,8 @@ import java.util.ArrayList;
 public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder>{
 
 
-    private static ArrayList<WordwID> wordList;
-    private static Context context;
+    private ArrayList<WordwID> wordList;
+    private Context context;
 
     public WordAdapter(ArrayList<WordwID> wordList, Context context ) {
         this.wordList = wordList;
@@ -39,9 +42,45 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     }
 
     @Override
-    public void onBindViewHolder(WordViewHolder holder, int position) {
+    public void onBindViewHolder(WordViewHolder holder, final int position) {
         holder.wordValue.setText(wordList.get(position).getValue());
+        holder.cv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                Intent intent = new Intent(context, ShowWordActivity.class);
+                Bundle b = new Bundle();
+                String key = wordList.get(position).getId();
+                Log.d("WORD ADAPTER KEY", key);
+                b.putString("wordId", key);
+                b.putParcelable("Word", wordList.get(position));
+
+                intent.putExtras(b);
+                context.startActivity(intent);
+            }
+        });
+        int lvl = wordList.get(position).getLevel();
+        int time = DB.getCurrentMin() - wordList.get(position).getLastOpen();
+        Log.d("WORDADAPTER >> ", wordList.get(position).getValue() + "  " + time);
+        if( time >= 43200){
+            holder.img.setImageResource(R.drawable.ic_gray);
+        }
+        else if (time>=10080){
+            if(lvl == 0)
+                holder.img.setImageResource(R.drawable.ic_green2);
+            else if (lvl == 1)
+                holder.img.setImageResource(R.drawable.ic_blue2);
+            else
+                holder.img.setImageResource(R.drawable.ic_red2);
+        }
+        else {
+            if(lvl == 0)
+                holder.img.setImageResource(R.drawable.ic_green1);
+            else if (lvl == 1)
+                holder.img.setImageResource(R.drawable.ic_blue1);
+            else
+                holder.img.setImageResource(R.drawable.ic_red1);
+        }
     }
 
     @Override
@@ -54,6 +93,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
         CardView cv;
         TextView wordValue;
         ImageButton delbtn;
+        ImageView img;
 
         public WordViewHolder(View itemView) {
             super(itemView);
@@ -61,24 +101,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
             cv = (CardView) itemView.findViewById(R.id.wordCV);
             wordValue = (TextView) itemView.findViewById(R.id.wordValue);
             delbtn = (ImageButton) itemView.findViewById(R.id.delWord);
-
-            delbtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Log.d("Del Btn", "Clicked");
-                }
-            });
-            cv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    Intent intent = new Intent(context, ShowWordActivity.class);
-                    intent.putExtra("word_key", wordList.get(getAdapterPosition()).getId());
-                    intent.putExtra("Word",wordList.get(getAdapterPosition()));
-
-                    context.startActivity(intent);
-                }
-            });
+            img = (ImageView) itemView.findViewById(R.id.img);
         }
     }
 }

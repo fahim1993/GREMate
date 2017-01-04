@@ -18,9 +18,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/img"
+            android:scaleType="fitCenter"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/img"
             android:layout_marginRight="50dp"
             android:layout_centerVertical="true"
             android:id="@+id/rl1">
@@ -37,7 +44,7 @@
 
         <ImageButton
             android:id="@+id/delWord"
-            android:padding="8dp"
+            android:padding="6dp"
             android:src="@drawable/deltbtn2"
             android:scaleType="fitCenter"
             android:backgroundTint="@color/cardviewItem"

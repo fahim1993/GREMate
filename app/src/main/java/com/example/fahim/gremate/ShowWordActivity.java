@@ -2,10 +2,8 @@ package com.example.fahim.gremate;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -15,12 +13,12 @@ import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.fahim.gremate.DataClasses.DB;
@@ -30,20 +28,12 @@ import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordAllData;
 import com.example.fahim.gremate.DataClasses.WordData;
 import com.example.fahim.gremate.DataClasses.WordDef;
-import com.example.fahim.gremate.DataClasses.WordDefP;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -63,25 +53,70 @@ public class ShowWordActivity extends AppCompatActivity {
     private TextView sentenceText;
     private TextView definitionText;
     private TextView descriptionText;
+    private TextView levelTv;
+
+    private SeekBar levelSb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_word);
 
-        int width = (int)(getResources().getDisplayMetrics().widthPixels*0.95);
-        int height = (int)(getResources().getDisplayMetrics().heightPixels*0.80);
+//        int width = (int)(getResources().getDisplayMetrics().widthPixels*0.95);
+//        int height = (int)(getResources().getDisplayMetrics().heightPixels*0.80);
 
-        getWindow().setLayout(width, height);
+//        getWindow().setLayout(width, height);
 
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         Bundle extras = getIntent().getExtras();
         if(extras == null) {
             finish();
         }
 
-        wordId = extras.getString("word_key");
+        levelSb = (SeekBar) findViewById(R.id.diffSeekBar);
+        levelTv = (TextView) findViewById(R.id.diff);
+
+        levelSb.setVisibility(View.GONE);
+        levelTv.setVisibility(View.GONE);
+
+        wordId = extras.getString("wordId");
+        DB.setWordLastOpen(wordId);
+
         WORD = extras.getParcelable("Word");
+
+        levelSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                DB.setWordLevel(wordId, i);
+                switch(i){
+                    case 0:
+                        levelTv.setText("Difficulty: Easy");
+                        levelTv.setTextColor(Color.parseColor("#006400"));
+                        break;
+                    case 1:
+                        levelTv.setText("Difficulty: Medium");
+                        levelTv.setTextColor(Color.parseColor("#00008B"));
+                        break;
+                    case 2:
+                        levelTv.setText("Difficulty: Hard");
+                        levelTv.setTextColor(Color.parseColor("#8B0000"));
+                        break;
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+
 
         Log.d("ShowWordActivity", WORD.getValue());
 
@@ -247,6 +282,26 @@ public class ShowWordActivity extends AppCompatActivity {
         descriptionText = (TextView) findViewById(R.id.showWordDescriptionText);
     }
 
+    private void setLevel(){
+        levelSb.setProgress(wordAllData_.getWord().getLevel());
+        switch(wordAllData_.getWord().getLevel()){
+            case 0:
+                levelTv.setText("Difficulty: Easy");
+                levelTv.setTextColor(Color.parseColor("#006400"));
+                break;
+            case 1:
+                levelTv.setText("Difficulty: Medium");
+                levelTv.setTextColor(Color.parseColor("#00008B"));
+                break;
+            case 2:
+                levelTv.setText("Difficulty: Hard");
+                levelTv.setTextColor(Color.parseColor("#8B0000"));
+                break;
+        }
+        levelSb.setVisibility(View.VISIBLE);
+        levelTv.setVisibility(View.VISIBLE);
+    }
+
     private void setContents() {
         try {
             setTextViews();
@@ -254,11 +309,13 @@ public class ShowWordActivity extends AppCompatActivity {
             setDes();
             setSenence();;
             setMN();
+            setLevel();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     @SuppressWarnings("deprecation")
     public static Spanned fromHtml(String source) {
@@ -375,6 +432,7 @@ public class ShowWordActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 wordAllData_.setWord(dataSnapshot.getValue(Word.class));
+                setLevel();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -443,13 +501,13 @@ public class ShowWordActivity extends AppCompatActivity {
             super.onPostExecute(s);
             if(wordAllData != null){
                 wordAllData_ = wordAllData;
-                wordAllData_.setWord(new Word(WORD.getListId(), WORD.getValue(), true, 1, Calendar.getInstance().get(Calendar.MINUTE), 1));
+                wordAllData_.setWord(new Word(WORD.getListId(), WORD.getValue(), true, 1, (int)(System.currentTimeMillis()/60000), 1));
                 setContents();
                 DB.setWordData(wordAllData_, wordId);
             }
             else {
                 DB.updateWord(new Word(WORD.getListId(), WORD.getValue(), WORD.isPracticable(), 2,
-                        Calendar.getInstance().get(Calendar.MINUTE), WORD.getLevel() ), wordId);
+                        (int)(System.currentTimeMillis()/60000), WORD.getLevel() ), wordId);
             }
         }
     }
