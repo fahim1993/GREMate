@@ -2,6 +2,7 @@ package com.example.fahim.gremate.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -59,28 +60,45 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                 context.startActivity(intent);
             }
         });
+//        int lvl = wordList.get(position).getLevel();
+//        int time = DB.getCurrentMin() - wordList.get(position).getLastOpen();
+//        Log.d("WORDADAPTER >> ", wordList.get(position).getValue() + "  " + time);
+//        if( time >= 43200){
+//            holder.img.setImageResource(R.drawable.ic_gray);
+//        }
+//        else if (time>=10080){
+//            if(lvl == 0)
+//                holder.img.setImageResource(R.drawable.ic_green2);
+//            else if (lvl == 1)
+//                holder.img.setImageResource(R.drawable.ic_blue2);
+//            else
+//                holder.img.setImageResource(R.drawable.ic_red2);
+//        }
+//        else {
+//            if(lvl == 0)
+//                holder.img.setImageResource(R.drawable.ic_green1);
+//            else if (lvl == 1)
+//                holder.img.setImageResource(R.drawable.ic_blue1);
+//            else
+//                holder.img.setImageResource(R.drawable.ic_red1);
+//        }
+
         int lvl = wordList.get(position).getLevel();
         int time = DB.getCurrentMin() - wordList.get(position).getLastOpen();
-        Log.d("WORDADAPTER >> ", wordList.get(position).getValue() + "  " + time);
-        if( time >= 43200){
+        if(time>=43200)
             holder.img.setImageResource(R.drawable.ic_gray);
-        }
-        else if (time>=10080){
-            if(lvl == 0)
-                holder.img.setImageResource(R.drawable.ic_green2);
-            else if (lvl == 1)
-                holder.img.setImageResource(R.drawable.ic_blue2);
-            else
-                holder.img.setImageResource(R.drawable.ic_red2);
-        }
-        else {
-            if(lvl == 0)
-                holder.img.setImageResource(R.drawable.ic_green1);
-            else if (lvl == 1)
-                holder.img.setImageResource(R.drawable.ic_blue1);
-            else
-                holder.img.setImageResource(R.drawable.ic_red1);
-        }
+        else if(time>=10080)
+            holder.img.setImageResource(R.drawable.ic_green2);
+        else
+            holder.img.setImageResource(R.drawable.ic_green1);
+
+        if(lvl == 0)
+            holder.wordValue.setTextColor(Color.parseColor("#007200"));
+        else if (lvl == 1)
+            holder.wordValue.setTextColor(Color.parseColor("#000072"));
+        else
+            holder.wordValue.setTextColor(Color.parseColor("#720000"));
+
     }
 
     @Override

@@ -51,14 +51,14 @@ public class WordSetActivity extends NavDrawerActivity {
     private ArrayList<WordwID> wordwIDs;
 
     private ImageButton listOptions;
-    private Button changeList;
-    private Button addWord;
     private TextView listTitle;
 
     private  RecyclerView wordsInListRV;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_word_set);
 
@@ -70,9 +70,8 @@ public class WordSetActivity extends NavDrawerActivity {
         wordSetID = extras.getString("wordset_key");
         title = extras.getString("wordset_title");
 
-
-
         setTitle(title);
+
         listOptions = (ImageButton)findViewById(R.id.listOptions);
         listOptions.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,8 +90,45 @@ public class WordSetActivity extends NavDrawerActivity {
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseDatabase.getInstance();
-
         uid = auth.getCurrentUser().getUid();
+
+
+//        addWordBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                AlertDialog.Builder builder = new AlertDialog.Builder(WordSetActivity.this);
+//                builder.setTitle("ADD WORD");
+//
+//                final EditText input = new EditText(WordSetActivity.this);
+//
+//                input.setInputType(InputType.TYPE_CLASS_TEXT);
+//                input.setHint("Word");
+//                builder.setView(input);
+//
+//                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        String word = input.getText().toString();
+//                        if(word.length()<1){
+//                            Toast.makeText(WordSetActivity.this,
+//                                    "Failed! Word must be at least 1 characters long.", Toast.LENGTH_LONG).show();
+//                        }
+//                        else{
+//                            DB.newWord(word,currentListId,wordSetID);
+//                        }
+//                    }
+//                });
+//                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                    }
+//                });
+//
+//                builder.show();
+//            }
+//        });
 
         getWordSet_list(wordSetID);
 //
@@ -133,6 +169,7 @@ public class WordSetActivity extends NavDrawerActivity {
         inflater.inflate(R.menu.wordset_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -203,6 +240,7 @@ public class WordSetActivity extends NavDrawerActivity {
                 alert.show();
                 return true;
             }
+
             case R.id.addWordToList:{
                 AlertDialog.Builder builder = new AlertDialog.Builder(WordSetActivity.this);
                 builder.setTitle("ADD WORD");
@@ -222,7 +260,7 @@ public class WordSetActivity extends NavDrawerActivity {
                                     "Failed! Word must be at least 1 characters long.", Toast.LENGTH_LONG).show();
                         }
                         else{
-                            DB.newWord(word,currentListId);
+                            DB.newWord(word,currentListId,wordSetID);
                         }
                     }
                 });

@@ -123,7 +123,7 @@ public class ShowWordActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         //setTitle(WORD.getValue().toUpperCase());
-        setTitle("Dialog Activity");
+        setTitle(WORD.getValue());
 
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -287,15 +287,15 @@ public class ShowWordActivity extends AppCompatActivity {
         switch(wordAllData_.getWord().getLevel()){
             case 0:
                 levelTv.setText("Difficulty: Easy");
-                levelTv.setTextColor(Color.parseColor("#006400"));
+                levelTv.setTextColor(Color.parseColor("#007200"));
                 break;
             case 1:
                 levelTv.setText("Difficulty: Medium");
-                levelTv.setTextColor(Color.parseColor("#00008B"));
+                levelTv.setTextColor(Color.parseColor("#000072"));
                 break;
             case 2:
                 levelTv.setText("Difficulty: Hard");
-                levelTv.setTextColor(Color.parseColor("#8B0000"));
+                levelTv.setTextColor(Color.parseColor("#720000"));
                 break;
         }
         levelSb.setVisibility(View.VISIBLE);
@@ -501,13 +501,13 @@ public class ShowWordActivity extends AppCompatActivity {
             super.onPostExecute(s);
             if(wordAllData != null){
                 wordAllData_ = wordAllData;
-                wordAllData_.setWord(new Word(WORD.getListId(), WORD.getValue(), true, 1, (int)(System.currentTimeMillis()/60000), 1));
+                wordAllData_.setWord(new Word(WORD.getListId(), WORD.getValue(), true, 1, DB.getCurrentMin(), 1, DB.getCurrentMin()));
                 setContents();
                 DB.setWordData(wordAllData_, wordId);
             }
             else {
                 DB.updateWord(new Word(WORD.getListId(), WORD.getValue(), WORD.isPracticable(), 2,
-                        (int)(System.currentTimeMillis()/60000), WORD.getLevel() ), wordId);
+                        DB.getCurrentMin(), WORD.getLevel(), WORD.getAdded() ), wordId);
             }
         }
     }

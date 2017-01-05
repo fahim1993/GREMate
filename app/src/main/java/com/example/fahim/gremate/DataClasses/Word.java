@@ -14,10 +14,10 @@ public class Word implements Parcelable{
 
     private String copyOf, listId, value;
     private boolean practicable;
-    private int validity, lastOpen, level;
+    private int validity, lastOpen, level, added;
 
     public static Word newWord(String listId, String val) {
-        return new Word(listId, val, false, 0, 0, 1);
+        return new Word(listId, val, false, 0, 0, 1, DB.getCurrentMin());
     }
 
     public Word() {
@@ -28,8 +28,9 @@ public class Word implements Parcelable{
         this.lastOpen = 0;
         this.validity = 0;
         this.level = 0;
+        this.added = 0;
     }
-    public Word(String listId, String value, boolean practicable, int validity, int lastOpen, int level) {
+    public Word(String listId, String value, boolean practicable, int validity, int lastOpen, int level, int added) {
         this.copyOf = "";
         this.listId = listId;
         this.value = value;
@@ -37,6 +38,15 @@ public class Word implements Parcelable{
         this.validity = validity;
         this.lastOpen = lastOpen;
         this.level = level;
+        this.added = added;
+    }
+
+    public int getAdded() {
+        return added;
+    }
+
+    public void setAdded(int added) {
+        this.added = added;
     }
 
     public int getLevel() {
@@ -109,6 +119,7 @@ public class Word implements Parcelable{
         parcel.writeInt(validity);
         parcel.writeValue(lastOpen);
         parcel.writeValue(level);
+        parcel.writeValue(added);
     }
 
     private Word(Parcel in) {
@@ -119,6 +130,7 @@ public class Word implements Parcelable{
         validity = in.readInt();
         lastOpen = in.readInt();
         level = in.readInt();
+        added = in.readInt();
     }
 
     public static final Parcelable.Creator<Word> CREATOR

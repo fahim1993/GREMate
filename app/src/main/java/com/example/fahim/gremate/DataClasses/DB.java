@@ -2,6 +2,7 @@ package com.example.fahim.gremate.DataClasses;
 
 import android.util.Log;
 
+import com.google.android.gms.common.data.DataBufferObserverSet;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,6 +46,8 @@ public class DB {
     private static String wordListId;
     private static String wordVal;
 
+    private static ValueEventListener listener1;
+    private static DatabaseReference mRef1;
 
     private static void initDB(){
         auth = FirebaseAuth.getInstance();
@@ -110,7 +113,7 @@ public class DB {
         }
     }
 
-    public static void newWord(String word, String listId){
+    public static void newWord(String word, String listId, String wsId){
         wordVal = word;
         wordListId = listId;
 
@@ -119,6 +122,25 @@ public class DB {
         DatabaseReference ref1 = db.getReference().child(USER_WORD).child(userid).child(WORD);
         String wordId = ref1.push().getKey();
         ref1.push().setValue(Word.newWord(listId, word));
+
+        mRef1 = db.getReference().child(USER_WORD).child(userid).child(WORDSET).child(wsId).child("wordCount");
+        listener1 = mRef1.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                long count = (long)dataSnapshot.getValue();
+                mRef1.setValue(count + 1);
+                removeListener1();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public static void removeListener1(){
+        mRef1.removeEventListener(listener1);
     }
 
     public static void updateWord(Word word, String wordId){
@@ -167,6 +189,7 @@ public class DB {
         for(Sentence s: wordAllData.getSentences()){
             db.getReference().child(USER_WORD).child(userid).child(SENTENCE).push().setValue(s);
         }
+
     }
 
     public static int getCurrentMin(){
