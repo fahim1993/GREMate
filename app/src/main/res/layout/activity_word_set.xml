@@ -37,33 +37,49 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/rl1"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+               >
 
                 <TextView
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="3dp"
+                    android:gravity="center_horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:textSize="18dp"
+                    android:textSize="20dp"
                     android:text="List: ALL"
                     android:textColor="#000"
                     android:maxLines="1"
+                    android:layout_weight="10"
                     android:id="@+id/listTitle"/>
 
                 <ImageButton
-                    android:id="@+id/listOptions"
-                    android:layout_alignParentRight="true"
-                    android:layout_gravity="right"
-                    android:padding="8dp"
-                    android:src="@drawable/more"
+                    android:id="@+id/changeList"
+                    android:layout_marginTop="-5dp"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_ws_changelist"
                     android:scaleType="fitCenter"
                     android:backgroundTint="@color/cardviewBackground"
-                    android:layout_width="50dp"
-                    android:layout_height="40dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="2"/>
 
-            </RelativeLayout>
+                <!--<ImageButton-->
+                    <!--android:id="@+id/listOptions"-->
+                    <!--android:layout_marginTop="-5dp"-->
+                    <!--android:padding="6dp"-->
+                    <!--android:src="@drawable/more"-->
+                    <!--android:scaleType="fitCenter"-->
+                    <!--android:backgroundTint="@color/cardviewBackground"-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="40dp"-->
+                    <!--android:layout_weight="2"/>-->
+
+            </LinearLayout>
             <View
                 android:layout_below="@id/rl1"
                 android:id="@+id/v1"
@@ -81,14 +97,16 @@
                 android:orientation="horizontal"
                 android:gravity="center"
                 >
+
                 <ImageButton
                     android:id="@+id/addWordBtn"
                     android:backgroundTint="@color/colorPrimary"
                     android:tint="#FFF"
-                    android:src="@drawable/ic_ws_add"
+                    android:src="@drawable/ic_ws_add_word"
                     android:scaleType="fitCenter"
                     android:layout_width="50dp"
                     android:layout_height="50dp" />
+
                 <ImageButton
                     android:id="@+id/sortBtn"
                     android:src="@drawable/ic_ws_reorder"
@@ -98,14 +116,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp" />
 
-                <ImageButton
-                    android:id="@+id/detailsBtn"
-                    android:src="@drawable/ic_ws_info"
-                    android:scaleType="fitCenter"
-                    android:backgroundTint="@color/colorPrimary"
-                    android:tint="#FFF"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp" />
+
 
                 <ImageButton
                     android:id="@+id/practiceBtn"

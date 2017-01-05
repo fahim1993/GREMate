@@ -5,25 +5,35 @@ package com.example.fahim.gremate.DataClasses;
  */
 
 public class WordSet {
-    private String name, owner;
+    private String name, owner, allList;
     private int wordCount, lastOpen;
 
     public WordSet() {
         this.name = "";
         this.owner = "";
+        this.allList = "";
         this.wordCount = 0;
         this.lastOpen = 0;
     }
 
-    public WordSet(String name, String owner, int wordCount, int lastOpen) {
+    public WordSet(String name, String owner, String allList, int wordCount, int lastOpen) {
         this.name = name;
         this.owner = owner;
+        this.allList = allList;
         this.wordCount = wordCount;
         this.lastOpen = lastOpen;
     }
 
-    public static WordSet newWordSet (String name, String owner){
-        return new WordSet(name, owner, 0, 0);
+    public static WordSet newWordSet (String name, String owner, String allList){
+        return new WordSet(name, owner, allList, 0, 0);
+    }
+
+    public String getAllList() {
+        return allList;
+    }
+
+    public void setAllList(String allList) {
+        this.allList = allList;
     }
 
     public String getName() {

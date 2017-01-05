@@ -17,7 +17,7 @@ public class Word implements Parcelable{
     private int validity, lastOpen, level, added;
 
     public static Word newWord(String listId, String val) {
-        return new Word(listId, val, false, 0, 0, 1, DB.getCurrentMin());
+        return new Word("", listId, val, false, 0, 0, 1, DB.getCurrentMin());
     }
 
     public Word() {
@@ -30,8 +30,8 @@ public class Word implements Parcelable{
         this.level = 0;
         this.added = 0;
     }
-    public Word(String listId, String value, boolean practicable, int validity, int lastOpen, int level, int added) {
-        this.copyOf = "";
+    public Word(String copyOf, String listId, String value, boolean practicable, int validity, int lastOpen, int level, int added) {
+        this.copyOf = copyOf;
         this.listId = listId;
         this.value = value;
         this.practicable = practicable;

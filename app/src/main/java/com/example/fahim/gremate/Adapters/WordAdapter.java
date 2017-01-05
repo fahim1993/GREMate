@@ -1,9 +1,11 @@
 package com.example.fahim.gremate.Adapters;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.WordListwID;
 import com.example.fahim.gremate.DataClasses.WordSetwID;
 import com.example.fahim.gremate.DataClasses.WordwID;
 import com.example.fahim.gremate.R;
@@ -28,10 +31,12 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
 
     private ArrayList<WordwID> wordList;
+    public ArrayList<WordListwID> otherLists;
     private Context context;
 
     public WordAdapter(ArrayList<WordwID> wordList, Context context ) {
         this.wordList = wordList;
+        this.otherLists = otherLists;
         this.context = context;
     }
 
@@ -52,7 +57,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                 Intent intent = new Intent(context, ShowWordActivity.class);
                 Bundle b = new Bundle();
                 String key = wordList.get(position).getId();
-                Log.d("WORD ADAPTER KEY", key);
+                if(wordList.get(position).getCopyOf().length()>=1) key = wordList.get(position).getCopyOf();
                 b.putString("wordId", key);
                 b.putParcelable("Word", wordList.get(position));
 
@@ -60,6 +65,40 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                 context.startActivity(intent);
             }
         });
+
+        holder.moreBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle(wordList.get(position).getValue().toUpperCase());
+                CharSequence [] listNames = new CharSequence[] {"Delete", "Add to another list"};
+                builder.setItems(listNames, new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        builder.setTitle("Select a list");
+                        CharSequence [] listNames = new CharSequence[otherLists.size()];
+                        for(int j=0; j<otherLists.size(); j++){
+                            listNames[j] = otherLists.get(j).getName();
+                        }
+                        builder.setItems(listNames, new DialogInterface.OnClickListener(){
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                DB.addWordToAnotherList(wordList.get(position), otherLists.get(i).getId());
+                            }
+                        });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        });
+
+
 //        int lvl = wordList.get(position).getLevel();
 //        int time = DB.getCurrentMin() - wordList.get(position).getLastOpen();
 //        Log.d("WORDADAPTER >> ", wordList.get(position).getValue() + "  " + time);
@@ -110,7 +149,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     public static class WordViewHolder extends RecyclerView.ViewHolder{
         CardView cv;
         TextView wordValue;
-        ImageButton delbtn;
+        ImageButton moreBtn;
         ImageView img;
 
         public WordViewHolder(View itemView) {
@@ -118,7 +157,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
             cv = (CardView) itemView.findViewById(R.id.wordCV);
             wordValue = (TextView) itemView.findViewById(R.id.wordValue);
-            delbtn = (ImageButton) itemView.findViewById(R.id.delWord);
+            moreBtn = (ImageButton) itemView.findViewById(R.id.moreBtn);
             img = (ImageView) itemView.findViewById(R.id.img);
         }
     }

@@ -6,6 +6,7 @@ UserWords:
 		 owner:
          wordCount:
          lastOpen:
+         allList:
    
    WordList:
       id:
@@ -13,14 +14,10 @@ UserWords:
          name:
          wordCount:
 
-    WordInList:
-		wordID:
-			listId
-
-	ListWords:
-		listID:
-			wordId
-		 
+   WordClones:
+       id:
+            otherWordId:
+            otherListId:
    Word:
       id:
 	     copyOf:

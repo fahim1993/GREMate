@@ -43,9 +43,9 @@
         </RelativeLayout>
 
         <ImageButton
-            android:id="@+id/delWord"
+            android:id="@+id/moreBtn"
             android:padding="6dp"
-            android:src="@drawable/deltbtn2"
+            android:src="@drawable/more"
             android:scaleType="fitCenter"
             android:backgroundTint="@color/cardviewItem"
             android:layout_alignParentEnd="true"

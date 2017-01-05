@@ -81,6 +81,7 @@ public class ShowWordActivity extends AppCompatActivity {
         levelTv.setVisibility(View.GONE);
 
         wordId = extras.getString("wordId");
+
         DB.setWordLastOpen(wordId);
 
         WORD = extras.getParcelable("Word");
@@ -501,13 +502,12 @@ public class ShowWordActivity extends AppCompatActivity {
             super.onPostExecute(s);
             if(wordAllData != null){
                 wordAllData_ = wordAllData;
-                wordAllData_.setWord(new Word(WORD.getListId(), WORD.getValue(), true, 1, DB.getCurrentMin(), 1, DB.getCurrentMin()));
+                wordAllData_.setWord(new Word(WORD.getCopyOf(), WORD.getListId(), WORD.getValue(), true, 1, DB.getCurrentMin(), 1, DB.getCurrentMin()));
                 setContents();
                 DB.setWordData(wordAllData_, wordId);
             }
             else {
-                DB.updateWord(new Word(WORD.getListId(), WORD.getValue(), WORD.isPracticable(), 2,
-                        DB.getCurrentMin(), WORD.getLevel(), WORD.getAdded() ), wordId);
+                DB.setWordValidity(wordId, 2);
             }
         }
     }
