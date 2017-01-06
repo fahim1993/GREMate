@@ -2,6 +2,8 @@ package com.example.fahim.gremate;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatImageButton;
@@ -9,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,6 +19,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,9 +70,12 @@ public class WordSetActivity extends NavDrawerActivity {
 
     private AppCompatImageButton addWord;
     private ImageButton deleteList;
+    private ImageButton sortBtn;
 
     private WordAdapter rvAdapter;
     private ProgressBar loadWordRV;
+
+    private int sortOrder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,7 +211,81 @@ public class WordSetActivity extends NavDrawerActivity {
             }
         });
 
+        sortBtn = (ImageButton) findViewById(R.id.sortBtn);
+        sortBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(WordSetActivity.this);
+                LayoutInflater inflater = (WordSetActivity.this).getLayoutInflater();
+
+                builder.setTitle("Sort words");
+                final View layout = inflater.inflate(R.layout.ws_sort, null);
+                final RadioButton recAdd = (RadioButton) layout.findViewById(R.id.recAdded);
+                final RadioButton recVwd = (RadioButton) layout.findViewById(R.id.recViewed);
+                final RadioButton alph = (RadioButton) layout.findViewById(R.id.alphabetical);
+                final RadioButton diff = (RadioButton) layout.findViewById(R.id.difficulty);
+
+                final RadioButton asc = (RadioButton) layout.findViewById(R.id.ascending);
+                final RadioButton dsc = (RadioButton) layout.findViewById(R.id.descending);
+
+                if(sortOrder == 11){recAdd.setChecked(true); asc.setChecked(true);}
+                else if (sortOrder == 12) {recAdd.setChecked(true); dsc.setChecked(true);}
+                else if (sortOrder == 21) {recVwd.setChecked(true); asc.setChecked(true);}
+                else if (sortOrder == 22) {recVwd.setChecked(true); dsc.setChecked(true);}
+                else if (sortOrder == 31) {alph.setChecked(true); asc.setChecked(true);}
+                else if (sortOrder == 32) {alph.setChecked(true); dsc.setChecked(true);}
+                else if (sortOrder == 41) {diff.setChecked(true); asc.setChecked(true);}
+                else if (sortOrder == 42) {diff.setChecked(true); dsc.setChecked(true);}
+
+                builder.setView(layout)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                if(recAdd.isChecked() && asc.isChecked()){sortOrder = 11;}
+                                else if (recAdd.isChecked() && dsc.isChecked()) {sortOrder = 12;}
+                                else if (recVwd.isChecked() && asc.isChecked()) {sortOrder = 21;}
+                                else if (recVwd.isChecked() && dsc.isChecked()) {sortOrder = 22;}
+                                else if (alph.isChecked() && asc.isChecked()) {sortOrder = 31;}
+                                else if (alph.isChecked() && dsc.isChecked()) {sortOrder = 32;}
+                                else if (diff.isChecked() && asc.isChecked()) {sortOrder = 41;}
+                                else if (diff.isChecked() && dsc.isChecked()) {sortOrder = 42;}
+
+                                sortWords();
+                            }
+                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+                builder.create();
+                builder.show();
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs.getInt("sortOrder", -1) != -1){
+            sortOrder = prefs.getInt("sortOrder", -1);
+        }
+        else {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("sortOrder", 0); sortOrder = 12;
+            editor.commit();
+        }
         getWordSet_list();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("sortOrder", sortOrder);
+        editor.commit();
     }
 
     @Override
@@ -307,10 +388,8 @@ public class WordSetActivity extends NavDrawerActivity {
                     WordwID wordwID = new WordwID(word, ds.getKey());
                     wordwIDs.add(wordwID);
                 }
-                Collections.reverse(wordwIDs);
-                rvAdapter = new WordAdapter(wordwIDs, WordSetActivity.this, wordSetId, allListId, currentListId);
+                sortWords();
                 rvAdapter.otherLists = getOtherLists(true);
-                Log.d("WORDSET ACTIVITY", "ADAPTER CHANGED");
                 wordsInListRV.setAdapter(rvAdapter);
                 getWordSet_list();
                 loadWordRV.setVisibility(View.GONE);
@@ -333,5 +412,22 @@ public class WordSetActivity extends NavDrawerActivity {
             tempList.add(wordLists.get(i));
         }
         return  tempList;
+    }
+
+    private void sortWords(){
+        if (wordwIDs == null) return;
+        if(sortOrder == 11){Collections.sort(wordwIDs, WordwID.recAdded_Asc);}
+        else if (sortOrder == 12) {Collections.sort(wordwIDs, WordwID.recAdded_Dsc);}
+        else if (sortOrder == 21) {Collections.sort(wordwIDs, WordwID.recViewed_Asc);}
+        else if (sortOrder == 22) {Collections.sort(wordwIDs, WordwID.recViewed_Dsc);}
+        else if (sortOrder == 31) {Collections.sort(wordwIDs, WordwID.alphabetical_Asc);}
+        else if (sortOrder == 32) {Collections.sort(wordwIDs, WordwID.alphabetical_Dsc);}
+        else if (sortOrder == 41) {Collections.sort(wordwIDs, WordwID.difficulty_Asc);}
+        else if (sortOrder == 42) {Collections.sort(wordwIDs, WordwID.difficulty_Dsc);}
+
+        if(rvAdapter != null)
+            rvAdapter.notifyDataSetChanged();
+        else
+            rvAdapter = new WordAdapter(wordwIDs, WordSetActivity.this, wordSetId, allListId, currentListId);
     }
 }

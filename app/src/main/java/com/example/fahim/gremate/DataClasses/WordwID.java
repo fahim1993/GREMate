@@ -1,5 +1,7 @@
 package com.example.fahim.gremate.DataClasses;
 
+import java.util.Comparator;
+
 /**
  * Created by Fahim on 27-Dec-16.
  */
@@ -12,13 +14,15 @@ public class WordwID extends Word {
         this.id = "";
     }
 
-    public WordwID(String copyOf, String listId, String value, String listName, boolean practicable, int validity, int lastOpen, int level, int added, String id) {
+    public WordwID(String copyOf, String listId, String value, String listName, boolean practicable,
+                   int validity, int lastOpen, int level, int added, String id) {
         super(copyOf, listId, value, listName, practicable, validity, lastOpen, level, added);
         this.id = id;
     }
 
     public WordwID(Word word, String id){
-        super(word.getCopyOf(), word.getListId(), word.getValue(), word.getSourceListName(), word.isPracticable(), word.getValidity(),
+        super(word.getCopyOf(), word.getListId(), word.getValue(), word.getSourceListName(),
+                word.isPracticable(), word.getValidity(),
                 word.getLastOpen(), word.getLevel(), word.getAdded());
 
         this.id = id;
@@ -33,6 +37,87 @@ public class WordwID extends Word {
     }
 
     public Word toWord(){
-        return new Word(getCopyOf(), getListId(), getValue(), getSourceListName(), isPracticable(), getValidity(), getLastOpen(), getLevel(), getAdded());
+        return new Word(getCopyOf(), getListId(), getValue(), getSourceListName(), isPracticable(),
+                getValidity(), getLastOpen(), getLevel(), getAdded());
     }
+
+    public static Comparator<WordwID> recAdded_Asc = new Comparator<WordwID>() {
+        public int compare(WordwID w1, WordwID w2) {
+            if(w1.getAdded() == w2.getAdded()){
+                return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
+            }
+            else{
+                return w1.getAdded() - w2.getAdded();
+            }
+        }
+    };
+
+    public static Comparator<WordwID> recAdded_Dsc = new Comparator<WordwID>() {
+        public int compare(WordwID w1, WordwID w2) {
+            if(w1.getAdded() == w2.getAdded()){
+                return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
+            }
+            else{
+                return w2.getAdded() - w1.getAdded();
+            }
+        }
+    };
+
+    public static Comparator<WordwID> recViewed_Asc = new Comparator<WordwID>() {
+        public int compare(WordwID w1, WordwID w2) {
+            if(w1.getLastOpen() == w2.getLastOpen()){
+                return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
+            }
+            else{
+                return w1.getLastOpen() - w2.getLastOpen();
+            }
+        }
+    };
+
+    public static Comparator<WordwID> recViewed_Dsc = new Comparator<WordwID>() {
+        public int compare(WordwID w1, WordwID w2) {
+            if(w1.getLastOpen() == w2.getLastOpen()){
+                return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
+            }
+            else{
+                return w2.getLastOpen() - w1.getLastOpen();
+            }
+        }
+    };
+
+    public static Comparator<WordwID> alphabetical_Asc = new Comparator<WordwID>() {
+        public int compare(WordwID w1, WordwID w2) {
+            return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
+        }
+    };
+
+    public static Comparator<WordwID> alphabetical_Dsc = new Comparator<WordwID>() {
+        public int compare(WordwID w1, WordwID w2) {
+            return w2.getValue().toUpperCase().compareTo(w1.getValue().toUpperCase());
+        }
+    };
+
+    public static Comparator<WordwID> difficulty_Asc = new Comparator<WordwID>() {
+        public int compare(WordwID w1, WordwID w2) {
+            if(w1.getLastOpen() == w2.getLastOpen()){
+                return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
+            }
+            else{
+                return w1.getLastOpen() - w2.getLastOpen();
+            }
+        }
+    };
+
+    public static Comparator<WordwID> difficulty_Dsc = new Comparator<WordwID>() {
+        public int compare(WordwID w1, WordwID w2) {
+            if(w1.getLevel() == w2.getLevel()){
+                return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
+            }
+            else{
+                return w2.getLevel() - w1.getLevel();
+            }
+        }
+    };
+
+
 }

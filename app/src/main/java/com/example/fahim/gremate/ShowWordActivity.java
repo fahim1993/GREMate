@@ -157,8 +157,6 @@ public class ShowWordActivity extends AppCompatActivity {
             desState = prefs.getInt("desState", -1);
             senState = prefs.getInt("senState", -1);
             mnState = prefs.getInt("mnState", -1);
-
-            Log.d("DefState: ", ""+defState);
         }
         else {
             SharedPreferences.Editor editor = prefs.edit();
@@ -180,7 +178,6 @@ public class ShowWordActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d("ON PAUSE ", "CALLED");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt("defState", defState);
@@ -507,7 +504,8 @@ public class ShowWordActivity extends AppCompatActivity {
             super.onPostExecute(s);
             if(wordAllData != null){
                 wordAllData_ = wordAllData;
-                wordAllData_.setWord(new Word(WORD.getCopyOf(), WORD.getListId(), WORD.getSourceListName(), WORD.getValue(), true, 1, DB.getCurrentMin(), 1, DB.getCurrentMin()));
+                wordAllData_.setWord(new Word(WORD.getCopyOf(), WORD.getListId(), WORD.getSourceListName(),
+                        WORD.getValue(), true, 1, DB.getCurrentMin(), 1, DB.getCurrentMin()));
                 setContents();
                 DB.setWordData(wordAllData_, wordId);
             }

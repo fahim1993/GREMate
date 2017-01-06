@@ -178,7 +178,6 @@ public class LearnActivity extends NavDrawerActivity {
                     WordSetwID wg = new WordSetwID(w, id);
                     wordSets.add(wg);
                 }
-                Collections.reverse(wordSets);
                 wsRecyclerView.setAdapter(new WordSetAdapter(wordSets, LearnActivity.this));
             }
 

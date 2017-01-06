@@ -458,14 +458,14 @@ public class DB {
     public static void initNewUser(String uid, String uname){
         DatabaseReference _db = FirebaseDatabase.getInstance().getReference();
 
-        for(int i=8; i>=1; i--) {
+        for(int i=1; i<=8; i++) {
             String wsId = _db.child(USER_WORD).child(uid).child(WORDSET).push().getKey();
             String allListId = _db.child(USER_WORD).child(uid).child(WORDLIST).push().getKey();
             _db.child(USER_WORD).child(uid).child(WORDSET).child(wsId).setValue(new WordSet("GRE Important Words: " + i, uname, allListId, 192, 0));
             _db.child(USER_WORD).child(uid).child(WORDLIST).child(allListId).setValue(new WordList(wsId, "All words", 192));
             String[] initWords = new FeedTestData().getWords();
 
-            for (int j = i*192 - 1; j >= (i-1)*192; j--) {
+            for (int j = (i-1)*192; j < (i)*192; j++) {
                 _db.child(USER_WORD).child(uid).child(WORD).push().setValue(new Word("", allListId, initWords[j], "All words", false, 0, 0, 1, 0));
             }
         }
