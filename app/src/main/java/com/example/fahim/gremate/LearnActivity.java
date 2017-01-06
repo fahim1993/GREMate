@@ -1,12 +1,16 @@
 package com.example.fahim.gremate;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class LearnActivity extends NavDrawerActivity {
 
@@ -92,7 +97,8 @@ public class LearnActivity extends NavDrawerActivity {
         auth = FirebaseAuth.getInstance();
         FBDB = FirebaseDatabase.getInstance();
 
-        setTitle();
+        setWsTitle();
+        setTitle("LEARN");
 
         UDATA = FBDB.getReference(DB.USER_DATA);
         UWORD = FBDB.getReference(DB.USER_WORD);
@@ -113,7 +119,31 @@ public class LearnActivity extends NavDrawerActivity {
 
     }
 
-    private void setTitle(){
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.learn_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.signout:
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(LearnActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                LearnActivity.this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    private void setWsTitle(){
         uid = auth.getCurrentUser().getUid();
         DatabaseReference mref = FBDB.getReference().child(DB.USER_DATA).child(uid);
         mref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -148,6 +178,7 @@ public class LearnActivity extends NavDrawerActivity {
                     WordSetwID wg = new WordSetwID(w, id);
                     wordSets.add(wg);
                 }
+                Collections.reverse(wordSets);
                 wsRecyclerView.setAdapter(new WordSetAdapter(wordSets, LearnActivity.this));
             }
 

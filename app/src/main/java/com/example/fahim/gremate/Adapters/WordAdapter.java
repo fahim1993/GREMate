@@ -37,12 +37,14 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     private Context context;
     private String wsId;
     private String allListId;
+    private String currentListId;
 
-    public WordAdapter(ArrayList<WordwID> wordList, Context context, String wsId, String allListId) {
+    public WordAdapter(ArrayList<WordwID> wordList, Context context, String wsId, String allListId, String currentListId) {
         this.wordList = wordList;
         this.context = context;
         this.wsId = wsId;
         this.allListId = allListId;
+        this.currentListId = currentListId;
     }
 
     @Override
@@ -55,7 +57,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     @Override
     public void onBindViewHolder(WordViewHolder holder, final int position) {
         holder.wordValue.setText(wordList.get(position).getValue());
-        if(wordList.get(position).getCopyOf().length()<1) holder.sourceListName.setText(wordList.get(position).getSourceListName());
+        if(wordList.get(position).getCopyOf().length()<1 || currentListId.equals(allListId)) holder.sourceListName.setText(wordList.get(position).getSourceListName());
         else holder.sourceListName.setText(wordList.get(position).getSourceListName() + " (c)");
 
         holder.cv.setOnClickListener(new View.OnClickListener() {
@@ -125,7 +127,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                                 if(word_.getCopyOf().length()<1)wid = word_.getId();
                                                 else wid = word_.getCopyOf();
 
-                                                DB.deleteWord(wid, wsId);
+                                                DB.deleteWord(wid, wsId, true);
                                                 Toast.makeText(context,
                                                         "Deleted " + word_.getValue(), Toast.LENGTH_LONG).show();
                                             }
@@ -163,7 +165,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                             .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                                    DB.deleteWord(word_.getCopyOf(), wsId);
+                                                    DB.deleteWord(word_.getCopyOf(), wsId, true);
                                                     Toast.makeText(context,
                                                             "Deleted " + word_.getValue(), Toast.LENGTH_LONG).show();
                                                 }

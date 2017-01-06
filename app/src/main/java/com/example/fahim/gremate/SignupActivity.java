@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.UserData;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -105,8 +106,10 @@ public class SignupActivity extends AppCompatActivity {
                         }
                         else{
                             UserData u = new UserData(uname, uemail);
+                            String uid = task.getResult().getUser().getUid();
                             ref.child(task.getResult().getUser().getUid()).setValue(u);
                             Toast.makeText(SignupActivity.this, "Sign up successful!", Toast.LENGTH_LONG).show();
+                            DB.initNewUser(uid, uname);
                             SignupActivity.this.finish();
                         }
                     }

@@ -50,6 +50,8 @@ public class DB {
     private static ValueEventListener listener3;
     private static ValueEventListener listener4;
     private static ValueEventListener listener5;
+    private static ValueEventListener listener6;
+    private static ValueEventListener listener7;
 
 
     private static void initDB(){
@@ -57,6 +59,7 @@ public class DB {
         db = FirebaseDatabase.getInstance();
         userid = auth.getCurrentUser().getUid();
     }
+
     private static void getUserName(final int fncNo){
         if(username.equals("-1")) {
             initDB();
@@ -82,14 +85,6 @@ public class DB {
                 }
             });
         }
-    }
-
-    public static void deleteWordSet(String wsId){
-        if(userid.equals("-1")){
-            initDB();
-        }
-        ref = db.getReference().child(USER_WORD).child(userid).child(WORDSET).child(wsId);
-        ref.removeValue();
     }
 
     public static void newWordSet(String wsname){
@@ -311,7 +306,7 @@ public class DB {
         return (int)(System.currentTimeMillis()/60000);
     }
 
-    public static void deleteWord(final String wordId, final String wsId){
+    public static void deleteWord(final String wordId, final String wsId, boolean reduceWordCount){
 
         if(userid.equals("-1")){
             initDB();
@@ -372,6 +367,8 @@ public class DB {
             public void onCancelled(DatabaseError databaseError) {}
         });
 
+        if(!reduceWordCount)return;
+
         final DatabaseReference mRef1 = db.getReference().child(USER_WORD).child(userid).child(WORDSET).child(wsId).child("wordCount");
         listener1 = new ValueEventListener() {
             @Override
@@ -391,6 +388,9 @@ public class DB {
 
     public static void removeWordClone(String cloneId, final String wordId){
 
+        if(userid.equals("-1")){
+            initDB();
+        }
         db.getReference().child(USER_WORD).child(userid).child(WORD).child(cloneId).setValue(null);
 
         db.getReference().child(USER_WORD).child(userid).child(WORDCLONE).child(wordId).orderByChild("wordId")
@@ -405,5 +405,69 @@ public class DB {
                     public void onCancelled(DatabaseError databaseError) {}
                 });
 
+    }
+
+    public static void deleteList(String listId, final String wsId, final boolean isAllList){
+
+        if(userid.equals("-1")){initDB();}
+        if(isAllList) {
+            db.getReference(DB.USER_WORD).child(userid).child(WORDSET).child(wsId).setValue(null);
+
+            final Query qr = db.getReference(DB.USER_WORD).child(userid).child(WORDLIST).orderByChild("wordSet")
+                    .equalTo(wsId);
+            listener7 = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for(DataSnapshot ds: dataSnapshot.getChildren()){
+                        String key = ds.getKey();
+                        db.getReference(DB.USER_WORD).child(userid).child(WORDLIST).child(key).setValue(null);
+                    }
+                    qr.removeEventListener(listener7);
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError){}
+            };
+            qr.addValueEventListener(listener7);
+
+        }
+        else
+            db.getReference(DB.USER_WORD).child(userid).child(WORDLIST).child(listId).setValue(null);
+
+        final Query q = db.getReference(DB.USER_WORD).child(userid).child(DB.WORD).orderByChild("listId")
+                .equalTo(listId);
+        listener6 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    String key = ds.getKey();
+                    String copy = (String)ds.child("copyOf").getValue();
+
+                    if(isAllList || copy == null || copy.length()<1)
+                        deleteWord(key, wsId, false);
+                    else
+                        removeWordClone(key, copy);
+                }
+                q.removeEventListener(listener6);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError){}
+        };
+        q.addValueEventListener(listener6);
+    }
+
+    public static void initNewUser(String uid, String uname){
+        DatabaseReference _db = FirebaseDatabase.getInstance().getReference();
+
+        for(int i=8; i>=1; i--) {
+            String wsId = _db.child(USER_WORD).child(uid).child(WORDSET).push().getKey();
+            String allListId = _db.child(USER_WORD).child(uid).child(WORDLIST).push().getKey();
+            _db.child(USER_WORD).child(uid).child(WORDSET).child(wsId).setValue(new WordSet("GRE Important Words: " + i, uname, allListId, 192, 0));
+            _db.child(USER_WORD).child(uid).child(WORDLIST).child(allListId).setValue(new WordList(wsId, "All words", 192));
+            String[] initWords = new FeedTestData().getWords();
+
+            for (int j = i*192 - 1; j >= (i-1)*192; j--) {
+                _db.child(USER_WORD).child(uid).child(WORD).push().setValue(new Word("", allListId, initWords[j], "All words", false, 0, 0, 1, 0));
+            }
+        }
     }
 }

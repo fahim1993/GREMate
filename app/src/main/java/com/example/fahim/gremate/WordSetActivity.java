@@ -1,6 +1,7 @@
 package com.example.fahim.gremate;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatImageButton;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +34,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class WordSetActivity extends NavDrawerActivity {
 
@@ -62,8 +65,10 @@ public class WordSetActivity extends NavDrawerActivity {
     private ValueEventListener rvQueryListener;
 
     private AppCompatImageButton addWord;
+    private ImageButton deleteList;
 
     private WordAdapter rvAdapter;
+    private ProgressBar loadWordRV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +120,8 @@ public class WordSetActivity extends NavDrawerActivity {
         LinearLayoutManager llm = new LinearLayoutManager(this);
         wordsInListRV.setLayoutManager(llm);
 
+        loadWordRV = (ProgressBar)findViewById(R.id.loadWordRV);
+
         auth = FirebaseAuth.getInstance();
         db = FirebaseDatabase.getInstance();
         uid = auth.getCurrentUser().getUid();
@@ -154,6 +161,46 @@ public class WordSetActivity extends NavDrawerActivity {
                 });
 
                 builder.show();
+            }
+        });
+
+        deleteList = (ImageButton) findViewById(R.id.deleteBtn);
+        deleteList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(WordSetActivity.this)
+                        .setTitle("Confirm Delete")
+                        .setMessage( (currentListId.equals(allListId))? "Are you sure you want to " +
+                                "delete this list? The word set will also be deleted." : "Are you sure you want to delete this list?")
+                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if(rvQueryListener!= null){
+                                    rvQuery.removeEventListener(rvQueryListener);
+                                }
+                                Toast.makeText(context,
+                                        "List " + currentListName + " deleted", Toast.LENGTH_LONG).show();
+                                if(currentListId.equals(allListId)){
+                                    DB.deleteList(currentListId, wordSetId, true);
+                                    Intent intent = new Intent(WordSetActivity.this, LearnActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                    WordSetActivity.this.finish();
+                                }
+                                else{
+                                    DB.deleteList(currentListId, wordSetId, false);
+                                    currentListId = allListId;
+                                    currentListName = "All words";
+                                    listTitle.setText(currentListName);
+                                    setListWords();
+                                }
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        }).show();
             }
         });
 
@@ -242,6 +289,9 @@ public class WordSetActivity extends NavDrawerActivity {
 
     public void setListWords(){
 
+        wordsInListRV.setVisibility(View.GONE);
+        loadWordRV.setVisibility(View.VISIBLE);
+
         if(rvQueryListener!= null){
             rvQuery.removeEventListener(rvQueryListener);
         }
@@ -250,17 +300,21 @@ public class WordSetActivity extends NavDrawerActivity {
         rvQueryListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
                 wordwIDs = new ArrayList<WordwID>();
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
                     Word word = ds.getValue(Word.class);
                     WordwID wordwID = new WordwID(word, ds.getKey());
                     wordwIDs.add(wordwID);
                 }
-                rvAdapter = new WordAdapter(wordwIDs, WordSetActivity.this, wordSetId, allListId);
+                Collections.reverse(wordwIDs);
+                rvAdapter = new WordAdapter(wordwIDs, WordSetActivity.this, wordSetId, allListId, currentListId);
                 rvAdapter.otherLists = getOtherLists(true);
                 Log.d("WORDSET ACTIVITY", "ADAPTER CHANGED");
                 wordsInListRV.setAdapter(rvAdapter);
                 getWordSet_list();
+                loadWordRV.setVisibility(View.GONE);
+                wordsInListRV.setVisibility(View.VISIBLE);
             }
 
             @Override

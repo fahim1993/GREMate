@@ -53,19 +53,21 @@
                     android:textSize="20dp"
                     android:textColor="#000"
                     android:maxLines="1"
-                    android:layout_weight="8"
+                    android:layout_weight="7"
                     android:id="@+id/listTitle"/>
 
                 <ImageButton
                     android:id="@+id/changeList"
                     android:layout_marginTop="-5dp"
-                    android:padding="6dp"
+                    android:padding="3dp"
                     android:src="@drawable/ic_ws_changelist"
                     android:scaleType="fitCenter"
                     android:backgroundTint="@color/cardviewBackground"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_weight="1"/>
+
+
 
                 <!--<ImageButton-->
                     <!--android:id="@+id/listOptions"-->
@@ -126,16 +128,35 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp" />
 
+                <ImageButton
+                    android:id="@+id/deleteBtn"
+                    android:src="@drawable/deltbtn"
+                    android:scaleType="fitCenter"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:tint="#FFF"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp" />
 
 
             </LinearLayout>
+
+            <ProgressBar
+                android:layout_centerInParent="true"
+                android:visibility="gone"
+                android:id="@+id/loadWordRV"
+                android:layout_width="50dp"
+                android:layout_height="50dp" />
 
             <android.support.v7.widget.RecyclerView
                 android:layout_marginTop="5dp"
                 android:id="@+id/wordInListRV"
                 android:layout_width="match_parent"
                 android:layout_below="@+id/ll1"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
+                android:scrollbarThumbVertical="@android:color/darker_gray"
+                android:scrollbarSize="5dp"
+            />
 
         </RelativeLayout>
 

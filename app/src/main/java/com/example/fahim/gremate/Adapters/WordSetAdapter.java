@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.WordSetwID;
+import com.example.fahim.gremate.LearnActivity;
 import com.example.fahim.gremate.R;
 import com.example.fahim.gremate.WordSetActivity;
 
@@ -55,7 +56,23 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
         holder.delbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("Del Btn", "Clicked");
+                new AlertDialog.Builder(context)
+                        .setTitle("Confirm Delete")
+                        .setMessage("Are you sure you want to delete this word set?")
+                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String name = wsList.get(position).getName();
+                                DB.deleteList(wsList.get(position).getAllList(), wsList.get(position).getId(), true);
+                                Toast.makeText(context,
+                                        "Word set " + name + " deleted" , Toast.LENGTH_LONG).show();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        }).show();
             }
         });
         holder.cv.setOnClickListener(new View.OnClickListener() {
@@ -83,38 +100,6 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
         else {
             holder.img.setImageResource(R.drawable.ic_gray);
         }
-
-        holder.delbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder alert = new AlertDialog.Builder(context);
-
-                alert.setTitle("Delete Word Set ");
-                alert.setMessage("Are you sure to delete word set "+wsList.get(position).getName()+"?");
-                alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        DB.deleteWordSet(wsList.get(position).getId());
-                        dialog.dismiss();
-
-                    }
-                });
-                alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        dialog.dismiss();
-                    }
-                });
-
-                alert.show();
-
-
-
-            }
-        });
     }
 
     @Override
