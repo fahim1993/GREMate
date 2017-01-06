@@ -99,7 +99,7 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                 ArrayList<WordDefP> wordDefPs = new ArrayList<>();
 
                 for(i=0; i<no; i++){
-                    wordDefPs.add(new WordDefP(wordId, defs[i]));
+                    wordDefPs.add(new WordDefP(word, wordId, defs[i]));
                     wordDefs.add(new WordDef(wordId, titles[i], syns[i], ants[i], defs[i]));
                 }
                 wordAllData.setWordDefPs(wordDefPs);

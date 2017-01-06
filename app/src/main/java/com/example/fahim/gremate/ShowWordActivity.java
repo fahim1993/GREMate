@@ -31,11 +31,12 @@ import com.example.fahim.gremate.DataClasses.WordDef;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class ShowWordActivity extends AppCompatActivity {
 
@@ -56,6 +57,15 @@ public class ShowWordActivity extends AppCompatActivity {
     private TextView levelTv;
 
     private SeekBar levelSb;
+
+    DatabaseReference ref1;
+    Query query2;
+    Query query3;
+    Query query4;
+    ValueEventListener listener1;
+    ValueEventListener listener2;
+    ValueEventListener listener3;
+    ValueEventListener listener4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,28 +118,28 @@ public class ShowWordActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
-
-
 
         Log.d("ShowWordActivity", WORD.getValue());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //setTitle(WORD.getValue().toUpperCase());
         setTitle(WORD.getValue());
 
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         switch (WORD.getValidity()){
             case 0:
@@ -137,14 +147,9 @@ public class ShowWordActivity extends AppCompatActivity {
                     new FetchData().execute(WORD.getValue(), wordId);
                 break;
             case 1:
-                retriveData();
+                retrieveData();
                 break;
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (prefs.getInt("defState", -1) != -1){
@@ -184,6 +189,10 @@ public class ShowWordActivity extends AppCompatActivity {
         editor.putInt("mnState", mnState);
         editor.commit();
 
+        if(listener1!=null)ref1.removeEventListener(listener1);
+        if(listener2!=null)query2.removeEventListener(listener2);
+        if(listener3!=null)query3.removeEventListener(listener3);
+        if(listener4!=null)query4.removeEventListener(listener4);
     }
 
     private void setDes(){
@@ -317,7 +326,6 @@ public class ShowWordActivity extends AppCompatActivity {
         }
     }
 
-
     @SuppressWarnings("deprecation")
     public static Spanned fromHtml(String source) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -421,17 +429,16 @@ public class ShowWordActivity extends AppCompatActivity {
         }
     }
 
-    public void retriveData(){
+    public void retrieveData(){
 
         setTextViews();
         wordAllData_ = new WordAllData();
 
-        FirebaseDatabase db = FirebaseDatabase.getInstance();
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        db.getReference().child(DB.USER_WORD).child(uid).child(DB.WORD).child(wordId).addValueEventListener(new ValueEventListener() {
+        ref1 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORD).child(wordId);
+        listener1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 wordAllData_.setWord(dataSnapshot.getValue(Word.class));
                 setLevel();
             }
@@ -439,9 +446,11 @@ public class ShowWordActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+        ref1.addValueEventListener(listener1);
 
-        db.getReference().child(DB.USER_WORD).child(uid).child(DB.WORDDATA).orderByChild("word").equalTo(wordId).addValueEventListener(new ValueEventListener() {
+        query2 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDDATA).orderByChild("word").equalTo(wordId);
+        listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
@@ -452,14 +461,13 @@ public class ShowWordActivity extends AppCompatActivity {
                 setDes();
                 setMN();
             }
-
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {}
+        };
+        query2.addValueEventListener(listener2);
 
-            }
-        });
-
-        db.getReference().child(DB.USER_WORD).child(uid).child(DB.WORDDEF).orderByChild("word").equalTo(wordId).addValueEventListener(new ValueEventListener() {
+        query3 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDDEF).orderByChild("word").equalTo(wordId);
+        listener3 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<WordDef> wordDefs = new ArrayList<WordDef>();
@@ -470,14 +478,13 @@ public class ShowWordActivity extends AppCompatActivity {
                 wordAllData_.setWordDefs(wordDefs);
                 setDef();
             }
-
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {}
+        };
+        query3.addValueEventListener(listener3);
 
-            }
-        });
-
-        db.getReference().child(DB.USER_WORD).child(uid).child(DB.SENTENCE).orderByChild("word").equalTo(wordId).addValueEventListener(new ValueEventListener() {
+        query4 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.SENTENCE).orderByChild("word").equalTo(wordId);
+        listener4 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<Sentence> sentences = new ArrayList<Sentence>();
@@ -488,12 +495,10 @@ public class ShowWordActivity extends AppCompatActivity {
                 wordAllData_.setSentences(sentences);
                 setSenence();
             }
-
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+            public void onCancelled(DatabaseError databaseError) {}
+        };
+        query4.addValueEventListener(listener4);
     }
 
     private class FetchData extends FetchDataAsync{
@@ -502,7 +507,7 @@ public class ShowWordActivity extends AppCompatActivity {
             super.onPostExecute(s);
             if(wordAllData != null){
                 wordAllData_ = wordAllData;
-                wordAllData_.setWord(new Word(WORD.getCopyOf(), WORD.getListId(), WORD.getValue(), true, 1, DB.getCurrentMin(), 1, DB.getCurrentMin()));
+                wordAllData_.setWord(new Word(WORD.getCopyOf(), WORD.getListId(), WORD.getSourceListName(), WORD.getValue(), true, 1, DB.getCurrentMin(), 1, DB.getCurrentMin()));
                 setContents();
                 DB.setWordData(wordAllData_, wordId);
             }

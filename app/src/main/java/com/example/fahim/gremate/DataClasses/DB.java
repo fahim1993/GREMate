@@ -118,15 +118,23 @@ public class DB {
         }
     }
 
-    public static void newWord(String word, String listId, String wsId){
+    public static void newWord(String word, String listId, String listName, String wsId, String allListId){
         wordVal = word;
         wordListId = listId;
 
         if(userid.equals("-1")) initDB();
 
+        Word w = Word.newWord(listId, listName, word);
+
         DatabaseReference ref1 = db.getReference().child(USER_WORD).child(userid).child(WORD);
-        String wordId = ref1.push().getKey();
-        ref1.push().setValue(Word.newWord(listId, word));
+        String key = ref1.push().getKey();
+        ref1.child(key).setValue(w);
+
+        if(!allListId.equals(listId)){
+            w.setCopyOf(key);
+            w.setListId(allListId);
+            addWordToAnotherList(w);
+        }
 
         final DatabaseReference mRef1 = db.getReference().child(USER_WORD).child(userid).child(WORDSET).child(wsId).child("wordCount");
         listener1 = new ValueEventListener() {
@@ -145,20 +153,15 @@ public class DB {
         mRef1.addValueEventListener(listener1);
     }
 
-    public static void addWordToAnotherList(WordwID wordwID, String listId){
+    public static void addWordToAnotherList(Word word_){
 
         if(userid.equals("-1")) initDB();
 
-        wordwID.setListId(listId);
-
-        if(wordwID.getCopyOf().length()<=1)
-            wordwID.setCopyOf(wordwID.getId());
-
         DatabaseReference ref1 = db.getReference().child(USER_WORD).child(userid).child(WORD);
         String wordId = ref1.push().getKey();
-        ref1.child(wordId).setValue(wordwID.toWord());
+        ref1.child(wordId).setValue(word_);
 
-        db.getReference().child(USER_WORD).child(userid).child(WORDCLONE).child(wordwID.getCopyOf()).
+        db.getReference().child(USER_WORD).child(userid).child(WORDCLONE).child(word_.getCopyOf()).
                 push().setValue(new WordClones(wordId));
     }
 
@@ -172,9 +175,6 @@ public class DB {
                 setValue(time);
 
     }
-
-
-
 
     public static void setWordData(WordAllData wordAllData, String wordId){
         if(userid.equals("-1")){
@@ -309,5 +309,101 @@ public class DB {
 
     public static int getCurrentMin(){
         return (int)(System.currentTimeMillis()/60000);
+    }
+
+    public static void deleteWord(final String wordId, final String wsId){
+
+        if(userid.equals("-1")){
+            initDB();
+        }
+
+        db.getReference().child(USER_WORD).child(userid).child(WORD).child(wordId).setValue(null);
+
+        db.getReference().child(USER_WORD).child(userid).child(SENTENCE).orderByChild("word").
+                equalTo(wordId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    db.getReference().child(USER_WORD).child(userid).child(SENTENCE).child(ds.getKey()).setValue(null);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+        db.getReference().child(USER_WORD).child(userid).child(WORDDEF).orderByChild("word").
+                equalTo(wordId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    db.getReference().child(USER_WORD).child(userid).child(WORDDEF).child(ds.getKey()).setValue(null);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+
+        db.getReference().child(USER_WORD).child(userid).child(WORDDATA).orderByChild("word").
+                equalTo(wordId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    db.getReference().child(USER_WORD).child(userid).child(WORDDATA).child(ds.getKey()).setValue(null);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+
+
+        db.getReference().child(USER_WORD).child(userid).child(WORDCLONE).child(wordId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    String clId = (String)ds.child("wordId").getValue();
+                    db.getReference().child(USER_WORD).child(userid).child(WORD).child(clId).setValue(null);
+                }
+                db.getReference().child(USER_WORD).child(userid).child(WORDCLONE).child(wordId).setValue(null);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+        final DatabaseReference mRef1 = db.getReference().child(USER_WORD).child(userid).child(WORDSET).child(wsId).child("wordCount");
+        listener1 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                long count = (long)dataSnapshot.getValue();
+                mRef1.setValue(count - 1);
+                mRef1.removeEventListener(listener1);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        mRef1.addValueEventListener(listener1);
+    }
+
+    public static void removeWordClone(String cloneId, final String wordId){
+
+        db.getReference().child(USER_WORD).child(userid).child(WORD).child(cloneId).setValue(null);
+
+        db.getReference().child(USER_WORD).child(userid).child(WORDCLONE).child(wordId).orderByChild("wordId")
+                .equalTo(cloneId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for(DataSnapshot ds: dataSnapshot.getChildren()){
+                            db.getReference().child(USER_WORD).child(userid).child(WORDCLONE).child(wordId).child(ds.getKey()).setValue(null);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
+
     }
 }

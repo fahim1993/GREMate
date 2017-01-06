@@ -64,6 +64,7 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
                 DB.setWordSetLastOpen(wsList.get(position).getId());
                 Intent intent = new Intent(context, WordSetActivity.class);
                 intent.putExtra("wordset_key", wsList.get(position).getId());
+                intent.putExtra("allList_key", wsList.get(position).getAllList());
                 intent.putExtra("wordset_title", wsList.get(position).getName());
                 context.startActivity(intent);
                 Log.d("Wordset", "Clicked");

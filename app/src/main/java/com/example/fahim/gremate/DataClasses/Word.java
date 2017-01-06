@@ -12,12 +12,12 @@ import java.io.Serializable;
 public class Word implements Parcelable{
 
 
-    private String copyOf, listId, value;
+    private String copyOf, listId, value, sourceListName;
     private boolean practicable;
     private int validity, lastOpen, level, added;
 
-    public static Word newWord(String listId, String val) {
-        return new Word("", listId, val, false, 0, 0, 1, DB.getCurrentMin());
+    public static Word newWord(String listId, String listName, String val) {
+        return new Word("", listId, val, listName, false, 0, 0, 1, DB.getCurrentMin());
     }
 
     public Word() {
@@ -30,15 +30,24 @@ public class Word implements Parcelable{
         this.level = 0;
         this.added = 0;
     }
-    public Word(String copyOf, String listId, String value, boolean practicable, int validity, int lastOpen, int level, int added) {
+    public Word(String copyOf, String listId, String value, String sourceListName, boolean practicable, int validity, int lastOpen, int level, int added) {
         this.copyOf = copyOf;
         this.listId = listId;
         this.value = value;
+        this.sourceListName = sourceListName;
         this.practicable = practicable;
         this.validity = validity;
         this.lastOpen = lastOpen;
         this.level = level;
         this.added = added;
+    }
+
+    public String getSourceListName() {
+        return sourceListName;
+    }
+
+    public void setSourceListName(String sourceListName) {
+        this.sourceListName = sourceListName;
     }
 
     public int getAdded() {
@@ -115,6 +124,7 @@ public class Word implements Parcelable{
         parcel.writeString(copyOf);
         parcel.writeString(listId);
         parcel.writeString(value);
+        parcel.writeString(sourceListName);
         parcel.writeValue(practicable);
         parcel.writeInt(validity);
         parcel.writeValue(lastOpen);
@@ -126,6 +136,7 @@ public class Word implements Parcelable{
         copyOf = in.readString();
         listId = in.readString();
         value = in.readString();
+        sourceListName = in.readString();
         practicable = (Boolean) in.readValue( null );
         validity = in.readInt();
         lastOpen = in.readInt();

@@ -15,8 +15,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordListwID;
 import com.example.fahim.gremate.DataClasses.WordSetwID;
 import com.example.fahim.gremate.DataClasses.WordwID;
@@ -27,29 +29,35 @@ import com.example.fahim.gremate.WordSetActivity;
 import java.util.ArrayList;
 
 
-public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder>{
+public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder> {
 
 
     private ArrayList<WordwID> wordList;
     public ArrayList<WordListwID> otherLists;
     private Context context;
+    private String wsId;
+    private String allListId;
 
-    public WordAdapter(ArrayList<WordwID> wordList, Context context ) {
+    public WordAdapter(ArrayList<WordwID> wordList, Context context, String wsId, String allListId) {
         this.wordList = wordList;
-        this.otherLists = otherLists;
         this.context = context;
+        this.wsId = wsId;
+        this.allListId = allListId;
     }
 
     @Override
     public WordViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.wordcard, parent, false);
-        WordViewHolder wv = new WordViewHolder(v );
+        WordViewHolder wv = new WordViewHolder(v);
         return wv;
     }
 
     @Override
     public void onBindViewHolder(WordViewHolder holder, final int position) {
         holder.wordValue.setText(wordList.get(position).getValue());
+        if(wordList.get(position).getCopyOf().length()<1) holder.sourceListName.setText(wordList.get(position).getSourceListName());
+        else holder.sourceListName.setText(wordList.get(position).getSourceListName() + " (c)");
+
         holder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,7 +65,8 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                 Intent intent = new Intent(context, ShowWordActivity.class);
                 Bundle b = new Bundle();
                 String key = wordList.get(position).getId();
-                if(wordList.get(position).getCopyOf().length()>=1) key = wordList.get(position).getCopyOf();
+                if (wordList.get(position).getCopyOf().length() >= 1)
+                    key = wordList.get(position).getCopyOf();
                 b.putString("wordId", key);
                 b.putParcelable("Word", wordList.get(position));
 
@@ -70,27 +79,103 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle(wordList.get(position).getValue().toUpperCase());
-                CharSequence [] listNames = new CharSequence[] {"Delete", "Add to another list"};
-                builder.setItems(listNames, new DialogInterface.OnClickListener(){
+                final WordwID word_ = wordList.get(position);
+                builder.setTitle(word_.getValue().toUpperCase());
+                CharSequence[] listNames;
+                if (word_.getCopyOf().length() < 1 || word_.getListId().equals(allListId))
+                    listNames = new CharSequence[]{"Add to another list", "Delete"};
+                else
+                    listNames = new CharSequence[]{"Add to another list", "Remove from list", "Delete"};
+
+                builder.setItems(listNames, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        builder.setTitle("Select a list");
-                        CharSequence [] listNames = new CharSequence[otherLists.size()];
-                        for(int j=0; j<otherLists.size(); j++){
-                            listNames[j] = otherLists.get(j).getName();
-                        }
-                        builder.setItems(listNames, new DialogInterface.OnClickListener(){
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                DB.addWordToAnotherList(wordList.get(position), otherLists.get(i).getId());
+                        if (i == 0) {
+                            if (otherLists == null) return;
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setTitle("Select a list");
+                            CharSequence[] listNames = new CharSequence[otherLists.size()];
+                            for (int j = 0; j < otherLists.size(); j++) {
+                                listNames[j] = otherLists.get(j).getName();
                             }
-                        });
-                        AlertDialog alert = builder.create();
-                        alert.show();
+                            builder.setItems(listNames, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    WordwID wid = wordList.get(position);
+                                    Word nword = wid.toWord();
+                                    if (nword.getCopyOf().length() < 1)
+                                        nword.setCopyOf(wid.getId());
+                                    nword.setListId(otherLists.get(i).getId());
+                                    Toast.makeText(context,
+                                            word_.getValue() + " added to " + otherLists.get(i).getName(), Toast.LENGTH_LONG).show();
+                                    DB.addWordToAnotherList(nword);
+                                }
+                            });
+                            AlertDialog alert = builder.create();
+                            alert.show();
+                        } else {
+                            if (word_.getCopyOf().length() < 1 || word_.getListId().equals(allListId)) {
+                                new AlertDialog.Builder(context)
+                                        .setTitle("Confirm Delete")
+                                        .setMessage("Are you sure you want to delete this word?")
+                                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                String wid;
+                                                if(word_.getCopyOf().length()<1)wid = word_.getId();
+                                                else wid = word_.getCopyOf();
 
+                                                DB.deleteWord(wid, wsId);
+                                                Toast.makeText(context,
+                                                        "Deleted " + word_.getValue(), Toast.LENGTH_LONG).show();
+                                            }
+                                        })
+                                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                            }
+                                        }).show();
+
+                            } else {
+                                if (i == 1) {
+                                    new AlertDialog.Builder(context)
+                                            .setTitle("Confirm Remove")
+                                            .setMessage("Are you sure you want to remove this word from this list?")
+                                            .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    DB.removeWordClone(word_.getId(), word_.getCopyOf());
+                                                    Toast.makeText(context,
+                                                            "Removed " + word_.getValue() + " from this list", Toast.LENGTH_LONG).show();
+                                                }
+                                            })
+                                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                }
+                                            }).show();
+
+
+                                } else {
+                                    new AlertDialog.Builder(context)
+                                            .setTitle("Confirm Delete")
+                                            .setMessage("Are you sure you want to delete this word?")
+                                            .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    DB.deleteWord(word_.getCopyOf(), wsId);
+                                                    Toast.makeText(context,
+                                                            "Deleted " + word_.getValue(), Toast.LENGTH_LONG).show();
+                                                }
+                                            })
+                                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                }
+                                            }).show();
+                                }
+                            }
+                        }
                     }
                 });
                 AlertDialog alert = builder.create();
@@ -124,14 +209,14 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
         int lvl = wordList.get(position).getLevel();
         int time = DB.getCurrentMin() - wordList.get(position).getLastOpen();
-        if(time>=43200)
+        if (time >= 43200)
             holder.img.setImageResource(R.drawable.ic_gray);
-        else if(time>=10080)
+        else if (time >= 10080)
             holder.img.setImageResource(R.drawable.ic_green2);
         else
             holder.img.setImageResource(R.drawable.ic_green1);
 
-        if(lvl == 0)
+        if (lvl == 0)
             holder.wordValue.setTextColor(Color.parseColor("#007200"));
         else if (lvl == 1)
             holder.wordValue.setTextColor(Color.parseColor("#000072"));
@@ -146,9 +231,10 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     }
 
 
-    public static class WordViewHolder extends RecyclerView.ViewHolder{
+    public static class WordViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         TextView wordValue;
+        TextView sourceListName;
         ImageButton moreBtn;
         ImageView img;
 
@@ -157,6 +243,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
             cv = (CardView) itemView.findViewById(R.id.wordCV);
             wordValue = (TextView) itemView.findViewById(R.id.wordValue);
+            sourceListName = (TextView) itemView.findViewById(R.id.sourceListName);
             moreBtn = (ImageButton) itemView.findViewById(R.id.moreBtn);
             img = (ImageView) itemView.findViewById(R.id.img);
         }

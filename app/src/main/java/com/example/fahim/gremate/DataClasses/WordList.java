@@ -26,7 +26,7 @@ public class WordList {
     }
 
     public static WordList getAllList(String wordSetKey){
-        return new WordList(wordSetKey, "All", 0);
+        return new WordList(wordSetKey, "All words", 0);
     }
 
     public String getWordSet() {

@@ -1,22 +1,19 @@
 package com.example.fahim.gremate;
 
 import android.content.DialogInterface;
-import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,10 +35,12 @@ import java.util.ArrayList;
 
 public class WordSetActivity extends NavDrawerActivity {
 
-    private String wordSetID;
+    private String wordSetId;
+    private String allListId;
     private String uid;
     private String title;
     private String currentListId;
+    private String currentListName;
 
 
     private static FirebaseAuth auth;
@@ -62,7 +61,7 @@ public class WordSetActivity extends NavDrawerActivity {
     private Query rvQuery;
     private ValueEventListener rvQueryListener;
 
-    private ImageButton addWord;
+    private AppCompatImageButton addWord;
 
     private WordAdapter rvAdapter;
 
@@ -77,7 +76,8 @@ public class WordSetActivity extends NavDrawerActivity {
         if(extras == null) {
             finish();
         }
-        wordSetID = extras.getString("wordset_key");
+        wordSetId = extras.getString("wordset_key");
+        allListId = extras.getString("allList_key");
         title = extras.getString("wordset_title");
 
         setTitle(title.toUpperCase());
@@ -89,8 +89,8 @@ public class WordSetActivity extends NavDrawerActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(WordSetActivity.this);
                 if(wordLists == null)return;
                 builder.setTitle("Change list");
-                CharSequence [] listNames = new CharSequence[wordLists.size()-1];
                 final ArrayList<WordListwID> tempList = getOtherLists(false);
+                CharSequence [] listNames = new CharSequence[tempList.size()];
                 for(int i=0; i<tempList.size(); i++){
                     listNames[i] = tempList.get(i).getName();
                 }
@@ -98,7 +98,8 @@ public class WordSetActivity extends NavDrawerActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         currentListId = tempList.get(i).getId();
-                        listTitle.setText("List: "+tempList.get(i).getName());
+                        currentListName = tempList.get(i).getName();
+                        listTitle.setText(tempList.get(i).getName().toUpperCase());
                         setListWords();
                     }
                 });
@@ -118,7 +119,7 @@ public class WordSetActivity extends NavDrawerActivity {
         db = FirebaseDatabase.getInstance();
         uid = auth.getCurrentUser().getUid();
 
-        addWord = (ImageButton) findViewById(R.id.addWordBtn);
+        addWord = (AppCompatImageButton) findViewById(R.id.addWordBtn);
         addWord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -141,7 +142,7 @@ public class WordSetActivity extends NavDrawerActivity {
                                     "Failed! Word must be at least 1 character long.", Toast.LENGTH_LONG).show();
                         }
                         else{
-                            DB.newWord(word,currentListId,wordSetID);
+                            DB.newWord(word, currentListId, currentListName, wordSetId, allListId);
                         }
                     }
                 });
@@ -189,8 +190,8 @@ public class WordSetActivity extends NavDrawerActivity {
                         else{
                             Toast.makeText(WordSetActivity.this,
                                     "List "+listname+" created", Toast.LENGTH_LONG).show();
-                            DB.newList(listname, wordSetID);
-                            rvAdapter.otherLists = getOtherLists(false);
+                            DB.newList(listname, wordSetId);
+                            rvAdapter.otherLists = getOtherLists(true);
                         }
                     }
                 });
@@ -212,7 +213,7 @@ public class WordSetActivity extends NavDrawerActivity {
     public void getWordSet_list(){
 
         ref = db.getReference().child(DB.USER_WORD).child(uid).child(DB.WORDLIST);
-        Query q = ref.orderByChild("wordSet").equalTo(wordSetID);
+        Query q = ref.orderByChild("wordSet").equalTo(wordSetId);
 
         q.addValueEventListener(new ValueEventListener() {
             @Override
@@ -224,11 +225,13 @@ public class WordSetActivity extends NavDrawerActivity {
                     wordLists.add(wlid);
                 }
                 if(currentListId == null){
-                    currentListId = wordLists.get(0).getId();
+                    listTitle.setText(wordLists.get(0).getName().toUpperCase());
+                    currentListId = allListId;
+                    currentListName = "All words";
                     setListWords();
                 }
                 if(rvAdapter != null)
-                    rvAdapter.otherLists = getOtherLists(false);
+                    rvAdapter.otherLists = getOtherLists(true);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -253,7 +256,9 @@ public class WordSetActivity extends NavDrawerActivity {
                     WordwID wordwID = new WordwID(word, ds.getKey());
                     wordwIDs.add(wordwID);
                 }
-                rvAdapter = new WordAdapter(wordwIDs, WordSetActivity.this);
+                rvAdapter = new WordAdapter(wordwIDs, WordSetActivity.this, wordSetId, allListId);
+                rvAdapter.otherLists = getOtherLists(true);
+                Log.d("WORDSET ACTIVITY", "ADAPTER CHANGED");
                 wordsInListRV.setAdapter(rvAdapter);
                 getWordSet_list();
             }
@@ -268,10 +273,10 @@ public class WordSetActivity extends NavDrawerActivity {
 
     private ArrayList<WordListwID> getOtherLists(boolean removeListAll){
         ArrayList<WordListwID> tempList = new ArrayList<>();
-        int i=0;
-        if(removeListAll)i=1;
-        for(; i<wordLists.size(); i++){
-            if(!wordLists.get(i).getId().equals(currentListId))tempList.add(wordLists.get(i));
+        for(int i=0; i<wordLists.size(); i++){
+            if(removeListAll && wordLists.get(i).getId().equals(allListId)) continue;
+            if(wordLists.get(i).getId().equals(currentListId))continue;
+            tempList.add(wordLists.get(i));
         }
         return  tempList;
     }

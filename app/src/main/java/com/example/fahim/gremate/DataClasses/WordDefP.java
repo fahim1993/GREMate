@@ -5,16 +5,26 @@ package com.example.fahim.gremate.DataClasses;
  */
 
 public class WordDefP {
-    private String word, value;
+    private String wordId, word, value;
 
     public WordDefP() {
+        this.wordId = "";
         this.word = "";
         this.value = "";
     }
 
-    public WordDefP(String word, String value) {
+    public WordDefP(String wordId, String word, String value) {
+        this.wordId = wordId;
         this.word = word;
         this.value = value;
+    }
+
+    public String getWordId() {
+        return wordId;
+    }
+
+    public void setWordId(String wordId) {
+        this.wordId = wordId;
     }
 
     public String getWord() {

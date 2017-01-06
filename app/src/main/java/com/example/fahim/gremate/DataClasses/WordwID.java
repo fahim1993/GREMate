@@ -12,13 +12,13 @@ public class WordwID extends Word {
         this.id = "";
     }
 
-    public WordwID(String copyOf, String listId, String value, boolean practicable, int validity, int lastOpen, int level, int added, String id) {
-        super(copyOf, listId, value, practicable, validity, lastOpen, level, added);
+    public WordwID(String copyOf, String listId, String value, String listName, boolean practicable, int validity, int lastOpen, int level, int added, String id) {
+        super(copyOf, listId, value, listName, practicable, validity, lastOpen, level, added);
         this.id = id;
     }
 
     public WordwID(Word word, String id){
-        super(word.getCopyOf(), word.getListId(), word.getValue(), word.isPracticable(), word.getValidity(),
+        super(word.getCopyOf(), word.getListId(), word.getValue(), word.getSourceListName(), word.isPracticable(), word.getValidity(),
                 word.getLastOpen(), word.getLevel(), word.getAdded());
 
         this.id = id;
@@ -33,6 +33,6 @@ public class WordwID extends Word {
     }
 
     public Word toWord(){
-        return new Word(getCopyOf(), getListId(), getValue(), isPracticable(), getValidity(), getLastOpen(), getLevel(), getAdded());
+        return new Word(getCopyOf(), getListId(), getValue(), getSourceListName(), isPracticable(), getValidity(), getLastOpen(), getLevel(), getAdded());
     }
 }
