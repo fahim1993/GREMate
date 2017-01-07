@@ -18,7 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -49,6 +49,7 @@ public class WordSetActivity extends NavDrawerActivity {
     private String title;
     private String currentListId;
     private String currentListName;
+    private String lastSavedList;
 
 
     private static FirebaseAuth auth;
@@ -60,19 +61,15 @@ public class WordSetActivity extends NavDrawerActivity {
     private ArrayList<WordListwID> wordLists;
     private ArrayList<WordwID> wordwIDs;
 
-    private AppCompatImageButton changeList;
     private TextView listTitle;
 
-    private  RecyclerView wordsInListRV;
+    private RecyclerView wordsInListRV;
+    private LinearLayoutManager llm;
 
     private Query rvQuery;
     private Query q;
     private ValueEventListener rvQueryListener;
     private ValueEventListener listener;
-
-    private AppCompatImageButton addWord;
-    private AppCompatImageButton deleteList;
-    private AppCompatImageButton sortBtn;
 
     private WordAdapter rvAdapter;
     private ProgressBar loadWordRV;
@@ -96,10 +93,11 @@ public class WordSetActivity extends NavDrawerActivity {
 
         setTitle(title.toUpperCase());
 
-        changeList = (AppCompatImageButton)findViewById(R.id.changeList);
+        AppCompatImageButton changeList = (AppCompatImageButton) findViewById(R.id.changeList);
         changeList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                setListState();
                 AlertDialog.Builder builder = new AlertDialog.Builder(WordSetActivity.this);
                 if(wordLists == null)return;
                 builder.setTitle("Change list");
@@ -116,10 +114,11 @@ public class WordSetActivity extends NavDrawerActivity {
                 builder.setItems(listNames, new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        hideWordRv();
+                        rvAdapter = null;
                         currentListId = tempList.get(i).getId();
                         currentListName = tempList.get(i).getName();
                         listTitle.setText(tempList.get(i).getName().toUpperCase());
-                        hideWordRv();
                         setListWords();
                     }
                 });
@@ -132,7 +131,7 @@ public class WordSetActivity extends NavDrawerActivity {
 
         wordsInListRV = (RecyclerView) findViewById(R.id.wordInListRV);
         wordsInListRV.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm = new LinearLayoutManager(this);
         wordsInListRV.setLayoutManager(llm);
 
         loadWordRV = (ProgressBar)findViewById(R.id.loadWordRV);
@@ -141,13 +140,13 @@ public class WordSetActivity extends NavDrawerActivity {
         db = FirebaseDatabase.getInstance();
         uid = auth.getCurrentUser().getUid();
 
-        addWord = (AppCompatImageButton) findViewById(R.id.addWordBtn);
+        AppCompatImageButton addWord = (AppCompatImageButton) findViewById(R.id.addWordBtn);
         addWord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(WordSetActivity.this);
-                builder.setTitle("ADD WORD");
+                builder.setTitle("Add Word");
 
                 final EditText input = new EditText(WordSetActivity.this);
 
@@ -155,7 +154,7 @@ public class WordSetActivity extends NavDrawerActivity {
                 input.setHint("Word");
                 builder.setView(input);
 
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String word = input.getText().toString();
@@ -164,6 +163,8 @@ public class WordSetActivity extends NavDrawerActivity {
                                     "Failed! Word must be at least 1 character long.", Toast.LENGTH_LONG).show();
                         }
                         else{
+                            Toast.makeText(WordSetActivity.this,
+                                    word + " added", Toast.LENGTH_SHORT).show();
                             DB.newWord(word, currentListId, currentListName, wordSetId, allListId);
                         }
                     }
@@ -179,7 +180,7 @@ public class WordSetActivity extends NavDrawerActivity {
             }
         });
 
-        deleteList = (AppCompatImageButton) findViewById(R.id.deleteBtn);
+        AppCompatImageButton deleteList = (AppCompatImageButton) findViewById(R.id.deleteBtn);
         deleteList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -219,14 +220,15 @@ public class WordSetActivity extends NavDrawerActivity {
             }
         });
 
-        sortBtn = (AppCompatImageButton) findViewById(R.id.sortBtn);
+        AppCompatImageButton sortBtn = (AppCompatImageButton) findViewById(R.id.sortBtn);
         sortBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(WordSetActivity.this);
                 LayoutInflater inflater = (WordSetActivity.this).getLayoutInflater();
 
-                builder.setTitle("Sort words");
+                builder.setTitle("Sort Words");
                 final View layout = inflater.inflate(R.layout.ws_sort, null);
                 final RadioButton recAdd = (RadioButton) layout.findViewById(R.id.recAdded);
                 final RadioButton recVwd = (RadioButton) layout.findViewById(R.id.recViewed);
@@ -245,6 +247,8 @@ public class WordSetActivity extends NavDrawerActivity {
                 else if (sortOrder == 41) {diff.setChecked(true); asc.setChecked(true);}
                 else if (sortOrder == 42) {diff.setChecked(true); dsc.setChecked(true);}
 
+                final int prevSortOrder = sortOrder;
+
                 builder.setView(layout)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
@@ -257,8 +261,9 @@ public class WordSetActivity extends NavDrawerActivity {
                                 else if (alph.isChecked() && dsc.isChecked()) {sortOrder = 32;}
                                 else if (diff.isChecked() && asc.isChecked()) {sortOrder = 41;}
                                 else if (diff.isChecked() && dsc.isChecked()) {sortOrder = 42;}
-
-                                sortWords();
+                                if(prevSortOrder == sortOrder)return;
+                                setListSortOrder();
+                                sortWords(true);
                             }
                         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -271,32 +276,63 @@ public class WordSetActivity extends NavDrawerActivity {
             }
         });
 
+        AppCompatImageButton searchButton = (AppCompatImageButton)findViewById(R.id.searchBtn);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(wordwIDs == null)return;
+                AlertDialog.Builder builder = new AlertDialog.Builder(WordSetActivity.this);
+                builder.setTitle("Search Word");
+
+                final EditText input = new EditText(WordSetActivity.this);
+
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                input.setHint("Word");
+                builder.setView(input);
+
+                builder.setPositiveButton("Search", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        char[] word = input.getText().toString().toLowerCase().toCharArray();
+                        for(int i=0; i<wordwIDs.size(); i++){
+                            char[] listWord = wordwIDs.get(i).getValue().toLowerCase().toCharArray();
+                            if(listWord.length < word.length) continue;
+                            boolean match = true;
+                            for(int j =0; j<word.length; j++){
+                                if(word[j]!=listWord[j]){
+                                    match = false;
+                                    break;
+                                }
+                            }
+                            if(match == true){
+                                llm.scrollToPositionWithOffset(i, 0);
+                                return;
+                            }
+                        }
+                        Toast.makeText(WordSetActivity.this,
+                                input.getText().toString() + " was not found in this list!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+            }
+        });
+
         hideWordRv();
         getWordSet_list();
         restoreList();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if (prefs.getInt("sortOrder", -1) != -1){
-            sortOrder = prefs.getInt("sortOrder", -1);
-        }
-        else {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt("sortOrder", 0); sortOrder = 12;
-            editor.commit();
-        }
-    }
 
     @Override
     protected void onPause() {
         super.onPause();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt("sortOrder", sortOrder);
-        editor.commit();
         setListState();
         setList();
     }
@@ -362,6 +398,7 @@ public class WordSetActivity extends NavDrawerActivity {
 
         ref = db.getReference().child(DB.USER_WORD).child(uid).child(DB.WORDLIST);
         q = ref.orderByChild("wordSet").equalTo(wordSetId);
+        final String[] tempName = new String[1];
 
         listener = new ValueEventListener() {
             @Override
@@ -371,12 +408,21 @@ public class WordSetActivity extends NavDrawerActivity {
                     WordList wl = ds.getValue(WordList.class);
                     WordListwID wlid = new WordListwID(wl, ds.getKey());
                     wordLists.add(wlid);
+                    if(lastSavedList!=null && lastSavedList.equals(wlid.getId())) tempName[0] = wlid.getName();
                 }
                 if(currentListId == null){
-                    listTitle.setText(wordLists.get(0).getName().toUpperCase());
-                    currentListId = allListId;
-                    currentListName = "All words";
-                    setListWords();
+                    if(lastSavedList != null){
+                        listTitle.setText(tempName[0]);
+                        currentListName = tempName[0];
+                        currentListId = lastSavedList;
+                        setListWords();
+                    }
+                    else {
+                        listTitle.setText(wordLists.get(0).getName().toUpperCase());
+                        currentListId = wordLists.get(0).getId();
+                        currentListName = wordLists.get(0).getName();
+                        setListWords();
+                    }
                 }
                 if(rvAdapter!=null) rvAdapter.otherLists = getOtherLists(true);
             }
@@ -398,16 +444,13 @@ public class WordSetActivity extends NavDrawerActivity {
         rvQueryListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                Log.d("<<<<<WORDSET>>>>>", "LISTENING");
                 wordwIDs = new ArrayList<WordwID>();
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
                     Word word = ds.getValue(Word.class);
                     WordwID wordwID = new WordwID(word, ds.getKey());
                     wordwIDs.add(wordwID);
                 }
-                sortWords();
-
+                sortWords(false);
             }
 
             @Override
@@ -428,9 +471,10 @@ public class WordSetActivity extends NavDrawerActivity {
         return  tempList;
     }
 
-    private void sortWords(){
+    private void sortWords(boolean resetList){
 
         if (wordwIDs == null) return;
+        getListSortOrder();
         if(sortOrder == 11){Collections.sort(wordwIDs, WordwID.recAdded_Asc);}
         else if (sortOrder == 12) {Collections.sort(wordwIDs, WordwID.recAdded_Dsc);}
         else if (sortOrder == 21) {Collections.sort(wordwIDs, WordwID.recViewed_Asc);}
@@ -440,7 +484,8 @@ public class WordSetActivity extends NavDrawerActivity {
         else if (sortOrder == 41) {Collections.sort(wordwIDs, WordwID.difficulty_Asc);}
         else if (sortOrder == 42) {Collections.sort(wordwIDs, WordwID.difficulty_Dsc);}
 
-        if(rvAdapter != null)setListState();
+        if(resetList) resetListState();
+        else if(rvAdapter != null)setListState();
         rvAdapter = new WordAdapter(wordwIDs, WordSetActivity.this, wordSetId, allListId, currentListId);
         wordsInListRV.setAdapter(rvAdapter);
         restoreListState();
@@ -449,19 +494,48 @@ public class WordSetActivity extends NavDrawerActivity {
         showWordRv();
     }
 
+    private void setListSortOrder(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences.edit().putInt(currentListId+"`~", sortOrder).apply();
+    }
+    private void getListSortOrder(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        sortOrder = prefs.getInt(currentListId+"`~", 12);
+    }
+
+    private void resetListState(){
+        if(wordsInListRV == null)return;
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        preferences.edit().putInt(currentListId, 0).apply();
+        preferences.edit().putInt(currentListId+"~~", 0).apply();
+    }
+
     private void setListState(){
+        if(wordsInListRV == null)return;
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         View firstChild = wordsInListRV.getChildAt(0);
+        if(firstChild == null)return;
         int firstVisiblePosition = wordsInListRV.getChildAdapterPosition(firstChild);
-
-        //Log.d("WORDSETACTIVITY >> ", "Postition: " + firstVisiblePosition);
+        int offset = firstChild.getTop();
 
         preferences.edit().putInt(currentListId, firstVisiblePosition).apply();
+        preferences.edit().putInt(currentListId+"~~", offset).apply();
+        setListSortOrder();
+
     }
     private void restoreListState(){
+        if(wordsInListRV == null)return;
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Log.d("RESTORE LIST STATE", currentListId + preferences.getInt(currentListId, 0));
         wordsInListRV.scrollToPosition(preferences.getInt(currentListId, 0));
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                wordsInListRV.scrollBy(0, - preferences.getInt(currentListId+"~~", 0));
+            }
+        }, 5);
     }
 
     private void hideWordRv(){
@@ -477,11 +551,11 @@ public class WordSetActivity extends NavDrawerActivity {
     private void setList(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         //Log.d("WORDSETACTIVITY >> ", "Postition: " + firstVisiblePosition);
-        preferences.edit().putString(currentListId, currentListId).apply();
+        preferences.edit().putString(wordSetId, currentListId).apply();
     }
 
     private void restoreList(){
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        currentListId = preferences.getString(currentListId, null);
+        lastSavedList = preferences.getString(wordSetId, null);
     }
 }

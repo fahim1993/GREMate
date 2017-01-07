@@ -114,7 +114,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                         nword.setCopyOf(wid.getId());
                                     nword.setListId(otherLists.get(i).getId());
                                     Toast.makeText(context,
-                                            word_.getValue() + " added to " + otherLists.get(i).getName(), Toast.LENGTH_LONG).show();
+                                            word_.getValue() + " added to " + otherLists.get(i).getName(), Toast.LENGTH_SHORT).show();
                                     DB.addWordToAnotherList(nword);
                                 }
                             });
@@ -148,7 +148,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                     new AlertDialog.Builder(context)
                                             .setTitle("Confirm Remove")
                                             .setMessage("Are you sure you want to remove this word from this list?")
-                                            .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                                            .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                     DB.removeWordClone(word_.getId(), word_.getCopyOf());

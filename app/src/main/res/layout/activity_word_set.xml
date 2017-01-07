@@ -106,6 +106,15 @@
                     android:layout_height="50dp" />
 
                 <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/searchBtn"
+                    android:src="@drawable/ic_ws_search"
+                    android:scaleType="fitCenter"
+                    app:backgroundTint="@color/colorPrimary"
+                    android:tint="#FFF"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp" />
+
+                <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/sortBtn"
                     android:src="@drawable/ic_ws_reorder"
                     android:scaleType="fitCenter"
