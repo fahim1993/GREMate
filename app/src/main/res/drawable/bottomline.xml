@@ -9,7 +9,7 @@
 
     <item android:bottom="2dp">
         <shape>
-            <solid android:color="@android:color/white" />
+            <solid android:color="@color/cardviewItem" />
         </shape>
     </item>
 

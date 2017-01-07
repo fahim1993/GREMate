@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatButton;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -26,7 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private Button signup;
+    private AppCompatButton signup;
     private TextView failText;
     private ProgressBar suSpinner;
     private EditText name, email, password;
@@ -67,7 +68,7 @@ public class SignupActivity extends AppCompatActivity {
         failText = (TextView) findViewById(R.id.suFailText);
         failText.setVisibility(View.GONE);
 
-        signup = (Button) findViewById(R.id.suSignup);
+        signup = (AppCompatButton) findViewById(R.id.suSignup);
 
         signup.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,18 +49,89 @@ public class LearnActivity extends NavDrawerActivity {
 
     private RecyclerView wsRecyclerView;
 
+    private ProgressBar loadWordSet;
+
     private TextView wordSetTitle;
+
+    DatabaseReference ref1;
+    ValueEventListener listener1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
 
-        Button b = (Button) findViewById(R.id.addWordset);
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
+
+        wordSetTitle = (TextView) findViewById(R.id.wordSetTitle);
+
+
+        auth = FirebaseAuth.getInstance();
+        FBDB = FirebaseDatabase.getInstance();
+
+        setWsTitle();
+        setTitle("LEARN");
+
+        UDATA = FBDB.getReference(DB.USER_DATA);
+        UWORD = FBDB.getReference(DB.USER_WORD);
+
+        UDATA.child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(UserData.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        wsRecyclerView = (RecyclerView)findViewById(R.id.rvWordSet);
+        wsRecyclerView.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        wsRecyclerView.setLayoutManager(llm);
+
+        loadWordSet = (ProgressBar) findViewById(R.id.loadWordSetRV);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        wsRecyclerView.setVisibility(View.GONE);
+        loadWordSet.setVisibility(View.VISIBLE);
+
+        setWordSet();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(listener1!=null){
+            ref1.removeEventListener(listener1);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.learn_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.signout:
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(LearnActivity.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                LearnActivity.this.finish();
+                return true;
+            case R.id.addSet:
                 AlertDialog.Builder builder = new AlertDialog.Builder(LearnActivity.this);
                 builder.setTitle("WORDSET NAME");
 
@@ -88,54 +160,6 @@ public class LearnActivity extends NavDrawerActivity {
                 });
 
                 builder.show();
-            }
-        });
-
-        wordSetTitle = (TextView) findViewById(R.id.wordSetTitle);
-
-
-        auth = FirebaseAuth.getInstance();
-        FBDB = FirebaseDatabase.getInstance();
-
-        setWsTitle();
-        setTitle("LEARN");
-
-        UDATA = FBDB.getReference(DB.USER_DATA);
-        UWORD = FBDB.getReference(DB.USER_WORD);
-
-        UDATA.child(uid).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                user = dataSnapshot.getValue(UserData.class);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        setWordSet();
-
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.learn_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.signout:
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(LearnActivity.this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                LearnActivity.this.finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -161,14 +185,12 @@ public class LearnActivity extends NavDrawerActivity {
     }
 
     private void setWordSet(){
+        if(listener1 != null){
+            ref1.removeEventListener(listener1);
+        }
 
-        wsRecyclerView = (RecyclerView)findViewById(R.id.rvWordSet);
-
-        wsRecyclerView.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-
-        wsRecyclerView.setLayoutManager(llm);
-        UWORD.child(uid).child(DB.WORDSET).addValueEventListener(new ValueEventListener() {
+        ref1 = UWORD.child(uid).child(DB.WORDSET);
+        listener1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 wordSets = new ArrayList<>();
@@ -178,13 +200,17 @@ public class LearnActivity extends NavDrawerActivity {
                     WordSetwID wg = new WordSetwID(w, id);
                     wordSets.add(wg);
                 }
+                Collections.reverse(wordSets);
                 wsRecyclerView.setAdapter(new WordSetAdapter(wordSets, LearnActivity.this));
+                wsRecyclerView.setVisibility(View.VISIBLE);
+                loadWordSet.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+        ref1.addValueEventListener(listener1);
     }
 }

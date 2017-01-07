@@ -4,6 +4,7 @@
     android:id="@+id/activity_show_word"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/cardviewItem"
     tools:context="com.example.fahim.gremate.ShowWordActivity">
 
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
@@ -17,11 +18,12 @@
         android:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     <ScrollView
+        android:id="@+id/showWordSV"
         android:layout_below="@id/toolbar"
         android:layout_width="match_parent"
-        android:id="@+id/showWordSv"
         android:layout_height="wrap_content">
         <LinearLayout
+
             android:layout_width="match_parent"
             android:orientation="vertical"
             android:layout_height="wrap_content">
@@ -33,13 +35,15 @@
                 android:layout_height="wrap_content">
 
                 <RelativeLayout
+                    android:clickable="true"
+                    android:id="@+id/showWordDescriptionRL"
+                    android:onClick="toggleDescription"
                     android:layout_margin="5dp"
                     android:layout_width="match_parent"
                     android:orientation="horizontal"
-                    android:layout_height="wrap_content">
+                    android:layout_height="50dp">
 
                     <TextView android:layout_height="wrap_content"
-                        android:clickable="true"
                         android:id="@+id/showWordDescription"
                         android:layout_width="wrap_content"
                         android:layout_centerVertical="true"
@@ -48,16 +52,16 @@
                         android:textStyle="bold"
                         android:textColor="#000000"
                         />
-                    <ImageButton
+                    <ImageView
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:layout_centerVertical="true"
                         android:layout_alignParentEnd="true"
                         android:scaleType="centerInside"
-                        android:id="@+id/showWordDescriptionButton"
+                        android:id="@+id/showWordDescriptionIB"
                         android:background="@color/cardviewItem"
                         android:src="@drawable/up"
-                        android:onClick="toggleDescription"
+
                         />
                 </RelativeLayout>
 
@@ -65,6 +69,7 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:id="@+id/showWordDescriptionText"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_marginTop="-6dp"
                     android:layout_marginLeft="8dp"
@@ -84,37 +89,40 @@
                 android:layout_height="wrap_content">
 
                 <RelativeLayout
+                    android:id="@+id/showWordDefinitionRL"
+                    android:onClick="toggleDefinition"
+                    android:clickable="true"
                     android:layout_margin="5dp"
                     android:layout_width="match_parent"
                     android:orientation="horizontal"
-                    android:layout_height="wrap_content">
+                    android:layout_height="50dp">
 
                     <TextView
                         android:layout_height="wrap_content"
                         android:layout_width="wrap_content"
                         android:layout_centerVertical="true"
-                        android:clickable="true"
                         android:id="@+id/showWordDefinition"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:text="Definitions"
                         android:textColor="#000000"
                         />
-                    <ImageButton
+                    <ImageView
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:scaleType="centerInside"
                         android:layout_centerVertical="true"
                         android:layout_alignParentEnd="true"
-                        android:id="@+id/showWordDefinitionButton"
+                        android:id="@+id/showWordDefinitionIB"
                         android:background="@color/cardviewItem"
                         android:src="@drawable/up"
-                        android:onClick="toggleDefinition"
+
                         />
 
                 </RelativeLayout>
 
                 <TextView
+                    android:visibility="gone"
                     android:layout_height="wrap_content"
                     android:id="@+id/showWordDefinitionText"
                     android:clickable="true"
@@ -137,14 +145,16 @@
                 android:layout_height="wrap_content">
 
                 <RelativeLayout
+                    android:id="@+id/showWordSentenceRL"
+                    android:onClick="toggleSentence"
+                    android:clickable="true"
                     android:layout_margin="5dp"
                     android:layout_width="match_parent"
                     android:orientation="horizontal"
-                    android:layout_height="wrap_content">
+                    android:layout_height="50dp">
 
                     <TextView android:layout_height="wrap_content"
                         android:id="@+id/showWordSentence"
-                        android:clickable="true"
                         android:layout_width="wrap_content"
                         android:layout_centerVertical="true"
                         android:textSize="20sp"
@@ -152,22 +162,23 @@
                         android:text="Sentences"
                         android:textColor="#000000"
                         />
-                    <ImageButton
+                    <ImageView
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:layout_centerVertical="true"
                         android:layout_alignParentEnd="true"
                         android:scaleType="centerInside"
-                        android:id="@+id/showWordSentenceButton"
+                        android:id="@+id/showWordSentenceIB"
                         android:background="@color/cardviewItem"
                         android:src="@drawable/up"
-                        android:onClick="toggleSentence"
+
                         />
 
                 </RelativeLayout>
 
 
                 <TextView
+                    android:visibility="gone"
                     android:layout_height="wrap_content"
                     android:id="@+id/showWordSentenceText"
                     android:clickable="true"
@@ -190,14 +201,16 @@
                 android:layout_height="wrap_content">
 
                 <RelativeLayout
+                    android:id="@+id/showWordMNRL"
+                    android:clickable="true"
+                    android:onClick="toggleMN"
                     android:layout_margin="5dp"
                     android:layout_width="match_parent"
                     android:orientation="horizontal"
-                    android:layout_height="wrap_content">
+                    android:layout_height="50dp">
 
                     <TextView android:layout_height="wrap_content"
                         android:id="@+id/showWordMN"
-                        android:clickable="true"
                         android:layout_width="wrap_content"
                         android:layout_centerVertical="true"
                         android:textSize="20sp"
@@ -205,22 +218,23 @@
                         android:text="Mnemonic"
                         android:textColor="#000000"
                         />
-                    <ImageButton
+                    <ImageView
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:layout_centerVertical="true"
                         android:layout_alignParentEnd="true"
                         android:scaleType="centerInside"
-                        android:id="@+id/showWordMNButton"
+                        android:id="@+id/showWordMNIB"
                         android:background="@color/cardviewItem"
                         android:src="@drawable/up"
-                        android:onClick="toggleMN"
+
                         />
 
                 </RelativeLayout>
 
 
                 <TextView
+                    android:visibility="gone"
                     android:layout_height="wrap_content"
                     android:id="@+id/showWordMNText"
                     android:clickable="true"
@@ -239,8 +253,8 @@
             <SeekBar
                 android:layout_gravity="center"
                 android:id="@+id/diffSeekBar"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
                 android:max="2"
                 android:layout_marginTop="39dp" />
             <TextView
@@ -252,7 +266,22 @@
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
-
     </ScrollView>
+    <ProgressBar
+        android:id="@+id/loadWordPB"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
+
+    <TextView
+        android:id="@+id/errorTV"
+        android:visibility="gone"
+        android:textSize="18dp"
+        android:text="Sorry, no data found!"
+        android:textColor="@color/FireBrick"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

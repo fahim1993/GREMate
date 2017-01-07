@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -54,10 +55,10 @@
             android:imeOptions="actionDone"
             android:maxLines="1" />
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:layout_below="@+id/password"
             android:layout_centerInParent="true"
-            android:backgroundTint="@color/colorAccent"
+            app:backgroundTint="@color/colorAccent"
             android:textColor="#FFF"
             android:id="@+id/login"
             android:text="Login"
@@ -99,10 +100,10 @@
             android:text="Don't have an account?"
             />
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:layout_below="@+id/noacc"
             android:layout_centerInParent="true"
-            android:backgroundTint="@color/colorAccent"
+            app:backgroundTint="@color/colorAccent"
             android:textColor="#FFF"
             android:id="@+id/signup"
             android:text="singup"

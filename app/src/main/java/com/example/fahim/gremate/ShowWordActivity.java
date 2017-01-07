@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -58,6 +59,10 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private SeekBar levelSb;
 
+    private ScrollView showWordSV;
+    private ProgressBar loadingPB;
+    private TextView errorTextV;
+
     DatabaseReference ref1;
     Query query2;
     Query query3;
@@ -83,6 +88,10 @@ public class ShowWordActivity extends AppCompatActivity {
         if(extras == null) {
             finish();
         }
+
+        showWordSV = (ScrollView)findViewById(R.id.showWordSV);
+        loadingPB = (ProgressBar)findViewById(R.id.loadWordPB);
+        errorTextV = (TextView)findViewById(R.id.errorTV);
 
         levelSb = (SeekBar) findViewById(R.id.diffSeekBar);
         levelTv = (TextView) findViewById(R.id.diff);
@@ -129,7 +138,10 @@ public class ShowWordActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle(WORD.getValue());
+        String titleText = WORD.getValue().toLowerCase();
+        char[] ttext = titleText.toCharArray();
+        ttext[0] = Character.toUpperCase(ttext[0]);
+        setTitle(new String(ttext));
 
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -141,6 +153,10 @@ public class ShowWordActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        showWordSV.setVisibility(View.GONE);
+        errorTextV.setVisibility(View.GONE);
+        loadingPB.setVisibility(View.VISIBLE);
+
         switch (WORD.getValidity()){
             case 0:
                 if(isNetworkConnected())
@@ -148,6 +164,10 @@ public class ShowWordActivity extends AppCompatActivity {
                 break;
             case 1:
                 retrieveData();
+                break;
+            case 2:
+                loadingPB.setVisibility(View.GONE);
+                errorTextV.setVisibility(View.VISIBLE);
                 break;
         }
 
@@ -167,7 +187,7 @@ public class ShowWordActivity extends AppCompatActivity {
             editor.commit();
         }
 
-        final ScrollView sv = (ScrollView) findViewById(R.id.showWordSv);
+        final ScrollView sv = (ScrollView) findViewById(R.id.showWordSV);
         sv.post(new Runnable() {
             public void run() {
                 sv.smoothScrollTo(0, 0);
@@ -196,12 +216,12 @@ public class ShowWordActivity extends AppCompatActivity {
         descriptionText.setText( fromHtml(wordAllData_.getWordData().getDes().replaceAll("\\n", "<br>")));
 
         if (desState == 1) {
-            ImageButton descriptionButton = (ImageButton) findViewById(R.id.showWordDescriptionButton);
+            ImageView descriptionButton = (ImageView) findViewById(R.id.showWordDescriptionIB);
             descriptionText.setVisibility(View.VISIBLE);
             descriptionButton.setImageResource(R.drawable.up);
             descriptionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         } else {
-            ImageButton descriptionButton = (ImageButton) findViewById(R.id.showWordDescriptionButton);
+            ImageView descriptionButton = (ImageView) findViewById(R.id.showWordDescriptionIB);
             descriptionText.setVisibility(View.GONE);
             descriptionButton.setImageResource(R.drawable.down);
             descriptionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -228,12 +248,12 @@ public class ShowWordActivity extends AppCompatActivity {
         definitionText.setText(fromHtml(def));
 
         if (defState == 1) {
-            ImageButton definitionButton = (ImageButton) findViewById(R.id.showWordDefinitionButton);
+            ImageView definitionButton = (ImageView) findViewById(R.id.showWordDefinitionIB);
             definitionText.setVisibility(View.VISIBLE);
             definitionButton.setImageResource(R.drawable.up);
             definitionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         } else {
-            ImageButton definitionButton = (ImageButton) findViewById(R.id.showWordDefinitionButton);
+            ImageView definitionButton = (ImageView) findViewById(R.id.showWordDefinitionIB);
             definitionText.setVisibility(View.GONE);
             definitionButton.setImageResource(R.drawable.down);
             definitionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -251,12 +271,12 @@ public class ShowWordActivity extends AppCompatActivity {
         sentenceText.setText(fromHtml(sen));
 
         if (senState == 1) {
-            ImageButton sentenceButton = (ImageButton) findViewById(R.id.showWordSentenceButton);
+            ImageView sentenceButton = (ImageView) findViewById(R.id.showWordSentenceIB);
             sentenceText.setVisibility(View.VISIBLE);
             sentenceButton.setImageResource(R.drawable.up);
             sentenceButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         } else {
-            ImageButton sentenceButton = (ImageButton) findViewById(R.id.showWordSentenceButton);
+            ImageView sentenceButton = (ImageView) findViewById(R.id.showWordSentenceIB);
             sentenceText.setVisibility(View.GONE);
             sentenceButton.setImageResource(R.drawable.down);
             sentenceButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -270,12 +290,12 @@ public class ShowWordActivity extends AppCompatActivity {
         mnText.setText(mn);
 
         if (mnState == 1) {
-            ImageButton mnButton = (ImageButton) findViewById(R.id.showWordMNButton);
+            ImageView mnButton = (ImageView) findViewById(R.id.showWordMNIB);
             mnText.setVisibility(View.VISIBLE);
             mnButton.setImageResource(R.drawable.up);
             mnButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         } else {
-            ImageButton mnButton = (ImageButton) findViewById(R.id.showWordMNButton);
+            ImageView mnButton = (ImageView) findViewById(R.id.showWordMNIB);
             mnText.setVisibility(View.GONE);
             mnButton.setImageResource(R.drawable.down);
             mnButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -337,7 +357,7 @@ public class ShowWordActivity extends AppCompatActivity {
             defState = 0;
             TextView definitionText = (TextView) findViewById(R.id.showWordDefinitionText);
             definitionText.setVisibility(View.GONE);
-            ImageButton definitionButton = (ImageButton) findViewById(R.id.showWordDefinitionButton);
+            ImageView definitionButton = (ImageView) findViewById(R.id.showWordDefinitionIB);
             definitionButton.setImageResource(R.drawable.down);
 
             definitionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -347,7 +367,7 @@ public class ShowWordActivity extends AppCompatActivity {
             defState = 1;
             TextView definitionText = (TextView) findViewById(R.id.showWordDefinitionText);
             definitionText.setVisibility(View.VISIBLE);
-            ImageButton definitionButton = (ImageButton) findViewById(R.id.showWordDefinitionButton);
+            ImageView definitionButton = (ImageView) findViewById(R.id.showWordDefinitionIB);
             definitionButton.setImageResource(R.drawable.up);
 
             definitionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -361,7 +381,7 @@ public class ShowWordActivity extends AppCompatActivity {
             desState = 0;
             TextView descriptionText = (TextView) findViewById(R.id.showWordDescriptionText);
             descriptionText.setVisibility(View.GONE);
-            ImageButton descriptionButton = (ImageButton) findViewById(R.id.showWordDescriptionButton);
+            ImageView descriptionButton = (ImageView) findViewById(R.id.showWordDescriptionIB);
             descriptionButton.setImageResource(R.drawable.down);
 
             descriptionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -371,7 +391,7 @@ public class ShowWordActivity extends AppCompatActivity {
             desState = 1;
             TextView descriptionText = (TextView) findViewById(R.id.showWordDescriptionText);
             descriptionText.setVisibility(View.VISIBLE);
-            ImageButton descriptionButton = (ImageButton) findViewById(R.id.showWordDescriptionButton);
+            ImageView descriptionButton = (ImageView) findViewById(R.id.showWordDescriptionIB);
             descriptionButton.setImageResource(R.drawable.up);
 
             descriptionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -385,7 +405,7 @@ public class ShowWordActivity extends AppCompatActivity {
             senState = 0;
             TextView sentenceText = (TextView) findViewById(R.id.showWordSentenceText);
             sentenceText.setVisibility(View.GONE);
-            ImageButton sentenceButton = (ImageButton) findViewById(R.id.showWordSentenceButton);
+            ImageView sentenceButton = (ImageView) findViewById(R.id.showWordSentenceIB);
             sentenceButton.setImageResource(R.drawable.down);
 
             sentenceButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -395,7 +415,7 @@ public class ShowWordActivity extends AppCompatActivity {
             senState = 1;
             TextView sentenceText = (TextView) findViewById(R.id.showWordSentenceText);
             sentenceText.setVisibility(View.VISIBLE);
-            ImageButton sentenceButton = (ImageButton) findViewById(R.id.showWordSentenceButton);
+            ImageView sentenceButton = (ImageView) findViewById(R.id.showWordSentenceIB);
             sentenceButton.setImageResource(R.drawable.up);
 
             sentenceButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -408,7 +428,7 @@ public class ShowWordActivity extends AppCompatActivity {
             mnState = 0;
             TextView mnText = (TextView) findViewById(R.id.showWordMNText);
             mnText.setVisibility(View.GONE);
-            ImageButton mnButton = (ImageButton) findViewById(R.id.showWordMNButton);
+            ImageView mnButton = (ImageView) findViewById(R.id.showWordMNIB);
             mnButton.setImageResource(R.drawable.down);
 
             mnButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -418,7 +438,7 @@ public class ShowWordActivity extends AppCompatActivity {
             mnState = 1;
             TextView sentenceText = (TextView) findViewById(R.id.showWordMNText);
             sentenceText.setVisibility(View.VISIBLE);
-            ImageButton mnButton = (ImageButton) findViewById(R.id.showWordMNButton);
+            ImageView mnButton = (ImageView) findViewById(R.id.showWordMNIB);
             mnButton.setImageResource(R.drawable.up);
 
             mnButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -496,6 +516,9 @@ public class ShowWordActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {}
         };
         query4.addValueEventListener(listener4);
+
+        loadingPB.setVisibility(View.GONE);
+        showWordSV.setVisibility(View.VISIBLE);
     }
 
     private class FetchData extends FetchDataAsync{
@@ -508,8 +531,13 @@ public class ShowWordActivity extends AppCompatActivity {
                         WORD.getValue(), true, 1, DB.getCurrentMin(), 1, DB.getCurrentMin()));
                 setContents();
                 DB.setWordData(wordAllData_, wordId);
+                loadingPB.setVisibility(View.GONE);
+                showWordSV.setVisibility(View.VISIBLE);
             }
             else {
+                loadingPB.setVisibility(View.GONE);
+                showWordSV.setVisibility(View.GONE);
+                errorTextV.setVisibility(View.VISIBLE);
                 DB.setWordValidity(wordId, 2);
             }
         }

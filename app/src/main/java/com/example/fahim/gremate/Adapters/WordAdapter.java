@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -56,7 +57,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
     @Override
     public void onBindViewHolder(WordViewHolder holder, final int position) {
-        holder.wordValue.setText(wordList.get(position).getValue());
+        holder.wordValue.setText(wordList.get(position).getValue().toUpperCase());
         if(wordList.get(position).getCopyOf().length()<1 || currentListId.equals(allListId)) holder.sourceListName.setText(wordList.get(position).getSourceListName());
         else holder.sourceListName.setText(wordList.get(position).getSourceListName() + " (c)");
 
@@ -93,7 +94,11 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if (i == 0) {
-                            if (otherLists == null) return;
+                            if (otherLists.size() == 0){
+                                Toast.makeText(context,
+                                        "Please create a new list first!", Toast.LENGTH_LONG).show();
+                                return;
+                            }
                             AlertDialog.Builder builder = new AlertDialog.Builder(context);
                             builder.setTitle("Select a list");
                             CharSequence[] listNames = new CharSequence[otherLists.size()];
@@ -237,7 +242,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
         CardView cv;
         TextView wordValue;
         TextView sourceListName;
-        ImageButton moreBtn;
+        AppCompatImageButton moreBtn;
         ImageView img;
 
         public WordViewHolder(View itemView) {
@@ -246,7 +251,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
             cv = (CardView) itemView.findViewById(R.id.wordCV);
             wordValue = (TextView) itemView.findViewById(R.id.wordValue);
             sourceListName = (TextView) itemView.findViewById(R.id.sourceListName);
-            moreBtn = (ImageButton) itemView.findViewById(R.id.moreBtn);
+            moreBtn = (AppCompatImageButton) itemView.findViewById(R.id.moreBtn);
             img = (ImageView) itemView.findViewById(R.id.img);
         }
     }

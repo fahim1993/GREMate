@@ -3,6 +3,7 @@ package com.example.fahim.gremate;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
@@ -59,18 +60,19 @@ public class WordSetActivity extends NavDrawerActivity {
     private ArrayList<WordListwID> wordLists;
     private ArrayList<WordwID> wordwIDs;
 
-    private ImageButton listOptions;
-    private ImageButton changeList;
+    private AppCompatImageButton changeList;
     private TextView listTitle;
 
     private  RecyclerView wordsInListRV;
 
     private Query rvQuery;
+    private Query q;
     private ValueEventListener rvQueryListener;
+    private ValueEventListener listener;
 
     private AppCompatImageButton addWord;
-    private ImageButton deleteList;
-    private ImageButton sortBtn;
+    private AppCompatImageButton deleteList;
+    private AppCompatImageButton sortBtn;
 
     private WordAdapter rvAdapter;
     private ProgressBar loadWordRV;
@@ -94,7 +96,7 @@ public class WordSetActivity extends NavDrawerActivity {
 
         setTitle(title.toUpperCase());
 
-        changeList = (ImageButton)findViewById(R.id.changeList);
+        changeList = (AppCompatImageButton)findViewById(R.id.changeList);
         changeList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,6 +104,11 @@ public class WordSetActivity extends NavDrawerActivity {
                 if(wordLists == null)return;
                 builder.setTitle("Change list");
                 final ArrayList<WordListwID> tempList = getOtherLists(false);
+                if(tempList.size() == 0){
+                    Toast.makeText(WordSetActivity.this,
+                            "Please create a new list first!", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 CharSequence [] listNames = new CharSequence[tempList.size()];
                 for(int i=0; i<tempList.size(); i++){
                     listNames[i] = tempList.get(i).getName();
@@ -112,6 +119,7 @@ public class WordSetActivity extends NavDrawerActivity {
                         currentListId = tempList.get(i).getId();
                         currentListName = tempList.get(i).getName();
                         listTitle.setText(tempList.get(i).getName().toUpperCase());
+                        hideWordRv();
                         setListWords();
                     }
                 });
@@ -171,7 +179,7 @@ public class WordSetActivity extends NavDrawerActivity {
             }
         });
 
-        deleteList = (ImageButton) findViewById(R.id.deleteBtn);
+        deleteList = (AppCompatImageButton) findViewById(R.id.deleteBtn);
         deleteList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -211,7 +219,7 @@ public class WordSetActivity extends NavDrawerActivity {
             }
         });
 
-        sortBtn = (ImageButton) findViewById(R.id.sortBtn);
+        sortBtn = (AppCompatImageButton) findViewById(R.id.sortBtn);
         sortBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -262,6 +270,10 @@ public class WordSetActivity extends NavDrawerActivity {
                 builder.show();
             }
         });
+
+        hideWordRv();
+        getWordSet_list();
+        restoreList();
     }
 
     @Override
@@ -276,7 +288,6 @@ public class WordSetActivity extends NavDrawerActivity {
             editor.putInt("sortOrder", 0); sortOrder = 12;
             editor.commit();
         }
-        getWordSet_list();
     }
 
     @Override
@@ -286,6 +297,16 @@ public class WordSetActivity extends NavDrawerActivity {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt("sortOrder", sortOrder);
         editor.commit();
+        setListState();
+        setList();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if(listener != null) q.removeEventListener(listener);
+        if(rvQueryListener != null) rvQuery.removeEventListener(rvQueryListener);
     }
 
     @Override
@@ -319,7 +340,6 @@ public class WordSetActivity extends NavDrawerActivity {
                             Toast.makeText(WordSetActivity.this,
                                     "List "+listname+" created", Toast.LENGTH_LONG).show();
                             DB.newList(listname, wordSetId);
-                            rvAdapter.otherLists = getOtherLists(true);
                         }
                     }
                 });
@@ -341,9 +361,9 @@ public class WordSetActivity extends NavDrawerActivity {
     public void getWordSet_list(){
 
         ref = db.getReference().child(DB.USER_WORD).child(uid).child(DB.WORDLIST);
-        Query q = ref.orderByChild("wordSet").equalTo(wordSetId);
+        q = ref.orderByChild("wordSet").equalTo(wordSetId);
 
-        q.addValueEventListener(new ValueEventListener() {
+        listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 wordLists = new ArrayList<>();
@@ -358,20 +378,17 @@ public class WordSetActivity extends NavDrawerActivity {
                     currentListName = "All words";
                     setListWords();
                 }
-                if(rvAdapter != null)
-                    rvAdapter.otherLists = getOtherLists(true);
+                if(rvAdapter!=null) rvAdapter.otherLists = getOtherLists(true);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+        q.addValueEventListener(listener);
     }
 
     public void setListWords(){
-
-        wordsInListRV.setVisibility(View.GONE);
-        loadWordRV.setVisibility(View.VISIBLE);
 
         if(rvQueryListener!= null){
             rvQuery.removeEventListener(rvQueryListener);
@@ -382,6 +399,7 @@ public class WordSetActivity extends NavDrawerActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
+                Log.d("<<<<<WORDSET>>>>>", "LISTENING");
                 wordwIDs = new ArrayList<WordwID>();
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
                     Word word = ds.getValue(Word.class);
@@ -389,11 +407,7 @@ public class WordSetActivity extends NavDrawerActivity {
                     wordwIDs.add(wordwID);
                 }
                 sortWords();
-                rvAdapter.otherLists = getOtherLists(true);
-                wordsInListRV.setAdapter(rvAdapter);
-                getWordSet_list();
-                loadWordRV.setVisibility(View.GONE);
-                wordsInListRV.setVisibility(View.VISIBLE);
+
             }
 
             @Override
@@ -415,6 +429,7 @@ public class WordSetActivity extends NavDrawerActivity {
     }
 
     private void sortWords(){
+
         if (wordwIDs == null) return;
         if(sortOrder == 11){Collections.sort(wordwIDs, WordwID.recAdded_Asc);}
         else if (sortOrder == 12) {Collections.sort(wordwIDs, WordwID.recAdded_Dsc);}
@@ -425,9 +440,48 @@ public class WordSetActivity extends NavDrawerActivity {
         else if (sortOrder == 41) {Collections.sort(wordwIDs, WordwID.difficulty_Asc);}
         else if (sortOrder == 42) {Collections.sort(wordwIDs, WordwID.difficulty_Dsc);}
 
-        if(rvAdapter != null)
-            rvAdapter.notifyDataSetChanged();
-        else
-            rvAdapter = new WordAdapter(wordwIDs, WordSetActivity.this, wordSetId, allListId, currentListId);
+        if(rvAdapter != null)setListState();
+        rvAdapter = new WordAdapter(wordwIDs, WordSetActivity.this, wordSetId, allListId, currentListId);
+        wordsInListRV.setAdapter(rvAdapter);
+        restoreListState();
+        rvAdapter.otherLists = getOtherLists(true);
+
+        showWordRv();
+    }
+
+    private void setListState(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        View firstChild = wordsInListRV.getChildAt(0);
+        int firstVisiblePosition = wordsInListRV.getChildAdapterPosition(firstChild);
+
+        //Log.d("WORDSETACTIVITY >> ", "Postition: " + firstVisiblePosition);
+
+        preferences.edit().putInt(currentListId, firstVisiblePosition).apply();
+    }
+    private void restoreListState(){
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        wordsInListRV.scrollToPosition(preferences.getInt(currentListId, 0));
+    }
+
+    private void hideWordRv(){
+        wordsInListRV.setVisibility(View.GONE);
+        loadWordRV.setVisibility(View.VISIBLE);
+    }
+
+    private void showWordRv(){
+        loadWordRV.setVisibility(View.GONE);
+        wordsInListRV.setVisibility(View.VISIBLE);
+    }
+
+    private void setList(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        //Log.d("WORDSETACTIVITY >> ", "Postition: " + firstVisiblePosition);
+        preferences.edit().putString(currentListId, currentListId).apply();
+    }
+
+    private void restoreList(){
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        currentListId = preferences.getString(currentListId, null);
     }
 }

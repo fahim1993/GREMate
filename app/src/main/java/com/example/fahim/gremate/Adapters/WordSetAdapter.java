@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
@@ -112,7 +113,7 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
         CardView cv;
         TextView wordSet;
         TextView wordSetData;
-        ImageButton delbtn;
+        AppCompatImageButton delbtn;
         ImageView img;
 
         public WSViewHolder(View itemView) {
@@ -121,7 +122,7 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
             cv = (CardView) itemView.findViewById(R.id.wordSetCardView);
             wordSet = (TextView) itemView.findViewById(R.id.wordSetName);
             wordSetData = (TextView) itemView.findViewById(R.id.wordSetData);
-            delbtn = (ImageButton) itemView.findViewById(R.id.delwordset);
+            delbtn = (AppCompatImageButton) itemView.findViewById(R.id.delwordset);
         }
     }
 }
