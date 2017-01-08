@@ -88,14 +88,14 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
                 Log.d("Wordset", "Clicked");
             }
         });
-        int time = DB.getCurrentMin();
+        long time = DB.getCurrentMin();
 
-        int min_diff = time - wsList.get(position).getLastOpen() ;
+        long min_diff = time - wsList.get(position).getLastOpen() ;
 
-        if(min_diff <= 10080){
+        if(min_diff <= 604800000L){
             holder.img.setImageResource(R.drawable.ic_green1);
         }
-        else if ( min_diff <= 43200 ){
+        else if ( min_diff <= 2592000000L ){
             holder.img.setImageResource(R.drawable.ic_green2);
         }
         else {

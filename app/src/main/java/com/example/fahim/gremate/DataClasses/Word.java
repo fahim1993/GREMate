@@ -14,7 +14,8 @@ public class Word implements Parcelable{
 
     private String copyOf, listId, value, sourceListName;
     private boolean practicable;
-    private int validity, lastOpen, level, added;
+    private int validity,  level;
+    private long lastOpen, added;
 
     public static Word newWord(String listId, String listName, String val) {
         return new Word("", listId, val, listName, false, 0, 0, 1, DB.getCurrentMin());
@@ -30,7 +31,7 @@ public class Word implements Parcelable{
         this.level = 0;
         this.added = 0;
     }
-    public Word(String copyOf, String listId, String value, String sourceListName, boolean practicable, int validity, int lastOpen, int level, int added) {
+    public Word(String copyOf, String listId, String value, String sourceListName, boolean practicable, int validity, long lastOpen, int level, long added) {
         this.copyOf = copyOf;
         this.listId = listId;
         this.value = value;
@@ -50,11 +51,11 @@ public class Word implements Parcelable{
         this.sourceListName = sourceListName;
     }
 
-    public int getAdded() {
+    public long getAdded() {
         return added;
     }
 
-    public void setAdded(int added) {
+    public void setAdded(long added) {
         this.added = added;
     }
 
@@ -82,11 +83,11 @@ public class Word implements Parcelable{
         this.practicable = practicable;
     }
 
-    public int getLastOpen() {
+    public long getLastOpen() {
         return lastOpen;
     }
 
-    public void setLastOpen(int lastOpen) {
+    public void setLastOpen(long lastOpen) {
         this.lastOpen = lastOpen;
     }
 
@@ -127,9 +128,9 @@ public class Word implements Parcelable{
         parcel.writeString(sourceListName);
         parcel.writeValue(practicable);
         parcel.writeInt(validity);
-        parcel.writeValue(lastOpen);
+        parcel.writeLong(lastOpen);
         parcel.writeValue(level);
-        parcel.writeValue(added);
+        parcel.writeLong(added);
     }
 
     private Word(Parcel in) {
@@ -139,9 +140,9 @@ public class Word implements Parcelable{
         sourceListName = in.readString();
         practicable = (Boolean) in.readValue( null );
         validity = in.readInt();
-        lastOpen = in.readInt();
+        lastOpen = in.readLong();
         level = in.readInt();
-        added = in.readInt();
+        added = in.readLong();
     }
 
     public static final Parcelable.Creator<Word> CREATOR

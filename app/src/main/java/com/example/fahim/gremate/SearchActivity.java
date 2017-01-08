@@ -8,6 +8,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -38,11 +40,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class ShowWordActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity {
 
-    private String wordId;
-
-    private Word WORD;
     private WordAllData wordAllData_;
 
     private int defState;
@@ -54,15 +53,14 @@ public class ShowWordActivity extends AppCompatActivity {
     private TextView sentenceText;
     private TextView definitionText;
     private TextView descriptionText;
-    private TextView levelTv;
-
-    private SeekBar levelSb;
 
     private ScrollView showWordSV;
     private ProgressBar loadingPB;
     private TextView errorTextV;
 
-    private int wordLevel;
+    private AppCompatImageButton webSearchButton;
+    private EditText input;
+
 
     DatabaseReference ref1;
     Query query2;
@@ -76,78 +74,38 @@ public class ShowWordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_word);
-
-//        int width = (int)(getResources().getDisplayMetrics().widthPixels*0.95);
-//        int height = (int)(getResources().getDisplayMetrics().heightPixels*0.80);
-
-//        getWindow().setLayout(width, height);
+        setContentView(R.layout.activity_search);
 
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-
-        Bundle extras = getIntent().getExtras();
-        if(extras == null) {
-            finish();
-        }
 
         showWordSV = (ScrollView)findViewById(R.id.showWordSV);
         loadingPB = (ProgressBar)findViewById(R.id.loadWordPB);
         errorTextV = (TextView)findViewById(R.id.errorTV);
 
-        levelSb = (SeekBar) findViewById(R.id.diffSeekBar);
-        levelTv = (TextView) findViewById(R.id.diff);
-
-        levelSb.setVisibility(View.GONE);
-        levelTv.setVisibility(View.GONE);
-
-        wordId = extras.getString("wordId");
-
-        DB.setWordLastOpen(wordId);
-
-        WORD = extras.getParcelable("Word");
-
-        levelSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                wordLevel = i;
-                switch(i){
-                    case 0:
-                        levelTv.setText("Easy");
-                        levelTv.setTextColor(Color.parseColor("#006400"));
-                        break;
-                    case 1:
-                        levelTv.setText("Medium");
-                        levelTv.setTextColor(Color.parseColor("#00008B"));
-                        break;
-                    case 2:
-                        levelTv.setText("Hard");
-                        levelTv.setTextColor(Color.parseColor("#8B0000"));
-                        break;
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-
-        Log.d("ShowWordActivity", WORD.getValue());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        String titleText = WORD.getValue().toLowerCase();
-        char[] ttext = titleText.toCharArray();
-        ttext[0] = Character.toUpperCase(ttext[0]);
-        setTitle(new String(ttext));
+        setTitle("Search");
 
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+
+        input = (EditText) findViewById(R.id.searchWordET);
+
+        webSearchButton = (AppCompatImageButton) findViewById(R.id.webSearchBtn);
+        webSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String qr = input.getText().toString().replaceAll("\\s","");
+                if(qr.length()<1)return;
+                new FetchData().execute(qr, "");
+                showWordSV.setVisibility(View.GONE);
+                errorTextV.setVisibility(View.GONE);
+                loadingPB.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     @Override
@@ -156,35 +114,21 @@ public class ShowWordActivity extends AppCompatActivity {
 
         showWordSV.setVisibility(View.GONE);
         errorTextV.setVisibility(View.GONE);
-        loadingPB.setVisibility(View.VISIBLE);
-
-        switch (WORD.getValidity()){
-            case 0:
-                if(isNetworkConnected())
-                    new FetchData().execute(WORD.getValue(), wordId);
-                break;
-            case 1:
-                retrieveData();
-                break;
-            case 2:
-                loadingPB.setVisibility(View.GONE);
-                errorTextV.setVisibility(View.VISIBLE);
-                break;
-        }
+        loadingPB.setVisibility(View.GONE);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if (prefs.getInt("defState", -1) != -1){
-            defState = prefs.getInt("defState", -1);
-            desState = prefs.getInt("desState", -1);
-            senState = prefs.getInt("senState", -1);
-            mnState = prefs.getInt("mnState", -1);
+        if (prefs.getInt("SRdefState", -1) != -1){
+            defState = prefs.getInt("SRdefState", -1);
+            desState = prefs.getInt("SRdesState", -1);
+            senState = prefs.getInt("SRsenState", -1);
+            mnState = prefs.getInt("SRmnState", -1);
         }
         else {
             SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt("defState", 0); defState = 0;
-            editor.putInt("desState", 0); desState = 0;
-            editor.putInt("senState", 0); senState = 0;
-            editor.putInt("mnState", 0); mnState = 0;
+            editor.putInt("SRdefState", 0); defState = 0;
+            editor.putInt("SRdesState", 0); desState = 0;
+            editor.putInt("SRsenState", 0); senState = 0;
+            editor.putInt("SRmnState", 0); mnState = 0;
             editor.commit();
         }
 
@@ -199,15 +143,13 @@ public class ShowWordActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(wordLevel != wordAllData_.getWord().getLevel() ){
-            DB.setWordLevel(wordId, wordLevel);
-        }
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt("defState", defState);
-        editor.putInt("desState", desState);
-        editor.putInt("senState", senState);
-        editor.putInt("mnState", mnState);
+        editor.putInt("SRdefState", defState);
+        editor.putInt("SRdesState", desState);
+        editor.putInt("SRsenState", senState);
+        editor.putInt("SRmnState", mnState);
 
         editor.commit();
 
@@ -326,27 +268,6 @@ public class ShowWordActivity extends AppCompatActivity {
         descriptionText = (TextView) findViewById(R.id.showWordDescriptionText);
     }
 
-    private void setLevel(){
-        wordLevel = wordAllData_.getWord().getLevel();
-        levelSb.setProgress(wordLevel);
-        switch(wordAllData_.getWord().getLevel()){
-            case 0:
-                levelTv.setText("Easy");
-                levelTv.setTextColor(Color.parseColor("#007200"));
-                break;
-            case 1:
-                levelTv.setText("Medium");
-                levelTv.setTextColor(Color.parseColor("#000072"));
-                break;
-            case 2:
-                levelTv.setText("Hard");
-                levelTv.setTextColor(Color.parseColor("#720000"));
-                break;
-        }
-        levelSb.setVisibility(View.VISIBLE);
-        levelTv.setVisibility(View.VISIBLE);
-    }
-
     private void setContents() {
         try {
             setTextViews();
@@ -354,7 +275,6 @@ public class ShowWordActivity extends AppCompatActivity {
             setDes();
             setSentence();;
             setMN();
-            setLevel();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -464,91 +384,13 @@ public class ShowWordActivity extends AppCompatActivity {
         }
     }
 
-    public void retrieveData(){
-
-        setTextViews();
-        wordAllData_ = new WordAllData();
-
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        ref1 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORD).child(wordId);
-        listener1 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                wordAllData_.setWord(dataSnapshot.getValue(Word.class));
-                setLevel();
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        ref1.addValueEventListener(listener1);
-
-        query2 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDDATA).orderByChild("word").equalTo(wordId);
-        listener2 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
-                WordData wd = ds.getValue(WordData.class);
-                wordAllData_.setWordData(wd);
-                Log.d("ShowWordActivity >>> ", wordAllData_.getWordData().getDes());
-                Log.d("ShowWordActivity >>> ", ""+dataSnapshot.getChildrenCount());
-                setDes();
-                setMN();
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        };
-        query2.addValueEventListener(listener2);
-
-        query3 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDDEF).orderByChild("word").equalTo(wordId);
-        listener3 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<WordDef> wordDefs = new ArrayList<WordDef>();
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    WordDef w = ds.getValue(WordDef.class);
-                    wordDefs.add(w);
-                }
-                wordAllData_.setWordDefs(wordDefs);
-                setDef();
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        };
-        query3.addValueEventListener(listener3);
-
-        query4 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.SENTENCE).orderByChild("word").equalTo(wordId);
-        listener4 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<Sentence> sentences = new ArrayList<Sentence>();
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    Sentence w = ds.getValue(Sentence.class);
-                    sentences.add(w);
-                }
-                wordAllData_.setSentences(sentences);
-                setSentence();
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        };
-        query4.addValueEventListener(listener4);
-
-        loadingPB.setVisibility(View.GONE);
-        showWordSV.setVisibility(View.VISIBLE);
-    }
-
     private class FetchData extends FetchDataAsync{
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             if(wordAllData != null){
                 wordAllData_ = wordAllData;
-                wordAllData_.setWord(new Word(WORD.getCopyOf(), WORD.getListId(), WORD.getSourceListName(),
-                        WORD.getValue(), true, 1, DB.getCurrentMin(), 1, DB.getCurrentMin()));
                 setContents();
-                DB.setWordData(wordAllData_, wordId);
                 loadingPB.setVisibility(View.GONE);
                 showWordSV.setVisibility(View.VISIBLE);
             }
@@ -556,7 +398,6 @@ public class ShowWordActivity extends AppCompatActivity {
                 loadingPB.setVisibility(View.GONE);
                 showWordSV.setVisibility(View.GONE);
                 errorTextV.setVisibility(View.VISIBLE);
-                DB.setWordValidity(wordId, 2);
             }
         }
     }

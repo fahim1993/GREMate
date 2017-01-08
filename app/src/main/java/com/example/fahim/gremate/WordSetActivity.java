@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.design.widget.NavigationView;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatImageButton;
@@ -82,6 +83,7 @@ public class WordSetActivity extends NavDrawerActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_word_set);
 
+        setupNavDrawerClick();
 
         Bundle extras = getIntent().getExtras();
         if(extras == null) {
@@ -557,5 +559,47 @@ public class WordSetActivity extends NavDrawerActivity {
     private void restoreList(){
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         lastSavedList = preferences.getString(wordSetId, null);
+    }
+
+    private void setupNavDrawerClick(){
+        NavigationView mNavigationView = (NavigationView)findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                Intent intent;
+                switch(menuItem.getItemId()){
+                    case R.id.nav_learn:
+                        intent = new Intent(WordSetActivity.this, LearnActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                        break;
+                    case R.id.nav_signout:
+                        new AlertDialog.Builder(WordSetActivity.this)
+                                .setTitle("Confirm Sign Out")
+                                .setMessage( "Are you sure you want to sign out?")
+                                .setPositiveButton("Sign Out", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        FirebaseAuth.getInstance().signOut();
+                                        Intent intent = new Intent(WordSetActivity.this, LoginActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                    }
+                                }).show();
+                        break;
+                    case R.id.nav_search:
+                        intent = new Intent(WordSetActivity.this, SearchActivity.class);
+                        WordSetActivity.this.startActivity(intent);
+                }
+                return true;
+            }
+        });
     }
 }

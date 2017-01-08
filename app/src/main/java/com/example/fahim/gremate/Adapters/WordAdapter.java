@@ -215,10 +215,10 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 //        }
 
         int lvl = wordList.get(position).getLevel();
-        int time = DB.getCurrentMin() - wordList.get(position).getLastOpen();
-        if (time >= 43200)
+        long time = DB.getCurrentMin() - wordList.get(position).getLastOpen();
+        if (time >= 2592000000L)
             holder.img.setImageResource(R.drawable.ic_gray);
-        else if (time >= 10080)
+        else if (time >= 604800000L)
             holder.img.setImageResource(R.drawable.ic_green2);
         else
             holder.img.setImageResource(R.drawable.ic_green1);

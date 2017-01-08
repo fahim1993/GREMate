@@ -8,14 +8,12 @@ import java.util.ArrayList;
 
 public class WordAllData {
     private Word word;
-    private ArrayList<WordDefP> wordDefPs;
     private ArrayList<WordDef> wordDefs;
     private WordData wordData;
     private ArrayList<Sentence> sentences;
 
     public WordAllData() {
         word = new Word();
-        wordDefPs = new ArrayList<>();
         wordDefs = new ArrayList<>();
         wordData = new WordData();
         sentences = new ArrayList<>();
@@ -27,14 +25,6 @@ public class WordAllData {
 
     public void setWord(Word word) {
         this.word = word;
-    }
-
-    public ArrayList<WordDefP> getWordDefPs() {
-        return wordDefPs;
-    }
-
-    public void setWordDefPs(ArrayList<WordDefP> wordDefPs) {
-        this.wordDefPs = wordDefPs;
     }
 
     public ArrayList<WordDef> getWordDefs() {

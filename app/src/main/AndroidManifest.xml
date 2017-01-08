@@ -24,7 +24,11 @@
         <activity android:name=".LearnActivity" />
         <activity android:name=".NavDrawerActivity" />
         <activity android:name=".WordSetActivity" />
-        <activity android:name=".ShowWordActivity" android:theme="@style/mydialog"></activity>
+        <activity
+            android:name=".ShowWordActivity"
+            android:theme="@style/mydialog" />
+        <activity android:name=".SearchActivity"
+            android:theme="@style/mydialog"/>
     </application>
 
 </manifest>

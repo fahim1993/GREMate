@@ -187,9 +187,10 @@ public class LearnActivity extends NavDrawerActivity {
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
+                Intent intent;
                 switch(menuItem.getItemId()){
                     case R.id.nav_learn:
-                        Intent intent = new Intent(LearnActivity.this, LearnActivity.class);
+                        intent = new Intent(LearnActivity.this, LearnActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                         finish();
@@ -214,6 +215,9 @@ public class LearnActivity extends NavDrawerActivity {
                                     }
                                 }).show();
                         break;
+                    case R.id.nav_search:
+                        intent = new Intent(LearnActivity.this, SearchActivity.class);
+                        LearnActivity.this.startActivity(intent);
                 }
                 return true;
             }

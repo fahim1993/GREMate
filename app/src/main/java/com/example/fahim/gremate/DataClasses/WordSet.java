@@ -6,7 +6,8 @@ package com.example.fahim.gremate.DataClasses;
 
 public class WordSet {
     private String name, owner, allList;
-    private int wordCount, lastOpen;
+    private int wordCount;
+    private long lastOpen;
 
     public WordSet() {
         this.name = "";
@@ -16,7 +17,7 @@ public class WordSet {
         this.lastOpen = 0;
     }
 
-    public WordSet(String name, String owner, String allList, int wordCount, int lastOpen) {
+    public WordSet(String name, String owner, String allList, int wordCount, long lastOpen) {
         this.name = name;
         this.owner = owner;
         this.allList = allList;
@@ -60,11 +61,11 @@ public class WordSet {
         this.wordCount = wordCount;
     }
 
-    public int getLastOpen() {
+    public long getLastOpen() {
         return lastOpen;
     }
 
-    public void setLastOpen(int learned) {
-        this.lastOpen = learned;
+    public void setLastOpen(long lastOpen) {
+        this.lastOpen = lastOpen;
     }
 }
