@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -213,7 +212,9 @@ public class ShowWordActivity extends AppCompatActivity {
     }
 
     private void setDes(){
-        descriptionText.setText( fromHtml(wordAllData_.getWordData().getDes().replaceAll("\\n", "<br>")));
+
+        if(wordAllData_.getWordData().getDes().length()<1)descriptionText.setText("(No data)");
+        else descriptionText.setText( fromHtml(wordAllData_.getWordData().getDes().replaceAll("\\n", "<br>")));
 
         if (desState == 1) {
             ImageView descriptionButton = (ImageView) findViewById(R.id.showWordDescriptionIB);
@@ -229,23 +230,26 @@ public class ShowWordActivity extends AppCompatActivity {
     }
 
     private void setDef(){
-        String def = "";
-        for (int i = 0; i < wordAllData_.getWordDefs().size(); i++) {
-            WordDef d = wordAllData_.getWordDefs().get(i);
-            if (i != 0) def += "<br><br>";
-            def += "<b>" + d.getTitle() + "</b><br>";
-            def += "<i>" + d.getDef() + "</i><br>";
-            if (d.getSyn().length() > 0) {
-                def += "<b>Synonyms:</b><br>";
-                def += d.getSyn() + "<br>";
-            }
+        if(wordAllData_.getWordDefs().size()==0)definitionText.setText("(No data)");
+        else {
+            String def = "";
+            for (int i = 0; i < wordAllData_.getWordDefs().size(); i++) {
+                WordDef d = wordAllData_.getWordDefs().get(i);
+                if (i != 0) def += "<br><br>";
+                def += "<b>" + d.getTitle() + "</b><br>";
+                def += "<i>" + d.getDef() + "</i><br>";
+                if (d.getSyn().length() > 0) {
+                    def += "<b>Synonyms:</b><br>";
+                    def += d.getSyn() + "<br>";
+                }
 
-            if (d.getAnt().length() > 0) {
-                def += "<b>Antonyms:</b><br>";
-                def += d.getAnt();
+                if (d.getAnt().length() > 0) {
+                    def += "<b>Antonyms:</b><br>";
+                    def += d.getAnt();
+                }
             }
+            definitionText.setText(fromHtml(def));
         }
-        definitionText.setText(fromHtml(def));
 
         if (defState == 1) {
             ImageView definitionButton = (ImageView) findViewById(R.id.showWordDefinitionIB);
@@ -260,15 +264,19 @@ public class ShowWordActivity extends AppCompatActivity {
         }
     }
 
-    private void setSenence(){
-        String sen = "";
-        for (int i = 0; i < wordAllData_.getSentences().size(); i++) {
-            Sentence s = wordAllData_.getSentences().get(i);
+    private void setSentence(){
 
-            if (i != 0) sen += "<br>";
-            sen += "<b>" + (i + 1) + ".</b> " + s.getValue() + "<br>";
+        if(wordAllData_.getSentences().size()==0)sentenceText.setText("(No data)");
+        else {
+            String sen = "";
+            for (int i = 0; i < wordAllData_.getSentences().size(); i++) {
+                Sentence s = wordAllData_.getSentences().get(i);
+
+                if (i != 0) sen += "<br>";
+                sen += "<b>" + (i + 1) + ".</b> " + s.getValue() + "<br>";
+            }
+            sentenceText.setText(fromHtml(sen));
         }
-        sentenceText.setText(fromHtml(sen));
 
         if (senState == 1) {
             ImageView sentenceButton = (ImageView) findViewById(R.id.showWordSentenceIB);
@@ -286,8 +294,11 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private void setMN(){
 
-        String mn = wordAllData_.getWordData().getMn();
-        mnText.setText(mn);
+        if(wordAllData_.getWordData().getMn().length()<1)mnText.setText("(No data)");
+        else {
+            String mn = wordAllData_.getWordData().getMn();
+            mnText.setText(mn);
+        }
 
         if (mnState == 1) {
             ImageView mnButton = (ImageView) findViewById(R.id.showWordMNIB);
@@ -334,7 +345,7 @@ public class ShowWordActivity extends AppCompatActivity {
             setTextViews();
             setDef();
             setDes();
-            setSenence();;
+            setSentence();;
             setMN();
             setLevel();
 
@@ -510,7 +521,7 @@ public class ShowWordActivity extends AppCompatActivity {
                     sentences.add(w);
                 }
                 wordAllData_.setSentences(sentences);
-                setSenence();
+                setSentence();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}

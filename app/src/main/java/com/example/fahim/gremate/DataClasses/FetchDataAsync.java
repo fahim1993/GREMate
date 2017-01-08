@@ -111,7 +111,8 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                 // Set it from the calling class
                 // Word word1 = new Word(wordSetId, wordListId, word, true, false, false, 0, 0);
 
-                wordAllData.setWordData(new WordData(wordId, shortds + "\n\n" + longds, mn));
+                if(shortds.length()<1) wordAllData.setWordData(new WordData(wordId, "", mn));
+                else wordAllData.setWordData(new WordData(wordId, shortds + "\n\n" + longds, mn));
 
                 i = 0;
                 sens = new String[]{"", "", "", "", "", "", "", "", "", ""};
