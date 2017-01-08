@@ -3,6 +3,7 @@ package com.example.fahim.gremate;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,16 +37,9 @@ import java.util.Collections;
 
 public class LearnActivity extends NavDrawerActivity {
 
-    private FirebaseAuth auth;
-    private FirebaseDatabase FBDB;
-    private DatabaseReference UDATA;
-    private DatabaseReference UWORD;
-
-    private UserData user;
     private ArrayList<WordSetwID> wordSets;
 
     private String uid;
-    private String userName;
 
     private RecyclerView wsRecyclerView;
 
@@ -61,31 +55,12 @@ public class LearnActivity extends NavDrawerActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
 
-
+        setupNavDrawerClick();
 
         wordSetTitle = (TextView) findViewById(R.id.wordSetTitle);
 
-
-        auth = FirebaseAuth.getInstance();
-        FBDB = FirebaseDatabase.getInstance();
-
         setWsTitle();
         setTitle("LEARN");
-
-        UDATA = FBDB.getReference(DB.USER_DATA);
-        UWORD = FBDB.getReference(DB.USER_WORD);
-
-        UDATA.child(uid).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                user = dataSnapshot.getValue(UserData.class);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
 
         wsRecyclerView = (RecyclerView)findViewById(R.id.rvWordSet);
         wsRecyclerView.setHasFixedSize(true);
@@ -124,13 +99,6 @@ public class LearnActivity extends NavDrawerActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.signout:
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(LearnActivity.this, LoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                LearnActivity.this.finish();
-                return true;
             case R.id.addSet:
                 AlertDialog.Builder builder = new AlertDialog.Builder(LearnActivity.this);
                 builder.setTitle("WORDSET NAME");
@@ -168,8 +136,8 @@ public class LearnActivity extends NavDrawerActivity {
     }
 
     private void setWsTitle(){
-        uid = auth.getCurrentUser().getUid();
-        DatabaseReference mref = FBDB.getReference().child(DB.USER_DATA).child(uid);
+        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference mref = FirebaseDatabase.getInstance().getReference().child(DB.USER_DATA).child(uid);
         mref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -189,7 +157,7 @@ public class LearnActivity extends NavDrawerActivity {
             ref1.removeEventListener(listener1);
         }
 
-        ref1 = UWORD.child(uid).child(DB.WORDSET);
+        ref1 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDSET);
         listener1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -212,5 +180,43 @@ public class LearnActivity extends NavDrawerActivity {
             }
         };
         ref1.addValueEventListener(listener1);
+    }
+
+    private void setupNavDrawerClick(){
+        NavigationView mNavigationView = (NavigationView)findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                switch(menuItem.getItemId()){
+                    case R.id.nav_learn:
+                        Intent intent = new Intent(LearnActivity.this, LearnActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                        break;
+                    case R.id.nav_signout:
+                        new AlertDialog.Builder(LearnActivity.this)
+                                .setTitle("Confirm Sign Out")
+                                .setMessage( "Are you sure you want to sign out?")
+                                .setPositiveButton("Sign Out", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        FirebaseAuth.getInstance().signOut();
+                                        Intent intent = new Intent(LearnActivity.this, LoginActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                    }
+                                }).show();
+                        break;
+                }
+                return true;
+            }
+        });
     }
 }
