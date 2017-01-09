@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.CardView;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -66,14 +68,17 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
             public void onClick(View view) {
 
                 Intent intent = new Intent(context, ShowWordActivity.class);
-                Bundle b = new Bundle();
-                String key = wordList.get(position).getId();
-                if (wordList.get(position).getCopyOf().length() >= 1)
-                    key = wordList.get(position).getCopyOf();
-                b.putString("wordId", key);
-                b.putParcelable("Word", wordList.get(position));
 
-                intent.putExtras(b);
+                ArrayList<Word> words = new ArrayList<>();
+                for (int i=0; i<wordList.size(); i++) {
+                    Word w = wordList.get(i).toWord();
+                    if(w.getCopyOf().length()<1)w.setCopyOf(wordList.get(i).getId());
+                    words.add(w);
+                }
+                Bundle b = new Bundle();
+                b.putParcelableArrayList("words", words);
+                b.putInt("index", position);
+                intent.putExtra("bundle", b);
                 context.startActivity(intent);
             }
         });

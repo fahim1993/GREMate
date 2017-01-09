@@ -129,7 +129,7 @@ public class Word implements Parcelable{
         parcel.writeValue(practicable);
         parcel.writeInt(validity);
         parcel.writeLong(lastOpen);
-        parcel.writeValue(level);
+        parcel.writeInt(level);
         parcel.writeLong(added);
     }
 

@@ -27,8 +27,11 @@
         <activity
             android:name=".ShowWordActivity"
             android:theme="@style/mydialog" />
-        <activity android:name=".SearchActivity"
-            android:theme="@style/mydialog"/>
+        <activity
+            android:name=".SearchActivity"
+            android:theme="@style/mydialog" />
+        <activity android:name=".PracticeActivity" />
+        <activity android:name=".PracticingActivity"></activity>
     </application>
 
 </manifest>

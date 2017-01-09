@@ -326,6 +326,19 @@ public class WordSetActivity extends NavDrawerActivity {
             }
         });
 
+        AppCompatImageButton practiceButton = (AppCompatImageButton) findViewById(R.id.practiceBtn);
+        practiceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(WordSetActivity.this, PracticeActivity.class);
+                Bundle b = new Bundle();
+                b.putString("ws_id", wordSetId);
+                b.putString("list_id", currentListId);
+                intent.putExtras(b);
+                startActivity(intent);
+            }
+        });
+
         hideWordRv();
         getWordSet_list();
         restoreList();

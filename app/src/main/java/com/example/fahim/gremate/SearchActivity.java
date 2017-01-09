@@ -61,16 +61,6 @@ public class SearchActivity extends AppCompatActivity {
     private AppCompatImageButton webSearchButton;
     private EditText input;
 
-
-    DatabaseReference ref1;
-    Query query2;
-    Query query3;
-    Query query4;
-    ValueEventListener listener1;
-    ValueEventListener listener2;
-    ValueEventListener listener3;
-    ValueEventListener listener4;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -152,11 +142,6 @@ public class SearchActivity extends AppCompatActivity {
         editor.putInt("SRmnState", mnState);
 
         editor.commit();
-
-        if(listener1!=null)ref1.removeEventListener(listener1);
-        if(listener2!=null)query2.removeEventListener(listener2);
-        if(listener3!=null)query3.removeEventListener(listener3);
-        if(listener4!=null)query4.removeEventListener(listener4);
     }
 
     private void setDes(){
@@ -401,7 +386,6 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
     }
-
     private boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null;

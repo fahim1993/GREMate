@@ -102,7 +102,6 @@ public class LoginActivity extends AppCompatActivity {
                         else {
                             loginFail.setVisibility(View.VISIBLE);
                             loginSpinner.setVisibility(View.GONE);
-
                         }
                     }
                 });

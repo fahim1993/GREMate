@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/prevWord"
+        android:icon="@drawable/ic_prev_word"
+        app:showAsAction="always"
+        android:title="Previous word" />
+    <item
+        android:id="@+id/nextWord"
+        android:icon="@drawable/ic_next_word"
+        app:showAsAction="always"
+        android:title="Previous word" />
+    <item
+        android:id="@+id/pronounce"
+        android:icon="@drawable/icon_play"
+        app:showAsAction="ifRoom"
+        android:title="Pronounce"/>
+</menu>

@@ -101,7 +101,7 @@ public class LearnActivity extends NavDrawerActivity {
         switch (item.getItemId()) {
             case R.id.addSet:
                 AlertDialog.Builder builder = new AlertDialog.Builder(LearnActivity.this);
-                builder.setTitle("WORDSET NAME");
+                builder.setTitle("WORD SET NAME");
 
                 final EditText input = new EditText(LearnActivity.this);
 
@@ -112,8 +112,8 @@ public class LearnActivity extends NavDrawerActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String wsname = input.getText().toString();
-                        if(wsname.length()<3){
-                            Toast.makeText(LearnActivity.this, "Failed! Name must be at least 3 characters long.", Toast.LENGTH_LONG).show();
+                        if(wsname.length()<1){
+                            Toast.makeText(LearnActivity.this, "Failed! Name must be at least 1 character long.", Toast.LENGTH_LONG).show();
                         }
                         else{
                             DB.newWordSet(wsname);
@@ -218,6 +218,13 @@ public class LearnActivity extends NavDrawerActivity {
                     case R.id.nav_search:
                         intent = new Intent(LearnActivity.this, SearchActivity.class);
                         LearnActivity.this.startActivity(intent);
+                        break;
+                    case R.id.nav_exercise:
+                        intent = new Intent(LearnActivity.this, PracticeActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                        break;
                 }
                 return true;
             }

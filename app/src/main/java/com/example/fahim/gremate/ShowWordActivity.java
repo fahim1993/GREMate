@@ -3,8 +3,12 @@ package com.example.fahim.gremate;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +16,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.FetchDataAsync;
@@ -36,14 +43,20 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class ShowWordActivity extends AppCompatActivity {
 
     private String wordId;
 
+    private ArrayList<Word> words;
     private Word WORD;
     private WordAllData wordAllData_;
+
+    private int index;
+    private boolean loading;
 
     private int defState;
     private int desState;
@@ -58,9 +71,14 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private SeekBar levelSb;
 
+    private ScrollView sv;
+
     private ScrollView showWordSV;
     private ProgressBar loadingPB;
     private TextView errorTextV;
+
+
+    private TextView wordTitle;
 
     private int wordLevel;
 
@@ -78,17 +96,16 @@ public class ShowWordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_word);
 
-//        int width = (int)(getResources().getDisplayMetrics().widthPixels*0.95);
-//        int height = (int)(getResources().getDisplayMetrics().heightPixels*0.80);
-
-//        getWindow().setLayout(width, height);
-
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         Bundle extras = getIntent().getExtras();
         if(extras == null) {
             finish();
         }
+        Bundle b = getIntent().getBundleExtra("bundle");
+        words = b.getParcelableArrayList("words");
+
+        index = b.getInt("index");
 
         showWordSV = (ScrollView)findViewById(R.id.showWordSV);
         loadingPB = (ProgressBar)findViewById(R.id.loadWordPB);
@@ -99,12 +116,6 @@ public class ShowWordActivity extends AppCompatActivity {
 
         levelSb.setVisibility(View.GONE);
         levelTv.setVisibility(View.GONE);
-
-        wordId = extras.getString("wordId");
-
-        DB.setWordLastOpen(wordId);
-
-        WORD = extras.getParcelable("Word");
 
         levelSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -135,14 +146,10 @@ public class ShowWordActivity extends AppCompatActivity {
             }
         });
 
-        Log.d("ShowWordActivity", WORD.getValue());
+        wordTitle = (TextView) findViewById(R.id.wordTitle);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        String titleText = WORD.getValue().toLowerCase();
-        char[] ttext = titleText.toCharArray();
-        ttext[0] = Character.toUpperCase(ttext[0]);
-        setTitle(new String(ttext));
 
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -151,26 +158,15 @@ public class ShowWordActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.show_word_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-
-        showWordSV.setVisibility(View.GONE);
-        errorTextV.setVisibility(View.GONE);
-        loadingPB.setVisibility(View.VISIBLE);
-
-        switch (WORD.getValidity()){
-            case 0:
-                if(isNetworkConnected())
-                    new FetchData().execute(WORD.getValue(), wordId);
-                break;
-            case 1:
-                retrieveData();
-                break;
-            case 2:
-                loadingPB.setVisibility(View.GONE);
-                errorTextV.setVisibility(View.VISIBLE);
-                break;
-        }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (prefs.getInt("defState", -1) != -1){
@@ -187,14 +183,10 @@ public class ShowWordActivity extends AppCompatActivity {
             editor.putInt("mnState", 0); mnState = 0;
             editor.commit();
         }
-
-        final ScrollView sv = (ScrollView) findViewById(R.id.showWordSV);
-        sv.post(new Runnable() {
-            public void run() {
-                sv.smoothScrollTo(0, 0);
-            }
-        });
+        sv = (ScrollView) findViewById(R.id.showWordSV);
+        loadWord();
     }
+
 
     @Override
     protected void onPause() {
@@ -211,10 +203,51 @@ public class ShowWordActivity extends AppCompatActivity {
 
         editor.commit();
 
+        removeListeners();
+    }
+
+    private void removeListeners(){
         if(listener1!=null)ref1.removeEventListener(listener1);
         if(listener2!=null)query2.removeEventListener(listener2);
         if(listener3!=null)query3.removeEventListener(listener3);
         if(listener4!=null)query4.removeEventListener(listener4);
+    }
+
+    private void loadWord(){
+        removeListeners();
+        sv.post(new Runnable() {
+            public void run() {
+                sv.smoothScrollTo(0, 0);
+            }
+        });
+        loading = true;
+        showWordSV.setVisibility(View.GONE);
+        errorTextV.setVisibility(View.GONE);
+        loadingPB.setVisibility(View.VISIBLE);
+
+        WORD = words.get(index);
+        wordId = WORD.getCopyOf();
+        DB.setWordLastOpen(wordId);
+
+        String titleText = WORD.getValue().toLowerCase();
+        char[] ttext = titleText.toCharArray();
+        ttext[0] = Character.toUpperCase(ttext[0]);
+//        setTitle(new String(ttext));
+        wordTitle.setText(new String(ttext));
+
+        switch (WORD.getValidity()){
+            case 0:
+                if(isNetworkConnected())
+                    new FetchData().execute(WORD.getValue(), wordId);
+                break;
+            case 1:
+                retrieveData();
+                break;
+            case 2:
+                loadingPB.setVisibility(View.GONE);
+                errorTextV.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 
     private void setDes(){
@@ -491,8 +524,6 @@ public class ShowWordActivity extends AppCompatActivity {
                 DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
                 WordData wd = ds.getValue(WordData.class);
                 wordAllData_.setWordData(wd);
-                Log.d("ShowWordActivity >>> ", wordAllData_.getWordData().getDes());
-                Log.d("ShowWordActivity >>> ", ""+dataSnapshot.getChildrenCount());
                 setDes();
                 setMN();
             }
@@ -537,6 +568,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
         loadingPB.setVisibility(View.GONE);
         showWordSV.setVisibility(View.VISIBLE);
+        loading = false;
     }
 
     private class FetchData extends FetchDataAsync{
@@ -547,16 +579,18 @@ public class ShowWordActivity extends AppCompatActivity {
                 wordAllData_ = wordAllData;
                 wordAllData_.setWord(new Word(WORD.getCopyOf(), WORD.getListId(), WORD.getSourceListName(),
                         WORD.getValue(), true, 1, DB.getCurrentMin(), 1, DB.getCurrentMin()));
-                setContents();
                 DB.setWordData(wordAllData_, wordId);
+                setContents();
                 loadingPB.setVisibility(View.GONE);
                 showWordSV.setVisibility(View.VISIBLE);
+                loading = false;
             }
             else {
                 loadingPB.setVisibility(View.GONE);
                 showWordSV.setVisibility(View.GONE);
                 errorTextV.setVisibility(View.VISIBLE);
                 DB.setWordValidity(wordId, 2);
+                loading = false;
             }
         }
     }
@@ -568,12 +602,69 @@ public class ShowWordActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // handle arrow click here
-        if (item.getItemId() == android.R.id.home) {
-            finish(); // close this activity and return to preview activity (if there is any)
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+            case R.id.prevWord:
+                if(loading)break;
+                if(wordLevel != wordAllData_.getWord().getLevel() ){
+                    DB.setWordLevel(wordId, wordLevel);
+                }
+                index--;
+                if(index < 0)index = words.size() - 1;
+                loadWord();
+                break;
+
+            case R.id.nextWord:
+                if(loading)break;
+                if(wordLevel != wordAllData_.getWord().getLevel() ){
+                    DB.setWordLevel(wordId, wordLevel);
+                }
+                index++;
+                if(index >= words.size())index = 0;
+                loadWord();
+                break;
+            case R.id.pronounce:
+                if(loading)break;
+                PlaybackPronunciation playback = new PlaybackPronunciation();
+                playback.execute();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private class PlaybackPronunciation extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            if (isNetworkConnected()) {
+                try {
+                    String link = "https://ssl.gstatic.com/dictionary/static/sounds/de/0/" + WORD.getValue() + ".mp3";
+                    URL url = new URL(link);
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    con.setRequestMethod("HEAD");
+                    con.connect();
+                    if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        MediaPlayer player = new MediaPlayer();
+                        player.reset();
+                        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                        player.setDataSource(link);
+                        player.prepare();
+                        player.start();
+                    }
+                    return "";
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast toast = Toast.makeText(ShowWordActivity.this, "Error...", Toast.LENGTH_SHORT);
+                    toast.show();
+                    return "";
+                }
+            } else {
+                Toast toast = Toast.makeText(ShowWordActivity.this, "Internet connection required!", Toast.LENGTH_SHORT);
+                toast.show();
+                return "";
+            }
+        }
     }
 
 }
