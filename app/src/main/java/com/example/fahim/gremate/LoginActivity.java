@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         if(!persist) {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-            //DB.initNewUser(FirebaseAuth.getInstance().getCurrentUser().getUid(), "Fahim");
+            DB.initNewUser(FirebaseAuth.getInstance().getCurrentUser().getUid(), "Fahim");
             persist = true;
         }
 

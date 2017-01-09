@@ -288,9 +288,11 @@ public class DB {
         return System.currentTimeMillis();
     }
 
-    public static void deleteWord(final String wordId, final String wsId, boolean reduceWordCount) {
+    public static void deleteWord(final String wordId, final String wsId, boolean reduceWordCount, boolean isEdit) {
+
         if(userid.equals("-1")) initDB();
-        db.getReference().child(USER_WORD).child(userid).child(WORD).child(wordId).setValue(null);
+
+        if(!isEdit)db.getReference().child(USER_WORD).child(userid).child(WORD).child(wordId).setValue(null);
 
         db.getReference().child(USER_WORD).child(userid).child(SENTENCE).orderByChild("word").
                 equalTo(wordId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -425,7 +427,7 @@ public class DB {
                     String copy = (String) ds.child("copyOf").getValue();
 
                     if (isAllList || copy == null || copy.length() < 1)
-                        deleteWord(key, wsId, false);
+                        deleteWord(key, wsId, false, false);
                     else
                         removeWordClone(key, copy);
                 }

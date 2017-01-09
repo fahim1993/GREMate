@@ -25,6 +25,7 @@ import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordListwID;
 import com.example.fahim.gremate.DataClasses.WordSetwID;
 import com.example.fahim.gremate.DataClasses.WordwID;
+import com.example.fahim.gremate.EditActivity;
 import com.example.fahim.gremate.R;
 import com.example.fahim.gremate.ShowWordActivity;
 import com.example.fahim.gremate.WordSetActivity;
@@ -91,9 +92,9 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                 builder.setTitle(word_.getValue().toUpperCase());
                 CharSequence[] listNames;
                 if (word_.getCopyOf().length() < 1 || word_.getListId().equals(allListId))
-                    listNames = new CharSequence[]{"Add to another list", "Delete"};
+                    listNames = new CharSequence[]{"Add to another list", "Edit", "Delete"};
                 else
-                    listNames = new CharSequence[]{"Add to another list", "Remove from list", "Delete"};
+                    listNames = new CharSequence[]{"Add to another list", "Edit", "Remove from list", "Delete"};
 
                 builder.setItems(listNames, new DialogInterface.OnClickListener() {
                     @Override
@@ -125,7 +126,16 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                             });
                             AlertDialog alert = builder.create();
                             alert.show();
-                        } else {
+                        }
+                        if(i==1){
+                            Intent intent = new Intent(context, EditActivity.class);
+
+                            Bundle b = new Bundle();
+                            b.putString("word_id", wordList.get(position).getId());
+                            intent.putExtras(b);
+                            context.startActivity(intent);
+                        }
+                        else {
                             if (word_.getCopyOf().length() < 1 || word_.getListId().equals(allListId)) {
                                 new AlertDialog.Builder(context)
                                         .setTitle("Confirm Delete")
@@ -137,7 +147,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                                 if(word_.getCopyOf().length()<1)wid = word_.getId();
                                                 else wid = word_.getCopyOf();
 
-                                                DB.deleteWord(wid, wsId, true);
+                                                DB.deleteWord(wid, wsId, true, false);
                                                 Toast.makeText(context,
                                                         "Deleted " + word_.getValue(), Toast.LENGTH_LONG).show();
                                             }
@@ -149,7 +159,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                         }).show();
 
                             } else {
-                                if (i == 1) {
+                                if (i == 2) {
                                     new AlertDialog.Builder(context)
                                             .setTitle("Confirm Remove")
                                             .setMessage("Are you sure you want to remove this word from this list?")
@@ -175,7 +185,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                             .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                                    DB.deleteWord(word_.getCopyOf(), wsId, true);
+                                                    DB.deleteWord(word_.getCopyOf(), wsId, true, false);
                                                     Toast.makeText(context,
                                                             "Deleted " + word_.getValue(), Toast.LENGTH_LONG).show();
                                                 }

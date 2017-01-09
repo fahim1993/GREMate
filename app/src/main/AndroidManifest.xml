@@ -31,7 +31,8 @@
             android:name=".SearchActivity"
             android:theme="@style/mydialog" />
         <activity android:name=".PracticeActivity" />
-        <activity android:name=".PracticingActivity"></activity>
+        <activity android:name=".PracticingActivity" />
+        <activity android:name=".EditActivity"></activity>
     </application>
 
 </manifest>
