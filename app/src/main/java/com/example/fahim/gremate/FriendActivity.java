@@ -1,6 +1,8 @@
 package com.example.fahim.gremate;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.support.design.widget.NavigationView;
 import android.support.v4.print.PrintHelper;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +11,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,7 +37,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class FriendActivity extends AppCompatActivity {
+public class FriendActivity extends NavDrawerActivity {
 
     private RecyclerView friendsRV;
     private RecyclerView friendNotfsRV;
@@ -57,6 +61,8 @@ public class FriendActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend);
+
+        setupNavDrawerClick();
 
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -212,5 +218,86 @@ public class FriendActivity extends AppCompatActivity {
         };
         query2.addValueEventListener(listener2);
     }
+
+    private void setupNavDrawerClick(){
+        NavigationView mNavigationView = (NavigationView)findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                Intent intent;
+                switch(menuItem.getItemId()){
+                    case R.id.nav_learn:
+                        intent = new Intent(FriendActivity.this, LearnActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                        break;
+                    case R.id.nav_signout:
+                        new AlertDialog.Builder(FriendActivity.this)
+                                .setTitle("Confirm Sign Out")
+                                .setMessage( "Are you sure you want to sign out?")
+                                .setPositiveButton("Sign Out", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        FirebaseAuth.getInstance().signOut();
+                                        Intent intent = new Intent(FriendActivity.this, LoginActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                    }
+                                }).show();
+                        break;
+                    case R.id.nav_search:
+                        intent = new Intent(FriendActivity.this, SearchActivity.class);
+                        FriendActivity.this.startActivity(intent);
+                        break;
+                    case R.id.nav_exercise:
+                        intent = new Intent(FriendActivity.this, PracticeActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                        break;
+                    case R.id.nav_friend:
+                        intent = new Intent(FriendActivity.this, FriendActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if(mDrawerLayout.isDrawerOpen(Gravity.LEFT))
+                mDrawerLayout.closeDrawer(Gravity.LEFT);
+            else {
+                new AlertDialog.Builder(FriendActivity.this)
+                        .setTitle("Close")
+                        .setMessage("Are you sure you want to close GREMate?")
+                        .setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                finishAffinity();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        }).show();
+            }
+        }
+        return true;
+    }
+
 
 }

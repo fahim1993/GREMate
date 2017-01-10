@@ -23,7 +23,7 @@
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".LearnActivity" />
         <activity android:name=".NavDrawerActivity" />
-        <activity android:name=".WordSetActivity" />
+        <activity android:name=".WordSetActivity" android:parentActivityName=".LearnActivity" />
         <activity
             android:name=".ShowWordActivity"
             android:theme="@style/mydialog" />

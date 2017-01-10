@@ -29,6 +29,7 @@ import com.example.fahim.gremate.Adapters.FriendAdapter;
 import com.example.fahim.gremate.Adapters.WordAdapter;
 import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.Friend;
+import com.example.fahim.gremate.DataClasses.FriendNotf;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordList;
 import com.example.fahim.gremate.DataClasses.WordListwID;
@@ -620,12 +621,23 @@ public class WordSetActivity extends NavDrawerActivity {
                     case R.id.nav_search:
                         intent = new Intent(WordSetActivity.this, SearchActivity.class);
                         WordSetActivity.this.startActivity(intent);
+                        break;
+                    case R.id.nav_exercise:
+                        intent = new Intent(WordSetActivity.this, PracticeActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                        break;
+                    case R.id.nav_friend:
+                        intent = new Intent(WordSetActivity.this, FriendActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        break;
                 }
                 return true;
             }
         });
     }
-
     private void setFriends(){
 
         ref1 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid)
@@ -649,4 +661,5 @@ public class WordSetActivity extends NavDrawerActivity {
         };
         ref1.addValueEventListener(listener1);
     }
+
 }

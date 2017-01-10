@@ -83,12 +83,15 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                 syns = new String[]{"", "", "", "", "", ""};
                 for (Element e : elems[2]) {
                     String s = "";
-                    Elements x = e.select("li.syn");
-                    for(Element ex : x){
-                        s+=(ex.text()+", ");
+                    if(e.hasText()) {
+                        Elements x = e.select("li.syn");
+                        for (Element ex : x) {
+                            s += (ex.text() + ", ");
+                        }
+                        s = s.substring(0, s.length() - 2);
                     }
-                    s=s.substring(0, s.length()-2);
                     syns[i] = s;
+
                     i++;
                     if (i == 6) break;
                 }

@@ -34,10 +34,9 @@ import com.google.firebase.database.ValueEventListener;
 
 public class NavDrawerActivity extends AppCompatActivity {
 
-    private ListView mDrawerList;
-    private DrawerLayout mDrawerLayout;
+    protected DrawerLayout mDrawerLayout;
     private ArrayAdapter<String> mAdapter;
-    private ActionBarDrawerToggle mDrawerToggle;
+    protected ActionBarDrawerToggle mDrawerToggle;
     private String mActivityTitle;
     protected String userName;
     FrameLayout actContent;
@@ -135,6 +134,5 @@ public class NavDrawerActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
 
 }

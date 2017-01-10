@@ -579,6 +579,8 @@ public class ShowWordActivity extends AppCompatActivity {
                 wordAllData_ = wordAllData;
                 wordAllData_.setWord(new Word(WORD.getCopyOf(), WORD.getListId(), WORD.getSourceListName(),
                         WORD.getValue(), true, 1, DB.getCurrentMin(), 1, DB.getCurrentMin()));
+
+                words.get(index).setValidity(1);
                 DB.setWordData(wordAllData_, wordId);
                 setContents();
                 loadingPB.setVisibility(View.GONE);
@@ -610,6 +612,7 @@ public class ShowWordActivity extends AppCompatActivity {
                 if(loading)break;
                 if(wordLevel != wordAllData_.getWord().getLevel() ){
                     DB.setWordLevel(wordId, wordLevel);
+                    words.get(index).setLevel(wordLevel);
                 }
                 index--;
                 if(index < 0)index = words.size() - 1;
@@ -620,6 +623,7 @@ public class ShowWordActivity extends AppCompatActivity {
                 if(loading)break;
                 if(wordLevel != wordAllData_.getWord().getLevel() ){
                     DB.setWordLevel(wordId, wordLevel);
+                    words.get(index).setLevel(wordLevel);
                 }
                 index++;
                 if(index >= words.size())index = 0;
