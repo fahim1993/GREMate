@@ -191,7 +191,7 @@ public class ShowWordActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(wordLevel != wordAllData_.getWord().getLevel() ){
+        if( WORD.getValidity()!=2 && wordLevel != wordAllData_.getWord().getLevel() ){
             DB.setWordLevel(wordId, wordLevel);
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -577,6 +577,7 @@ public class ShowWordActivity extends AppCompatActivity {
             super.onPostExecute(s);
             if(wordAllData != null){
                 wordAllData_ = wordAllData;
+
                 wordAllData_.setWord(new Word(WORD.getCopyOf(), WORD.getListId(), WORD.getSourceListName(),
                         WORD.getValue(), true, 1, DB.getCurrentMin(), 1, DB.getCurrentMin()));
 

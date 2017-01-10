@@ -129,6 +129,7 @@ public class EditActivity extends AppCompatActivity {
         listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getChildrenCount() == 0)return;
                 DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
                 WordData wd = ds.getValue(WordData.class);
                 wordAllData.setWordData(wd);
@@ -150,6 +151,7 @@ public class EditActivity extends AppCompatActivity {
         listener3 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getChildrenCount() == 0)return;
                 ArrayList<WordDef> wordDefs = new ArrayList<WordDef>();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     WordDef w = ds.getValue(WordDef.class);
@@ -174,6 +176,7 @@ public class EditActivity extends AppCompatActivity {
         listener4 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getChildrenCount() == 0)return;
                 ArrayList<Sentence> sentences = new ArrayList<Sentence>();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Sentence w = ds.getValue(Sentence.class);
@@ -515,6 +518,7 @@ public class EditActivity extends AppCompatActivity {
             }
         }
         wordAllData.setWordDefs(defs);
+        wordAllData.getWord().setValidity(1);
 
         WordData wordData = new WordData();
         wordData.setWord(wordId);
@@ -529,6 +533,8 @@ public class EditActivity extends AppCompatActivity {
         wordAllData.getWord().setPracticable(practicable);
 
         DB.setWordData(wordAllData, wordId);
+
+        Toast.makeText(EditActivity.this, "Saved", Toast.LENGTH_SHORT);
 
         finish();
     }
