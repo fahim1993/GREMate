@@ -524,9 +524,10 @@ public class WordSetActivity extends NavDrawerActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         preferences.edit().putInt(currentListId+"`~", sortOrder).apply();
     }
+
     private void getListSortOrder(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        sortOrder = prefs.getInt(currentListId+"`~", 12);
+        sortOrder = prefs.getInt(currentListId+"`~", 11);
     }
 
     private void resetListState(){
@@ -551,6 +552,7 @@ public class WordSetActivity extends NavDrawerActivity {
         setListSortOrder();
 
     }
+
     private void restoreListState(){
         if(wordsInListRV == null)return;
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -638,6 +640,7 @@ public class WordSetActivity extends NavDrawerActivity {
             }
         });
     }
+
     private void setFriends(){
 
         ref1 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid)

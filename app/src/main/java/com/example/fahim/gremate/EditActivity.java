@@ -482,6 +482,8 @@ public class EditActivity extends AppCompatActivity {
 
     public void saveData(){
 
+        Toast.makeText(EditActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+
         boolean practicable = false;
         for (DefinitionView dv : definitionViews) {
             String df = dv.edDef.getText().toString().replaceAll("\\s","");
@@ -522,19 +524,23 @@ public class EditActivity extends AppCompatActivity {
 
         WordData wordData = new WordData();
         wordData.setWord(wordId);
-        if(description.getText().toString().length()>0){
+
+        if(description == null)
+            wordData.setDes("");
+        else
             wordData.setDes(description.getText().toString());
-        }
-        if(mnemonic.getText().toString().length()>0){
+
+        if(mnemonic == null)
+            wordData.setMn("");
+        else
             wordData.setMn(mnemonic.getText().toString());
-        }
+
+
         wordAllData.setWordData(wordData);
 
         wordAllData.getWord().setPracticable(practicable);
 
         DB.setWordData(wordAllData, wordId);
-
-        Toast.makeText(EditActivity.this, "Saved", Toast.LENGTH_SHORT);
 
         finish();
     }

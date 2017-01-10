@@ -592,6 +592,7 @@ public class ShowWordActivity extends AppCompatActivity {
                 loadingPB.setVisibility(View.GONE);
                 showWordSV.setVisibility(View.GONE);
                 errorTextV.setVisibility(View.VISIBLE);
+                WORD.setValidity(2);
                 DB.setWordValidity(wordId, 2);
                 loading = false;
             }

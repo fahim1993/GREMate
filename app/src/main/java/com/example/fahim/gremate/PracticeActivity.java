@@ -324,12 +324,6 @@ public class PracticeActivity extends NavDrawerActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
-
-
-    public void practicableDialog(View v){
-
-    }
-
     private void setupNavDrawerClick(){
         NavigationView mNavigationView = (NavigationView)findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {

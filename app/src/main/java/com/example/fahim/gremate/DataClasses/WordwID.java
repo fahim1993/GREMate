@@ -47,7 +47,7 @@ public class WordwID extends Word {
                 return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
             }
             else{
-                return  Long.valueOf(w1.getAdded()).compareTo(w2.getAdded());
+                return  Long.valueOf(w2.getAdded()).compareTo(w1.getAdded());
             }
         }
     };
@@ -58,7 +58,7 @@ public class WordwID extends Word {
                 return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
             }
             else{
-                return  Long.valueOf(w2.getAdded()).compareTo(w1.getAdded());
+                return  Long.valueOf(w1.getAdded()).compareTo(w2.getAdded());
             }
         }
     };
@@ -69,7 +69,7 @@ public class WordwID extends Word {
                 return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
             }
             else{
-                return Long.valueOf(w1.getLastOpen()).compareTo( w2.getLastOpen() );
+                return Long.valueOf(w2.getLastOpen()).compareTo( w1.getLastOpen() );
             }
         }
     };
@@ -80,7 +80,7 @@ public class WordwID extends Word {
                 return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
             }
             else{
-                return Long.valueOf(w2.getLastOpen()).compareTo( w1.getLastOpen() );
+                return Long.valueOf(w1.getLastOpen()).compareTo( w2.getLastOpen() );
             }
         }
     };
