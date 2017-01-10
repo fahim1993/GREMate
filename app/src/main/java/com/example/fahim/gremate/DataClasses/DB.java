@@ -34,6 +34,8 @@ public class DB {
     public static String WORDDEFP = "WordDefP";
     public static String SENTENCE = "Sentence";
     public static String WORDCLONE = "WordClone";
+    public static String FRIEND = "Friend";
+    public static String FRIENDNOTF = "FriendNotf";
 
 
     private static String username = "-1";

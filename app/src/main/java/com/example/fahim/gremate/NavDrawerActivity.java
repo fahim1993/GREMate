@@ -39,6 +39,7 @@ public class NavDrawerActivity extends AppCompatActivity {
     private ArrayAdapter<String> mAdapter;
     private ActionBarDrawerToggle mDrawerToggle;
     private String mActivityTitle;
+    protected String userName;
     FrameLayout actContent;
     Context context;
 
@@ -77,6 +78,7 @@ public class NavDrawerActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserData user = dataSnapshot.getValue(UserData.class);
                 ((TextView)findViewById(R.id.menu_username)).setText(user.getUserName());
+                userName = user.getUserName();
             }
 
             @Override

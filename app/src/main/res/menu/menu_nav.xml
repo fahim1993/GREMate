@@ -14,6 +14,11 @@
             android:id="@+id/nav_exercise"
             android:icon="@drawable/ic_ws_exercise"
             android:title="PRACTICE" />
+
+        <item
+            android:id="@+id/nav_friend"
+            android:icon="@drawable/ic_friends"
+            android:title="FRIENDS" />
     </group>
 
     <group>

@@ -25,8 +25,10 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.fahim.gremate.Adapters.FriendAdapter;
 import com.example.fahim.gremate.Adapters.WordAdapter;
 import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.Friend;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordList;
 import com.example.fahim.gremate.DataClasses.WordListwID;
@@ -47,6 +49,7 @@ public class WordSetActivity extends NavDrawerActivity {
     private String wordSetId;
     private String allListId;
     private String uid;
+    private String uname;
     private String title;
     private String currentListId;
     private String currentListName;
@@ -61,6 +64,7 @@ public class WordSetActivity extends NavDrawerActivity {
 
     private ArrayList<WordListwID> wordLists;
     private ArrayList<WordwID> wordwIDs;
+    private ArrayList<Friend> friends;
 
     private TextView listTitle;
 
@@ -69,8 +73,10 @@ public class WordSetActivity extends NavDrawerActivity {
 
     private Query rvQuery;
     private Query q;
+    private DatabaseReference ref1;
     private ValueEventListener rvQueryListener;
     private ValueEventListener listener;
+    private ValueEventListener listener1;
 
     private WordAdapter rvAdapter;
     private ProgressBar loadWordRV;
@@ -92,6 +98,7 @@ public class WordSetActivity extends NavDrawerActivity {
         wordSetId = extras.getString("wordset_key");
         allListId = extras.getString("allList_key");
         title = extras.getString("wordset_title");
+        uname = extras.getString("user_name");
 
         setTitle(title.toUpperCase());
 
@@ -339,6 +346,8 @@ public class WordSetActivity extends NavDrawerActivity {
             }
         });
 
+        setFriends();
+
         hideWordRv();
         getWordSet_list();
         restoreList();
@@ -358,6 +367,7 @@ public class WordSetActivity extends NavDrawerActivity {
 
         if(listener != null) q.removeEventListener(listener);
         if(rvQueryListener != null) rvQuery.removeEventListener(rvQueryListener);
+        if(ref1!=null)ref1.removeEventListener(listener1);
     }
 
     @Override
@@ -439,7 +449,7 @@ public class WordSetActivity extends NavDrawerActivity {
                         setListWords();
                     }
                 }
-                if(rvAdapter!=null) rvAdapter.otherLists = getOtherLists(true);
+                if(rvAdapter!=null) rvAdapter.setOtherLists(getOtherLists(true));
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -501,10 +511,10 @@ public class WordSetActivity extends NavDrawerActivity {
 
         if(resetList) resetListState();
         else if(rvAdapter != null)setListState();
-        rvAdapter = new WordAdapter(wordwIDs, WordSetActivity.this, wordSetId, allListId, currentListId);
+        rvAdapter = new WordAdapter(wordwIDs, friends, WordSetActivity.this, wordSetId, allListId, currentListId, userName);
         wordsInListRV.setAdapter(rvAdapter);
         restoreListState();
-        rvAdapter.otherLists = getOtherLists(true);
+        rvAdapter.setOtherLists(getOtherLists(true));
 
         showWordRv();
     }
@@ -614,5 +624,29 @@ public class WordSetActivity extends NavDrawerActivity {
                 return true;
             }
         });
+    }
+
+    private void setFriends(){
+
+        ref1 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid)
+                .child(DB.FRIEND);
+
+        listener1 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                friends = new ArrayList<>();
+                ArrayList<String> keys = new ArrayList<>();
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    Friend f = ds.getValue(Friend.class);
+                    friends.add(f);
+                    keys.add(ds.getKey());
+                    Log.d(f.getId(), f.getName());
+                }
+                if(rvAdapter!=null)rvAdapter.setFriends(friends);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {           }
+        };
+        ref1.addValueEventListener(listener1);
     }
 }

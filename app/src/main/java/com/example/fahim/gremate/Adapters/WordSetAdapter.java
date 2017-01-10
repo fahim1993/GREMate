@@ -34,8 +34,8 @@ import java.util.Calendar;
 public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHolder>{
 
 
-    private static ArrayList<WordSetwID> wsList;
-    private static Context context;
+    private ArrayList<WordSetwID> wsList;
+    private Context context;
 
     public WordSetAdapter(ArrayList<WordSetwID> wordSetList, Context context ) {
         this.wsList = wordSetList;

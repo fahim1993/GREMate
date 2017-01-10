@@ -32,7 +32,8 @@
             android:theme="@style/mydialog" />
         <activity android:name=".PracticeActivity" />
         <activity android:name=".PracticingActivity" />
-        <activity android:name=".EditActivity"></activity>
+        <activity android:name=".EditActivity" />
+        <activity android:name=".FriendActivity"></activity>
     </application>
 
 </manifest>

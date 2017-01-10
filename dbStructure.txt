@@ -27,11 +27,6 @@ UserWords:
 		 validity: 0=Fetch Data, 1=Data is set, 2=Data Fetched with Error
          lastOpen:
 		 level:
-   
-   WordDefP:
-      id:
-         word:(WordId)
-         value:
          
    WordDef:
       id:
@@ -52,10 +47,15 @@ UserWords:
          word:
          value:
 
-   RecentViews:
-      id:
-         word:
-         time:
+   Friend:
+       id:
+           name:
+           id:
+
+   FriendNotf:
+       id:
+           value:
+
                      
 UserData:
 	ID:

@@ -225,6 +225,11 @@ public class LearnActivity extends NavDrawerActivity {
                         startActivity(intent);
                         finish();
                         break;
+                    case R.id.nav_friend:
+                        intent = new Intent(LearnActivity.this, FriendActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        break;
                 }
                 return true;
             }

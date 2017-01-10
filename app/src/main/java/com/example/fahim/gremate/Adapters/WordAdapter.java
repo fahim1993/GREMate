@@ -21,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.Friend;
+import com.example.fahim.gremate.DataClasses.FriendNotf;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordListwID;
 import com.example.fahim.gremate.DataClasses.WordSetwID;
@@ -29,6 +31,8 @@ import com.example.fahim.gremate.EditActivity;
 import com.example.fahim.gremate.R;
 import com.example.fahim.gremate.ShowWordActivity;
 import com.example.fahim.gremate.WordSetActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -37,18 +41,24 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
 
     private ArrayList<WordwID> wordList;
-    public ArrayList<WordListwID> otherLists;
+    private ArrayList<WordListwID> otherLists;
+    private ArrayList<Friend> friends;
+
+
     private Context context;
     private String wsId;
     private String allListId;
     private String currentListId;
+    private String uname;
 
-    public WordAdapter(ArrayList<WordwID> wordList, Context context, String wsId, String allListId, String currentListId) {
+    public WordAdapter(ArrayList<WordwID> wordList, ArrayList<Friend> friends, Context context, String wsId, String allListId, String currentListId, String uname) {
         this.wordList = wordList;
         this.context = context;
+        this.friends = friends;
         this.wsId = wsId;
         this.allListId = allListId;
         this.currentListId = currentListId;
+        this.uname = uname;
     }
 
     @Override
@@ -61,7 +71,8 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     @Override
     public void onBindViewHolder(WordViewHolder holder, final int position) {
         holder.wordValue.setText(wordList.get(position).getValue().toUpperCase());
-        if(wordList.get(position).getCopyOf().length()<1 || currentListId.equals(allListId)) holder.sourceListName.setText(wordList.get(position).getSourceListName());
+        if (wordList.get(position).getCopyOf().length() < 1 || currentListId.equals(allListId))
+            holder.sourceListName.setText(wordList.get(position).getSourceListName());
         else holder.sourceListName.setText(wordList.get(position).getSourceListName() + " (c)");
 
         holder.cv.setOnClickListener(new View.OnClickListener() {
@@ -71,9 +82,9 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                 Intent intent = new Intent(context, ShowWordActivity.class);
 
                 ArrayList<Word> words = new ArrayList<>();
-                for (int i=0; i<wordList.size(); i++) {
+                for (int i = 0; i < wordList.size(); i++) {
                     Word w = wordList.get(i).toWord();
-                    if(w.getCopyOf().length()<1)w.setCopyOf(wordList.get(i).getId());
+                    if (w.getCopyOf().length() < 1) w.setCopyOf(wordList.get(i).getId());
                     words.add(w);
                 }
                 Bundle b = new Bundle();
@@ -92,15 +103,15 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                 builder.setTitle(word_.getValue().toUpperCase());
                 CharSequence[] listNames;
                 if (word_.getCopyOf().length() < 1 || word_.getListId().equals(allListId))
-                    listNames = new CharSequence[]{"Add to another list", "Edit", "Delete"};
+                    listNames = new CharSequence[]{"Add to another list", "Edit", "Share with a friend", "Delete"};
                 else
-                    listNames = new CharSequence[]{"Add to another list", "Edit", "Remove from list", "Delete"};
+                    listNames = new CharSequence[]{"Add to another list", "Edit", "Share with a friend", "Remove from list", "Delete"};
 
                 builder.setItems(listNames, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if (i == 0) {
-                            if (otherLists.size() == 0){
+                            if (otherLists.size() == 0) {
                                 Toast.makeText(context,
                                         "Please create a new list first!", Toast.LENGTH_LONG).show();
                                 return;
@@ -127,13 +138,34 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                             AlertDialog alert = builder.create();
                             alert.show();
                         }
-                        if(i==1){
+                        if (i == 1) {
                             Intent intent = new Intent(context, EditActivity.class);
 
                             Bundle b = new Bundle();
                             b.putString("word_id", wordList.get(position).getId());
                             intent.putExtras(b);
                             context.startActivity(intent);
+                        }
+                        else if(i==2){
+                            if(friends == null)return;
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setTitle("Select a friend");
+                            CharSequence[] friendsNames = new CharSequence[friends.size()];
+                            for (int j = 0; j < friends.size(); j++) {
+                                friendsNames[j] = friends.get(j).getName();
+                            }
+                            builder.setItems(friendsNames, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    FriendNotf notf = new FriendNotf(uname + " suggested the word " + wordList.get(position).getValue());
+                                    FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(friends.get(i).getId())
+                                            .child(DB.FRIENDNOTF).push().setValue(notf);
+                                    Toast.makeText(context, "Word shared", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            AlertDialog alert = builder.create();
+                            alert.show();
+
                         }
                         else {
                             if (word_.getCopyOf().length() < 1 || word_.getListId().equals(allListId)) {
@@ -144,7 +176,8 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 String wid;
-                                                if(word_.getCopyOf().length()<1)wid = word_.getId();
+                                                if (word_.getCopyOf().length() < 1)
+                                                    wid = word_.getId();
                                                 else wid = word_.getCopyOf();
 
                                                 DB.deleteWord(wid, wsId, true, false);
@@ -158,8 +191,10 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                             }
                                         }).show();
 
-                            } else {
-                                if (i == 2) {
+                            }
+
+                            else {
+                                if (i == 3) {
                                     new AlertDialog.Builder(context)
                                             .setTitle("Confirm Remove")
                                             .setMessage("Are you sure you want to remove this word from this list?")
@@ -250,6 +285,22 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     @Override
     public int getItemCount() {
         return wordList.size();
+    }
+
+    public ArrayList<Friend> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(ArrayList<Friend> friends) {
+        this.friends = friends;
+    }
+
+    public ArrayList<WordListwID> getOtherLists() {
+        return otherLists;
+    }
+
+    public void setOtherLists(ArrayList<WordListwID> otherLists) {
+        this.otherLists = otherLists;
     }
 
 
