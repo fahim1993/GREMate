@@ -82,6 +82,20 @@ public class FriendNotfAdapter extends RecyclerView.Adapter<FriendNotfAdapter.Fr
                         }).show();
             }
         });
+        holder.cv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(context)
+                        .setTitle("Notification")
+                        .setMessage(friendNotfs.get(position).getValue())
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        }).show();
+            }
+        });
     }
 
     @Override
@@ -94,11 +108,13 @@ public class FriendNotfAdapter extends RecyclerView.Adapter<FriendNotfAdapter.Fr
 
         TextView value;
         AppCompatImageButton delBtn;
+        CardView cv;
 
         public FriendNotfViewHolder(View itemView) {
             super(itemView);
             value = (TextView) itemView.findViewById(R.id.value);
             delBtn = (AppCompatImageButton) itemView.findViewById(R.id.delBtn);
+            cv = (CardView) itemView.findViewById(R.id.friendCardView);
         }
     }
 }

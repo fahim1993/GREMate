@@ -36,6 +36,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class FriendActivity extends NavDrawerActivity {
 
@@ -43,6 +44,7 @@ public class FriendActivity extends NavDrawerActivity {
     private RecyclerView friendNotfsRV;
 
     private DatabaseReference ref1;
+    private DatabaseReference ref2;
     private DatabaseReference ref3;
     private Query query2;
     private ValueEventListener listener1;
@@ -82,6 +84,8 @@ public class FriendActivity extends NavDrawerActivity {
 
         setFriends();
         setFriendNotfs();
+
+        setTitle("Friends");
     }
 
     @Override
@@ -107,6 +111,7 @@ public class FriendActivity extends NavDrawerActivity {
                     keys.add(ds.getKey());
                     Log.d(fn.getValue(), ds.getKey());
                 }
+                Collections.reverse(friendNotfs);
                 FriendNotfAdapter adapter = new FriendNotfAdapter(friendNotfs, keys, uid, FriendActivity.this);
                 friendNotfsRV.setAdapter(adapter);
                 Log.d(dataSnapshot.getKey(), "Friend activity");
@@ -187,28 +192,35 @@ public class FriendActivity extends NavDrawerActivity {
 
     }
 
-    private void addFriend(String email){
-        query2 = FirebaseDatabase.getInstance().getReference().child(DB.USER_DATA)
-                .orderByChild("userEmail").equalTo(email);
+    private void addFriend(final String email){
+        Log.d("FriendActivity ", email);
+//        query2 = FirebaseDatabase.getInstance().getReference().child(DB.USER_DATA)
+//                .orderByChild("userEmail").equalTo(email);
+
+
+        ref2 = FirebaseDatabase.getInstance().getReference().child(DB.USER_DATA);
         listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getChildrenCount()>0){
-                    DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
-                    UserData user = ds.getValue(UserData.class);
-                    String id = ds.getKey();
+                boolean flag = true;
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    UserData u = ds.getValue(UserData.class);
+                    if(u.getUserEmail().equals(email)){
+                        String id = ds.getKey();
 
-                    Friend f = new Friend(user.getUserName(), id);
-                    FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.FRIEND)
-                            .push().setValue(f);
+                        Friend f = new Friend(u.getUserName(), id);
+                        FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.FRIEND)
+                                .push().setValue(f);
 
-                    Toast.makeText(FriendActivity.this, "Friend added", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(FriendActivity.this, "Friend added", Toast.LENGTH_SHORT).show();
 
+                        flag = false;
+                    }
                 }
-                else{
-                    Toast.makeText(FriendActivity.this, "Email doesn't exist", Toast.LENGTH_SHORT).show();
-                }
-                query2.removeEventListener(listener2);
+
+                if(flag)Toast.makeText(FriendActivity.this, "Email doesn't exist", Toast.LENGTH_SHORT).show();
+
+                ref2.removeEventListener(listener2);
             }
 
             @Override
@@ -216,7 +228,7 @@ public class FriendActivity extends NavDrawerActivity {
 
             }
         };
-        query2.addValueEventListener(listener2);
+        ref2.addValueEventListener(listener2);
     }
 
     private void setupNavDrawerClick(){

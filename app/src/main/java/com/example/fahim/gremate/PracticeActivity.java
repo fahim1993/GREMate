@@ -384,20 +384,7 @@ public class PracticeActivity extends NavDrawerActivity {
             if(mDrawerLayout.isDrawerOpen(Gravity.LEFT))
                 mDrawerLayout.closeDrawer(Gravity.LEFT);
             else {
-                new AlertDialog.Builder(PracticeActivity.this)
-                        .setTitle("Close")
-                        .setMessage("Are you sure you want to close GREMate?")
-                        .setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                finishAffinity();
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                            }
-                        }).show();
+                onBackPressed();
             }
         }
         return true;

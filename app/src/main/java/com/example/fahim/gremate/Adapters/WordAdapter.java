@@ -137,14 +137,17 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                             });
                             AlertDialog alert = builder.create();
                             alert.show();
+                            return;
                         }
-                        if (i == 1) {
+                        else if (i == 1) {
                             Intent intent = new Intent(context, EditActivity.class);
 
                             Bundle b = new Bundle();
                             b.putString("word_id", wordList.get(position).getId());
                             intent.putExtras(b);
                             context.startActivity(intent);
+
+                            return;
                         }
                         else if(i==2){
                             if(friends == null)return;
@@ -165,6 +168,8 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                             });
                             AlertDialog alert = builder.create();
                             alert.show();
+
+                            return;
 
                         }
                         else {

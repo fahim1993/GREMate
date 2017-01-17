@@ -429,7 +429,7 @@ public class DB {
                     String copy = (String) ds.child("copyOf").getValue();
 
                     if (isAllList || copy == null || copy.length() < 1)
-                        deleteWord(key, wsId, false, false);
+                        deleteWord(key, wsId, true, false);
                     else
                         removeWordClone(key, copy);
                 }
