@@ -1,0 +1,64 @@
+UserWords:
+   id:
+   WordSet:
+      id:
+         name:
+		 owner:
+         wordCount:
+         lastOpen:
+         allList:
+   
+   WordList:
+      id:
+         wordSet: (WordSetID)
+         name:
+         wordCount:
+
+   WordClones:
+       id:
+            wordId:
+   Word:
+      id:
+	     copyOf:
+		 listId:
+         value:
+         sourceListName:
+		 practicable: 
+		 validity: 0=Fetch Data, 1=Data is set, 2=Data Fetched with Error
+         lastOpen:
+		 level:
+         
+   WordDef:
+      id:
+         word:
+         title:
+         def:
+         syn:
+         ant:
+         
+   WordData:
+      id:
+         word: (WordID)
+         des:
+         mn:
+
+   Sentence:
+      id:
+         word:
+         value:
+
+   Friend:
+       id:
+           name:
+           id:
+
+   FriendNotf:
+       id:
+           value:
+
+                     
+UserData:
+	ID:
+		userEmail:
+		userName:
+      
