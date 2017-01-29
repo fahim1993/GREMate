@@ -336,6 +336,7 @@ public class DB {
             }
         });
 
+        if(isEdit)return;
 
         db.getReference().child(USER_WORD).child(userid).child(WORDCLONE).child(wordId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
