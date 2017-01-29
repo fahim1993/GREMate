@@ -74,7 +74,7 @@ public class EditActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         wordId = bundle.getString("word_id");
-        Log.d("ID: ", wordId);
+        Log.d("ID", wordId);
 
         final float scale = this.getResources().getDisplayMetrics().density;
         delbtnSize = (int) (45 * scale);
@@ -130,14 +130,15 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getChildrenCount() == 0)return;
-                DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
-                WordData wd = ds.getValue(WordData.class);
-                wordAllData.setWordData(wd);
-                if (wordAllData.getWordData().getDes().length() > 0) {
-                    desLL.addView(addDescLL(true, wordAllData.getWordData().getDes()));
-                }
-                if (wordAllData.getWordData().getMn().length() > 0) {
-                    mnLL.addView(addMnLL(true, wordAllData.getWordData().getMn()));
+                for(DataSnapshot ds :dataSnapshot.getChildren()){
+                    WordData wd = ds.getValue(WordData.class);
+                    wordAllData.setWordData(wd);
+                    if (wordAllData.getWordData().getDes().length() > 0) {
+                        desLL.addView(addDescLL(true, wordAllData.getWordData().getDes()));
+                    }
+                    if (wordAllData.getWordData().getMn().length() > 0) {
+                        mnLL.addView(addMnLL(true, wordAllData.getWordData().getMn()));
+                    }
                 }
             }
 
