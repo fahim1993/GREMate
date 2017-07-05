@@ -84,7 +84,7 @@ public class EditActivity extends AppCompatActivity {
         definitionViews = new ArrayList<>();
 
         definitionViewID = 100000;
-        dummyHeight = 65;
+        dummyHeight = 66;
 
         defsLL = (LinearLayout) findViewById(R.id.WordOperationLLDef);
         senLL = (LinearLayout) findViewById(R.id.WordOperationLLSen);
