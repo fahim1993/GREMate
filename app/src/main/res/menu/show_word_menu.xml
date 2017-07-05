@@ -16,4 +16,10 @@
         android:icon="@drawable/icon_play"
         app:showAsAction="ifRoom"
         android:title="Pronounce"/>
+
+    <item
+        android:id="@+id/edit"
+        android:icon="@drawable/ic_edit"
+        app:showAsAction="ifRoom"
+        android:title="Edit"/>
 </menu>

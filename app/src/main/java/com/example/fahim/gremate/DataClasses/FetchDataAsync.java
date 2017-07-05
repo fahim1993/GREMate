@@ -8,6 +8,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,7 +22,7 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
 
     private final String url1 = "http://www.synonym.com/synonyms/";
     private final String url2 = "https://www.vocabulary.com/dictionary/";
-    private final String url3 = "http://www.dictionary.com/browse/";
+    private final String url3 = "http://corpus.vocabulary.com/api/1.0/examples.json?query=";
     private final String url4 = "http://www.mnemonicdictionary.com/?word=";
 
     protected WordAllData wordAllData;
@@ -30,13 +32,13 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... strings) {
 
-        String word = strings[0];
+        String word = strings[0].toLowerCase();
         String wordId = strings[1];
 
         try {
             Document doc = Jsoup.connect(url1 + word).get();
             Document doc1 = Jsoup.connect(url2 + word).get();
-            Document doc2 = Jsoup.connect(url3 + word).get();
+            Document doc2 = Jsoup.connect(url3 + word + "&maxResults=20").ignoreContentType(true).get();
             Document doc3 = Jsoup.connect(url4 + word).get();
 
             Elements[] elems = new Elements[8];
@@ -47,7 +49,6 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
             elems[3] = doc.select("ul.antonyms");
             elems[4] = doc1.select("p.short");
             elems[5] = doc1.select("p.long");
-            elems[6] = doc2.select("p.partner-example-text");
             elems[7] = doc3.select("div.span9");
 
             if (elems[0].hasText()) error = false;
@@ -56,7 +57,6 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
             String[] defs;
             String[] syns;
             String[] ants;
-            String[] sens;
             String shortds, longds, mn="";
 
             if (!error) {
@@ -99,7 +99,16 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                 i = 0;
                 ants = new String[]{"", "", "", "", "", ""};
                 for (Element e : elems[3]) {
-                    ants[i] = e.text();
+                    String s = "";
+                    if(e.hasText()) {
+                        Elements x = e.select("li.ant");
+                        for (Element ex : x) {
+                            s += (ex.text() + ", ");
+                        }
+                        s = s.substring(0, s.length() - 2);
+                    }
+                    ants[i] = s;
+
                     i++;
                     if (i == 6) break;
                 }
@@ -120,17 +129,30 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                 if(shortds.length()<1) wordAllData.setWordData(new WordData(wordId, "", mn));
                 else wordAllData.setWordData(new WordData(wordId, shortds + "\n\n" + longds, mn));
 
-                i = 0;
-                sens = new String[]{"", "", "", "", "", "", "", "", "", ""};
-                for (Element e : elems[6]) {
-                    sens[i] = e.text();
-                    i++;
-                    if (i == 6) break;
-                }
                 ArrayList<Sentence> sentences = new ArrayList<>();
-                for(int j=0; j<i; j++){
-                    sentences.add(new Sentence(wordId, sens[j]));
+                String jsn = doc2.text();
+                JSONObject obj = new JSONObject(jsn);
+                JSONArray sts = obj.getJSONObject("result").getJSONArray("sentences");
+                System.out.println(sts.length());
+                for(int ii=0; ii<sts.length(); ii++){
+                    JSONObject ith = (JSONObject)sts.get(ii);
+                    String sentence = (String)ith.get("sentence");
+                    JSONArray offset = (JSONArray) ith.get("offsets");
+                    String finalSentence="";
+                    int pv = 0;
+                    for(int j=0; j<offset.length(); j+=2){
+                        int st = (int)offset.get(j);
+                        int en = (int)offset.get(j+1);
+                        finalSentence += sentence.substring(pv,st);
+                        finalSentence += "<b>";
+                        finalSentence += sentence.substring(st, en);
+                        finalSentence += "</b>";
+                        pv=en;
+                    }
+                    if(pv < sentence.length()) finalSentence += sentence.substring(pv, sentence.length());
+                    sentences.add(new Sentence(wordId, finalSentence));
                 }
+
                 wordAllData.setSentences(sentences);
 
                 for(Element e: elems[7]){

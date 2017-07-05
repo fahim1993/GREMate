@@ -452,11 +452,11 @@ public class DB {
         for (i = 8; i >= 1; i--) {
             String wsId = _db.child(USER_WORD).child(uid).child(WORDSET).push().getKey();
             String allListId = _db.child(USER_WORD).child(uid).child(WORDLIST).push().getKey();
-            _db.child(USER_WORD).child(uid).child(WORDSET).child(wsId).setValue(new WordSet("GRE: Set " + i, uname, allListId, 140, 0));
-            _db.child(USER_WORD).child(uid).child(WORDLIST).child(allListId).setValue(new WordList(wsId, "All words", 140));
+            _db.child(USER_WORD).child(uid).child(WORDSET).child(wsId).setValue(new WordSet("GRE: Set " + i, uname, allListId, 80, 0));
+            _db.child(USER_WORD).child(uid).child(WORDLIST).child(allListId).setValue(new WordList(wsId, "All words", 80));
 
 
-            for (int j = (i - 1) * 140; j < (i) * 140; j++) {
+            for (int j = (i - 1) * 80; j < (i) * 80; j++) {
                 _db.child(USER_WORD).child(uid).child(WORD).push().setValue(new Word("", allListId, initWords[j], "All words", false, 0, 0, 1, 0));
             }
         }

@@ -68,7 +68,7 @@ public class Word implements Parcelable{
     }
 
     public String getValue() {
-        return value;
+        return value.replaceAll("\\s+","");
     }
 
     public void setValue(String value) {

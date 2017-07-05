@@ -1,6 +1,7 @@
 package com.example.fahim.gremate;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.AudioManager;
@@ -50,6 +51,8 @@ import java.util.ArrayList;
 public class ShowWordActivity extends AppCompatActivity {
 
     private String wordId;
+
+    private int loadedCount;
 
     private ArrayList<Word> words;
     private Word WORD;
@@ -215,11 +218,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private void loadWord(){
         removeListeners();
-        sv.post(new Runnable() {
-            public void run() {
-                sv.smoothScrollTo(0, 0);
-            }
-        });
+
         loading = true;
         showWordSV.setVisibility(View.GONE);
         errorTextV.setVisibility(View.GONE);
@@ -388,6 +387,7 @@ public class ShowWordActivity extends AppCompatActivity {
             setSentence();;
             setMN();
             setLevel();
+            scrollSV();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -499,6 +499,9 @@ public class ShowWordActivity extends AppCompatActivity {
 
     public void retrieveData(){
 
+        loadedCount = 0;
+        removeListeners();
+
         setTextViews();
         wordAllData_ = new WordAllData();
 
@@ -509,6 +512,10 @@ public class ShowWordActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 wordAllData_.setWord(dataSnapshot.getValue(Word.class));
                 setLevel();
+                loadedCount++;
+                if(loadedCount==4){
+                    allLoaded();
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -526,6 +533,10 @@ public class ShowWordActivity extends AppCompatActivity {
                 wordAllData_.setWordData(wd);
                 setDes();
                 setMN();
+                loadedCount++;
+                if(loadedCount==4){
+                    allLoaded();
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -543,6 +554,10 @@ public class ShowWordActivity extends AppCompatActivity {
                 }
                 wordAllData_.setWordDefs(wordDefs);
                 setDef();
+                loadedCount++;
+                if(loadedCount==4){
+                    allLoaded();
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -560,15 +575,31 @@ public class ShowWordActivity extends AppCompatActivity {
                 }
                 wordAllData_.setSentences(sentences);
                 setSentence();
+                loadedCount++;
+                if(loadedCount==4){
+                    allLoaded();
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         };
         query4.addValueEventListener(listener4);
+    }
 
+    private void allLoaded(){
+        scrollSV();
         loadingPB.setVisibility(View.GONE);
         showWordSV.setVisibility(View.VISIBLE);
         loading = false;
+        loadedCount = 0;
+    }
+
+    private void scrollSV(){
+        sv.post(new Runnable() {
+            public void run() {
+                sv.scrollTo(0,0);
+            }
+        });
     }
 
     private class FetchData extends FetchDataAsync{
@@ -584,6 +615,7 @@ public class ShowWordActivity extends AppCompatActivity {
                 words.get(index).setValidity(1);
                 DB.setWordData(wordAllData_, wordId);
                 setContents();
+                scrollSV();
                 loadingPB.setVisibility(View.GONE);
                 showWordSV.setVisibility(View.VISIBLE);
                 loading = false;
@@ -631,10 +663,21 @@ public class ShowWordActivity extends AppCompatActivity {
                 if(index >= words.size())index = 0;
                 loadWord();
                 break;
+
             case R.id.pronounce:
                 if(loading)break;
                 PlaybackPronunciation playback = new PlaybackPronunciation();
                 playback.execute();
+                break;
+
+            case R.id.edit:
+                Intent intent = new Intent(this, EditActivity.class);
+
+                Bundle b = new Bundle();
+                b.putString("word_id", wordId);
+                intent.putExtras(b);
+                startActivity(intent);
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -645,7 +688,8 @@ public class ShowWordActivity extends AppCompatActivity {
         protected String doInBackground(String... strings) {
             if (isNetworkConnected()) {
                 try {
-                    String link = "https://ssl.gstatic.com/dictionary/static/sounds/de/0/" + WORD.getValue() + ".mp3";
+                    String link = "https://ssl.gstatic.com/dictionary/static/sounds/de/0/" + WORD.getValue().toLowerCase() + ".mp3";
+                    Log.d("ShowWord", link);
                     URL url = new URL(link);
                     HttpURLConnection con = (HttpURLConnection) url.openConnection();
                     con.setRequestMethod("HEAD");
@@ -658,16 +702,35 @@ public class ShowWordActivity extends AppCompatActivity {
                         player.prepare();
                         player.start();
                     }
+                    else{
+                        ShowWordActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+//                        Toast toast = Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT);
+//                        toast.show();
+                    }
                     return "";
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast toast = Toast.makeText(ShowWordActivity.this, "Error...", Toast.LENGTH_SHORT);
-                    toast.show();
+                    ShowWordActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+//                    Toast toast = Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT);
+//                    toast.show();
                     return "";
                 }
             } else {
-                Toast toast = Toast.makeText(ShowWordActivity.this, "Internet connection required!", Toast.LENGTH_SHORT);
-                toast.show();
+                ShowWordActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "Internet connection required!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+//                Toast toast = Toast.makeText(getApplicationContext(), "Internet connection required!", Toast.LENGTH_SHORT);
+//                toast.show();
                 return "";
             }
         }
