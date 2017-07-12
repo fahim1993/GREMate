@@ -3,7 +3,7 @@ UserWords:
    WordSet:
       id:
          name:
-		 owner:
+         owner:
          wordCount:
          lastOpen:
          allList:
@@ -59,6 +59,6 @@ UserWords:
                      
 UserData:
 	ID:
-		userEmail:
-		userName:
+             userEmail:
+	     userName:
       
