@@ -476,6 +476,21 @@ public class WordSetActivity extends NavDrawerActivity {
                     WordwID wordwID = new WordwID(word, ds.getKey());
                     wordwIDs.add(wordwID);
                 }
+                if(title.substring(0,8).equals("GRE: Set")){
+                    if(wordLists.size()==1){
+                        int j = 0;
+                        for(int i=0; i<4; i++){
+                            String listKey = DB.newList("List "+(i+1), wordSetId);
+                            int lim = (wordwIDs.size() * (i+1)) / 4 ;
+                            for( ; j<lim; j++) {
+                                Word nword = wordwIDs.get(j).toWord();
+                                nword.setCopyOf(wordwIDs.get(j).getId());
+                                nword.setListId(listKey);
+                                DB.addWordToAnotherList(nword);
+                            }
+                        }
+                    }
+                }
                 sortWords(false);
             }
 

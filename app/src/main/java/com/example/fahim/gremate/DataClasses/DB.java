@@ -97,7 +97,7 @@ public class DB {
         }
     }
 
-    public static void newList(String listname, String wsId) {
+    public static String newList(String listname, String wsId) {
 
         if (userid.equals("-1")) {
             initDB();
@@ -106,9 +106,13 @@ public class DB {
         wordList = listname;
         wordSetId = wsId;
 
-        db.getReference().child(USER_WORD).child(userid).child(WORDLIST)
-                .push().setValue(WordList.getNewList(wsId, listname));
+        String key = db.getReference().child(USER_WORD).child(userid).child(WORDLIST)
+                .push().getKey();
 
+        db.getReference().child(USER_WORD).child(userid).child(WORDLIST).child(key)
+                .setValue(WordList.getNewList(wsId, listname));
+
+        return  key;
     }
 
     public static void newWord(String word, String listId, String listName, String wsId, String allListId) {

@@ -47,10 +47,11 @@
                     android:layout_marginTop="3dp"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
                     android:textColor="#000"
                     android:maxLines="1"
-                    android:layout_weight="7"
+                    android:layout_weight="1"
                     android:id="@+id/listTitle"/>
 
                 <android.support.v7.widget.AppCompatImageButton
@@ -60,9 +61,8 @@
                     android:src="@drawable/ic_ws_changelist"
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/cardviewBackground"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"/>
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"/>
 
 
 

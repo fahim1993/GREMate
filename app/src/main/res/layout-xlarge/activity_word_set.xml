@@ -47,10 +47,11 @@
                     android:layout_marginTop="3dp"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:textSize="25sp"
                     android:textColor="#000"
                     android:maxLines="1"
-                    android:layout_weight="7"
+                    android:layout_weight="1"
                     android:id="@+id/listTitle"/>
 
                 <android.support.v7.widget.AppCompatImageButton
@@ -60,9 +61,8 @@
                     android:src="@drawable/ic_ws_changelist"
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/cardviewBackground"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"/>
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"/>
 
 
 
@@ -102,8 +102,8 @@
                     android:tint="#FFF"
                     android:src="@drawable/ic_ws_add_word"
                     android:scaleType="fitCenter"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp" />
+                    android:layout_width="60dp"
+                    android:layout_height="60dp" />
 
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/searchBtn"
@@ -111,8 +111,8 @@
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/colorPrimary"
                     android:tint="#FFF"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp" />
+                    android:layout_width="60dp"
+                    android:layout_height="60dp" />
 
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/sortBtn"
@@ -120,8 +120,8 @@
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/colorPrimary"
                     android:tint="#FFF"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp" />
+                    android:layout_width="60dp"
+                    android:layout_height="60dp" />
 
 
 
@@ -131,8 +131,8 @@
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/colorPrimary"
                     android:tint="#FFF"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp" />
+                    android:layout_width="60dp"
+                    android:layout_height="60dp" />
 
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/deleteBtn"
@@ -140,8 +140,8 @@
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/colorPrimary"
                     android:tint="#FFF"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp" />
+                    android:layout_width="60dp"
+                    android:layout_height="60dp" />
 
 
             </LinearLayout>
