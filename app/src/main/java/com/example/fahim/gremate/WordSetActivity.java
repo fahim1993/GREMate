@@ -19,17 +19,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.fahim.gremate.Adapters.FriendAdapter;
 import com.example.fahim.gremate.Adapters.WordAdapter;
 import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.Friend;
-import com.example.fahim.gremate.DataClasses.FriendNotf;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordList;
 import com.example.fahim.gremate.DataClasses.WordListwID;
@@ -348,12 +345,10 @@ public class WordSetActivity extends NavDrawerActivity {
         });
 
         setFriends();
-
         hideWordRv();
-        getWordSet_list();
+        getWordSetList();
         restoreList();
     }
-
 
     @Override
     protected void onPause() {
@@ -365,10 +360,13 @@ public class WordSetActivity extends NavDrawerActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        removeListeners();
+    }
 
+    private void removeListeners(){
         if(listener != null) q.removeEventListener(listener);
         if(rvQueryListener != null) rvQuery.removeEventListener(rvQueryListener);
-        if(ref1!=null)ref1.removeEventListener(listener1);
+        if(listener1!=null)ref1.removeEventListener(listener1);
     }
 
     @Override
@@ -420,7 +418,7 @@ public class WordSetActivity extends NavDrawerActivity {
 
     }
 
-    public void getWordSet_list(){
+    public void getWordSetList(){
 
         ref = db.getReference().child(DB.USER_WORD).child(uid).child(DB.WORDLIST);
         q = ref.orderByChild("wordSet").equalTo(wordSetId);
@@ -550,7 +548,7 @@ public class WordSetActivity extends NavDrawerActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         preferences.edit().putInt(currentListId, 0).apply();
-        preferences.edit().putInt(currentListId+"~~", 0).apply();
+        preferences.edit().putInt(currentListId+"`~", 0).apply();
     }
 
     private void setListState(){

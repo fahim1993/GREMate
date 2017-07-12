@@ -205,8 +205,12 @@ public class ShowWordActivity extends AppCompatActivity {
         editor.putInt("mnState", mnState);
 
         editor.commit();
-
         removeListeners();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private void removeListeners(){
