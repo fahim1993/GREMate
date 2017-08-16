@@ -138,7 +138,8 @@ public class PracticingActivity extends AppCompatActivity {
                     defs.add(w.getDef());
                 }
                 Random rn = new Random();
-                int i = Math.abs(rn.nextInt())%defs.size();
+                int modVal = (defs.size()<2)?defs.size() : 2;
+                int i = Math.abs(rn.nextInt())%modVal;
                 def = defs.get(i);
 
                 setupQuestion();
@@ -155,7 +156,7 @@ public class PracticingActivity extends AppCompatActivity {
         int qsType = 0;
         HashMap<String, Integer> mp = new HashMap<>();
 
-        if(qsType == 0){
+//        if(qsType == 0){
             questionTV.setText("Meaning of the word "+words.get(index).getValue() + " is?" );
             ArrayList<String> otDefs = new ArrayList<>();
             mp.put(words.get(index).getValue().toLowerCase(), 1);
@@ -174,27 +175,27 @@ public class PracticingActivity extends AppCompatActivity {
                 if(i==ansIndex)continue;
                 ansTVs[i].setText( fromHtml("<b>"+(i+1)+".</b> " + otDefs.get(j++)));
             }
-        }
-        else {
-            questionTV.setText("\""+def+"\"" + " - is the meaning of: ");
-            ArrayList<String> otWords = new ArrayList<>();
-            mp.put(words.get(index).getValue().toLowerCase(), 1);
-            while(mp.size()!=5){
-                int ind = Math.abs(rn.nextInt())%1536;
-                String w = OD[ind][0];
-                if(mp.containsKey(w.toLowerCase()))continue;
-                otWords.add(OD[ind][0]);
-                mp.put(w.toLowerCase(), 1);
-            }
-            ansIndex = Math.abs(rn.nextInt())%5;
-            ansTVs[ansIndex].setText( fromHtml( "<b>"+(ansIndex+1)+".</b> " + words.get(index).getValue()));
-
-            int j = 0;
-            for(int i=0; i<5; i++){
-                if(i==ansIndex)continue;
-                ansTVs[i].setText( fromHtml( "<b>"+(i+1)+".</b> " + otWords.get(j++)));
-            }
-        }
+//        }
+//        else {
+//            questionTV.setText("\""+def+"\"" + " - is the meaning of: ");
+//            ArrayList<String> otWords = new ArrayList<>();
+//            mp.put(words.get(index).getValue().toLowerCase(), 1);
+//            while(mp.size()!=5){
+//                int ind = Math.abs(rn.nextInt())%1536;
+//                String w = OD[ind][0];
+//                if(mp.containsKey(w.toLowerCase()))continue;
+//                otWords.add(OD[ind][0]);
+//                mp.put(w.toLowerCase(), 1);
+//            }
+//            ansIndex = Math.abs(rn.nextInt())%5;
+//            ansTVs[ansIndex].setText( fromHtml( "<b>"+(ansIndex+1)+".</b> " + words.get(index).getValue()));
+//
+//            int j = 0;
+//            for(int i=0; i<5; i++){
+//                if(i==ansIndex)continue;
+//                ansTVs[i].setText( fromHtml( "<b>"+(i+1)+".</b> " + otWords.get(j++)));
+//            }
+//        }
         practicingLoading.setVisibility(View.GONE);
         practicingSV.setVisibility(View.VISIBLE);
 
