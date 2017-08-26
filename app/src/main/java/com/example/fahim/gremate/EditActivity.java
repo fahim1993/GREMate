@@ -133,7 +133,7 @@ public class EditActivity extends AppCompatActivity {
 
             }
         };
-        ref1.addListenerForSingleValueEvent(listener1);
+        ref1.addValueEventListener(listener1);
 
         query2 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDDATA).orderByChild("word").equalTo(wordId);
         listener2 = new ValueEventListener() {
@@ -156,7 +156,7 @@ public class EditActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         };
-        query2.addListenerForSingleValueEvent(listener2);
+        query2.addValueEventListener(listener2);
 
         query3 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDDEF).orderByChild("word").equalTo(wordId);
         listener3 = new ValueEventListener() {
@@ -181,7 +181,7 @@ public class EditActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         };
-        query3.addListenerForSingleValueEvent(listener3);
+        query3.addValueEventListener(listener3);
 
         query4 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.SENTENCE).orderByChild("word").equalTo(wordId);
         listener4 = new ValueEventListener() {
@@ -206,7 +206,7 @@ public class EditActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         };
-        query4.addListenerForSingleValueEvent(listener4);
+        query4.addValueEventListener(listener4);
 
         query5 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.IMAGE).orderByChild("word").equalTo(wordId);
         listener5 = new ValueEventListener() {
@@ -231,7 +231,7 @@ public class EditActivity extends AppCompatActivity {
 
             }
         };
-        query5.addListenerForSingleValueEvent(listener5);
+        query5.addValueEventListener(listener5);
     }
 
 

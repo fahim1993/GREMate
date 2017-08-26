@@ -246,6 +246,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
         WORD = words.get(index);
         wordId = WORD.getCopyOf();
+        Log.d("loadWord wordId", "is: " + wordId );
         DB.setWordLastOpen(wordId);
 
         String titleText = WORD.getValue().toLowerCase();
@@ -665,8 +666,6 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private void setImages(ArrayList<WordImage> images){
 
-        Log.d("SetImages", " "+ images.size());
-
         if(images.size()==0){
             findViewById(R.id.showWordImgLL).setVisibility(View.GONE);
             countLoaded();
@@ -847,7 +846,6 @@ public class ShowWordActivity extends AppCompatActivity {
             if (isNetworkConnected()) {
                 try {
                     String link = "https://ssl.gstatic.com/dictionary/static/sounds/de/0/" + WORD.getValue().toLowerCase() + ".mp3";
-                    Log.d("ShowWord", link);
                     URL url = new URL(link);
                     HttpURLConnection con = (HttpURLConnection) url.openConnection();
                     con.setRequestMethod("HEAD");

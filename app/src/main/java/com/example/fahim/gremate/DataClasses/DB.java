@@ -173,7 +173,6 @@ public class DB {
     }
 
     public static void setWordData(WordAllData wordAllData, String wordId) {
-        Log.d("setWordData", "");
 
         if (userid.equals("-1")) initDB();
 
@@ -182,6 +181,7 @@ public class DB {
         setWordValidity(wordId, wordAllData.getWord().getValidity());
 
         db.getReference().child(USER_WORD).child(userid).child(WORDDATA).push().setValue(wordAllData.getWordData());
+
         for (WordDef def : wordAllData.getWordDefs()) {
             db.getReference().child(USER_WORD).child(userid).child(WORDDEF).push().setValue(def);
         }
