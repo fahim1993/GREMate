@@ -474,7 +474,7 @@ public class WordSetActivity extends NavDrawerActivity {
                     WordwID wordwID = new WordwID(word, ds.getKey());
                     wordwIDs.add(wordwID);
                 }
-                if(title.substring(0,8).equals("GRE: Set")){
+                if(title.length() >= 8 && title.substring(0,8).equals("GRE: Set")){
                     if(wordLists.size()==1){
                         int j = 0;
                         for(int i=0; i<4; i++){

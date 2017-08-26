@@ -551,7 +551,7 @@ public class EditActivity extends AppCompatActivity {
     }
 
     public void save(View v) {
-        Log.d("setWordData21", "");
+        Log.d("setWordData21", "smt");
         boolean practicable = false;
         for (DefinitionView dv : definitionViews) {
             String df = dv.edDef.getText().toString().replaceAll("\\s","");
@@ -578,7 +578,7 @@ public class EditActivity extends AppCompatActivity {
     }
 
     public void saveData(){
-        Log.d("setWordData1", "");
+        Log.d("setWordData1", "smt");
         DB.deleteWord(wordId, " ", false, true);
 
         Toast.makeText(EditActivity.this, "Saved", Toast.LENGTH_SHORT).show();
@@ -649,7 +649,7 @@ public class EditActivity extends AppCompatActivity {
 
         wordAllData.getWord().setPracticable(practicable);
 
-        Log.d("setWordData2", "");
+        Log.d("setWordData2", "smt");
         DB.setWordData(wordAllData, wordId);
 
         finish();

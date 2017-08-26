@@ -307,7 +307,7 @@ public class DB {
         if(!isEdit)db.getReference().child(USER_WORD).child(userid).child(WORD).child(wordId).setValue(null);
 
         db.getReference().child(USER_WORD).child(userid).child(IMAGE).orderByChild("word").
-                equalTo(wordId).addValueEventListener(new ValueEventListener() {
+                equalTo(wordId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -320,7 +320,7 @@ public class DB {
         });
 
         db.getReference().child(USER_WORD).child(userid).child(SENTENCE).orderByChild("word").
-                equalTo(wordId).addValueEventListener(new ValueEventListener() {
+                equalTo(wordId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -333,7 +333,7 @@ public class DB {
         });
 
         db.getReference().child(USER_WORD).child(userid).child(WORDDEF).orderByChild("word").
-                equalTo(wordId).addValueEventListener(new ValueEventListener() {
+                equalTo(wordId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -347,7 +347,7 @@ public class DB {
 
 
         db.getReference().child(USER_WORD).child(userid).child(WORDDATA).orderByChild("word").
-                equalTo(wordId).addValueEventListener(new ValueEventListener() {
+                equalTo(wordId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -362,7 +362,7 @@ public class DB {
         if(isEdit)return;
 
         db.getReference().child(USER_WORD).child(userid).child(WORDCLONE).child(wordId)
-                .addValueEventListener(new ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -483,6 +483,5 @@ public class DB {
                 _db.child(USER_WORD).child(uid).child(WORD).push().setValue(new Word("", allListId, initWords[j], "All words", false, 0, 0, 1, 0));
             }
         }
-
     }
 }
