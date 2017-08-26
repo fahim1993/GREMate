@@ -11,6 +11,7 @@ public class WordAllData {
     private ArrayList<WordDef> wordDefs;
     private WordData wordData;
     private ArrayList<Sentence> sentences;
+    private ArrayList<WordImageFB> images;
 
     public WordAllData() {
         word = new Word();
@@ -49,5 +50,13 @@ public class WordAllData {
 
     public void setSentences(ArrayList<Sentence> sentences) {
         this.sentences = sentences;
+    }
+
+    public ArrayList<WordImageFB> getImages() {
+        return images;
+    }
+
+    public void setImages(ArrayList<WordImageFB> images) {
+        this.images = images;
     }
 }

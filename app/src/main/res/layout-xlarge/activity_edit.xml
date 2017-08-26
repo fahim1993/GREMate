@@ -97,6 +97,22 @@
                         />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/WordOperationLLImg"
+                    android:layout_marginTop="20dp"
+                    android:orientation="vertical">
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ADD IMAGE URL"
+                        android:layout_gravity="center"
+                        android:id="@+id/WordOperationBtnImg"
+                        android:onClick="addImg"
+                        />
+                </LinearLayout>
+
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_gravity="center"

@@ -23,6 +23,7 @@ import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordAllData;
 import com.example.fahim.gremate.DataClasses.WordData;
 import com.example.fahim.gremate.DataClasses.WordDef;
+import com.example.fahim.gremate.DataClasses.WordImageFB;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -42,7 +43,9 @@ public class EditActivity extends AppCompatActivity {
     private WordAllData wordAllData;
 
     private ArrayList<SentenceView> sentenceViews;
+    private ArrayList<ImageView> imageViews;
     private int sentenceViewID;
+    private int imageViewID;
     private ArrayList<DefinitionView> definitionViews;
     private int definitionViewID;
     private EditText description;
@@ -52,15 +55,18 @@ public class EditActivity extends AppCompatActivity {
     Query query2;
     Query query3;
     Query query4;
+    Query query5;
     ValueEventListener listener1;
     ValueEventListener listener2;
     ValueEventListener listener3;
     ValueEventListener listener4;
+    ValueEventListener listener5;
 
     LinearLayout defsLL;
     LinearLayout desLL;
     LinearLayout senLL;
     LinearLayout mnLL;
+    LinearLayout imgLL;
     LinearLayout ll1;
 
 
@@ -80,7 +86,9 @@ public class EditActivity extends AppCompatActivity {
         delbtnSize = (int) (45 * scale);
 
         sentenceViewID = 0;
+        imageViewID = 0;
         sentenceViews = new ArrayList<>();
+        imageViews = new ArrayList<>();
         definitionViews = new ArrayList<>();
 
         definitionViewID = 100000;
@@ -90,6 +98,7 @@ public class EditActivity extends AppCompatActivity {
         senLL = (LinearLayout) findViewById(R.id.WordOperationLLSen);
         desLL = (LinearLayout) findViewById(R.id.WordOperationLLDes);
         mnLL = (LinearLayout) findViewById(R.id.WordOperationLLMN);
+        imgLL = (LinearLayout) findViewById(R.id.WordOperationLLImg);
         ll1 = (LinearLayout) findViewById(R.id.WordOperationLL);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -104,6 +113,7 @@ public class EditActivity extends AppCompatActivity {
         if(listener2!=null)query2.removeEventListener(listener2);
         if(listener3!=null)query3.removeEventListener(listener3);
         if(listener4!=null)query4.removeEventListener(listener4);
+        if(listener5!=null)query4.removeEventListener(listener5);
     }
 
     public void editWordSetup() {
@@ -123,7 +133,7 @@ public class EditActivity extends AppCompatActivity {
 
             }
         };
-        ref1.addValueEventListener(listener1);
+        ref1.addListenerForSingleValueEvent(listener1);
 
         query2 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDDATA).orderByChild("word").equalTo(wordId);
         listener2 = new ValueEventListener() {
@@ -146,7 +156,7 @@ public class EditActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         };
-        query2.addValueEventListener(listener2);
+        query2.addListenerForSingleValueEvent(listener2);
 
         query3 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDDEF).orderByChild("word").equalTo(wordId);
         listener3 = new ValueEventListener() {
@@ -171,7 +181,7 @@ public class EditActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         };
-        query3.addValueEventListener(listener3);
+        query3.addListenerForSingleValueEvent(listener3);
 
         query4 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.SENTENCE).orderByChild("word").equalTo(wordId);
         listener4 = new ValueEventListener() {
@@ -196,8 +206,32 @@ public class EditActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         };
-        query4.addValueEventListener(listener4);
+        query4.addListenerForSingleValueEvent(listener4);
 
+        query5 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.IMAGE).orderByChild("word").equalTo(wordId);
+        listener5 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<WordImageFB> images = new ArrayList<>();
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    WordImageFB wordImageFB = ds.getValue(WordImageFB.class);
+                    images.add(wordImageFB);
+                }
+                wordAllData.setImages(images);
+                if (images.size() > 0) {
+                    for (int i = 0; i < images.size(); i++) {
+                        LinearLayout ll = addImgLL(true, images.get(i));
+                        imgLL.addView(ll, imgLL.getChildCount() - 1);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        query5.addListenerForSingleValueEvent(listener5);
     }
 
 
@@ -221,7 +255,7 @@ public class EditActivity extends AppCompatActivity {
 
         ImageButton delBtn = new ImageButton(EditActivity.this);
         delBtn.setImageResource(R.drawable.deltbtn);
-        delBtn.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        delBtn.setScaleType(android.widget.ImageView.ScaleType.CENTER_INSIDE);
         delBtn.setLayoutParams(new LinearLayout.LayoutParams(delbtnSize, delbtnSize));
 
         delBtn.setOnClickListener(new View.OnClickListener() {
@@ -266,7 +300,7 @@ public class EditActivity extends AppCompatActivity {
 
         ImageButton delBtn = new ImageButton(EditActivity.this);
         delBtn.setImageResource(R.drawable.deltbtn);
-        delBtn.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        delBtn.setScaleType(android.widget.ImageView.ScaleType.CENTER_INSIDE);
         delBtn.setLayoutParams(new LinearLayout.LayoutParams(delbtnSize, delbtnSize));
 
         delBtn.setOnClickListener(new View.OnClickListener() {
@@ -274,8 +308,8 @@ public class EditActivity extends AppCompatActivity {
             public void onClick(View v) {
                 ((LinearLayout) v.getParent()).setVisibility(View.GONE);
                 mnemonic = null;
-                Button btnDes = (Button) findViewById(R.id.WordOperationBtnDes);
-                btnDes.setVisibility(View.VISIBLE);
+                Button btnMN = (Button) findViewById(R.id.WordOperationBtnMN);
+                btnMN.setVisibility(View.VISIBLE);
             }
         });
 
@@ -338,7 +372,7 @@ public class EditActivity extends AppCompatActivity {
 
         ImageButton delBtn = new ImageButton(EditActivity.this);
         delBtn.setImageResource(R.drawable.deltbtn);
-        delBtn.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        delBtn.setScaleType(android.widget.ImageView.ScaleType.CENTER_INSIDE);
         delBtn.setLayoutParams(new LinearLayout.LayoutParams(delbtnSize, delbtnSize));
 
         delBtn.setOnClickListener(new View.OnClickListener() {
@@ -413,7 +447,7 @@ public class EditActivity extends AppCompatActivity {
 
         ImageButton delBtn = new ImageButton(EditActivity.this);
         delBtn.setImageResource(R.drawable.deltbtn);
-        delBtn.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        delBtn.setScaleType(android.widget.ImageView.ScaleType.CENTER_INSIDE);
         delBtn.setLayoutParams(new LinearLayout.LayoutParams(delbtnSize, delbtnSize));
 
         delBtn.setOnClickListener(new View.OnClickListener() {
@@ -429,7 +463,7 @@ public class EditActivity extends AppCompatActivity {
                 if (i != sentenceViews.size()) sentenceViews.remove(i);
 
                 if (sentenceViews.size() == 0) {
-                    Button b = (Button) findViewById(R.id.WordOperationBtnDef);
+                    Button b = (Button) findViewById(R.id.WordOperationBtnSen);
                     b.setText("ADD SENTENCE");
                 }
             }
@@ -452,8 +486,72 @@ public class EditActivity extends AppCompatActivity {
         return ll;
     }
 
-    public void save(View v) {
+    public void addImg(View v) {
+        LinearLayout llp = (LinearLayout) v.getParent();
+        llp.addView(addImgLL(false, null), llp.getChildCount() - 1);
+    }
 
+    private LinearLayout addImgLL(boolean flg, WordImageFB img) {
+
+        ImageView imv = new ImageView();
+
+        LinearLayout ll = new LinearLayout(EditActivity.this);
+        ll.setOrientation(LinearLayout.VERTICAL);
+        ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        View v = new View(EditActivity.this);
+        v.setLayoutParams(new ActionBar.LayoutParams(0, dummyHeight));
+
+        TextView tvImg = new TextView(EditActivity.this);
+        tvImg.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        tvImg.setText("Image URL");
+        EditText edImg = new EditText(EditActivity.this);
+        edImg.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        if (flg) edImg.setText(img.getUrl());
+
+        ImageButton delBtn = new ImageButton(EditActivity.this);
+        delBtn.setImageResource(R.drawable.deltbtn);
+        delBtn.setScaleType( android.widget.ImageView.ScaleType.CENTER_INSIDE);
+        delBtn.setLayoutParams(new LinearLayout.LayoutParams(delbtnSize, delbtnSize));
+
+        delBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int id = v.getId(), i;
+                LinearLayout llp = (LinearLayout) v.getParent();
+                llp.setVisibility(View.GONE);
+
+                for (i = 0; i < imageViews.size(); i++) {
+                    if (imageViews.get(i).slNo == id) break;
+                }
+                if (i != imageViews.size()) imageViews.remove(i);
+
+                if (imageViews.size() == 0) {
+                    Button b = (Button) findViewById(R.id.WordOperationBtnImg);
+                    b.setText("ADD IMAGE URL");
+                }
+            }
+        });
+
+        imv.edImg = edImg;
+
+        Button b = (Button) findViewById(R.id.WordOperationBtnImg);
+        b.setText("ADD ANOTHER IMAGE URL");
+
+        delBtn.setId(imageViewID);
+        imv.slNo = imageViewID++;
+        imageViews.add(imv);
+
+        ll.addView(v);
+        ll.addView(tvImg);
+        ll.addView(edImg);
+        ll.addView(delBtn);
+
+        return ll;
+    }
+
+    public void save(View v) {
+        Log.d("setWordData21", "");
         boolean practicable = false;
         for (DefinitionView dv : definitionViews) {
             String df = dv.edDef.getText().toString().replaceAll("\\s","");
@@ -477,11 +575,11 @@ public class EditActivity extends AppCompatActivity {
                         }
                     }).show();
         }
-
-
     }
 
     public void saveData(){
+        Log.d("setWordData1", "");
+        DB.deleteWord(wordId, " ", false, true);
 
         Toast.makeText(EditActivity.this, "Saved", Toast.LENGTH_SHORT).show();
 
@@ -490,8 +588,6 @@ public class EditActivity extends AppCompatActivity {
             String df = dv.edDef.getText().toString().replaceAll("\\s","");
             if(df.length()>0)practicable = true;
         }
-
-        DB.deleteWord(wordId, " ", false, true);
 
         ArrayList<WordDef> defs = new ArrayList<>();
         ArrayList<Sentence> sentences = new ArrayList<>();
@@ -505,6 +601,18 @@ public class EditActivity extends AppCompatActivity {
             }
         }
         wordAllData.setSentences(sentences);
+
+        ArrayList<WordImageFB> images = new ArrayList<>();
+
+        for (ImageView iv : imageViews) {
+            if (iv.edImg.getText().length() > 0) {
+                WordImageFB im = new WordImageFB();
+                im.setWord(wordId);
+                im.setUrl(iv.edImg.getText().toString());
+                images.add(im);
+            }
+        }
+        wordAllData.setImages(images);
 
         for (DefinitionView dv : definitionViews) {
             if (dv.edTitle.getText().length() > 0 ||
@@ -541,6 +649,7 @@ public class EditActivity extends AppCompatActivity {
 
         wordAllData.getWord().setPracticable(practicable);
 
+        Log.d("setWordData2", "");
         DB.setWordData(wordAllData, wordId);
 
         finish();
@@ -551,6 +660,12 @@ public class EditActivity extends AppCompatActivity {
         public int slNo;
     }
 
+
+    private class ImageView {
+        public EditText edImg;
+        public int slNo;
+    }
+
     private class DefinitionView {
         public EditText edTitle;
         public EditText edDef;
@@ -558,5 +673,4 @@ public class EditActivity extends AppCompatActivity {
         public EditText edAnt;
         public int slNo;
     }
-
 }
