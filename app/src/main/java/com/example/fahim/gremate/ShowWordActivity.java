@@ -1,28 +1,34 @@
 package com.example.fahim.gremate;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
@@ -31,11 +37,14 @@ import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.FetchDataAsync;
+import com.example.fahim.gremate.DataClasses.FetchImageAsync;
 import com.example.fahim.gremate.DataClasses.Sentence;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordAllData;
 import com.example.fahim.gremate.DataClasses.WordData;
 import com.example.fahim.gremate.DataClasses.WordDef;
+import com.example.fahim.gremate.DataClasses.WordImage;
+import com.example.fahim.gremate.DataClasses.WordImageFB;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -64,6 +73,7 @@ public class ShowWordActivity extends AppCompatActivity {
     private int defState;
     private int desState;
     private int senState;
+    private int imgState;
     private int mnState;
 
     private TextView mnText;
@@ -89,10 +99,12 @@ public class ShowWordActivity extends AppCompatActivity {
     Query query2;
     Query query3;
     Query query4;
+    Query query5;
     ValueEventListener listener1;
     ValueEventListener listener2;
     ValueEventListener listener3;
     ValueEventListener listener4;
+    ValueEventListener listener5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,6 +188,7 @@ public class ShowWordActivity extends AppCompatActivity {
             defState = prefs.getInt("defState", -1);
             desState = prefs.getInt("desState", -1);
             senState = prefs.getInt("senState", -1);
+            imgState = prefs.getInt("imgState", -1);
             mnState = prefs.getInt("mnState", -1);
         }
         else {
@@ -183,6 +196,7 @@ public class ShowWordActivity extends AppCompatActivity {
             editor.putInt("defState", 0); defState = 0;
             editor.putInt("desState", 0); desState = 0;
             editor.putInt("senState", 0); senState = 0;
+            editor.putInt("imgState", 0); imgState = 0;
             editor.putInt("mnState", 0); mnState = 0;
             editor.commit();
         }
@@ -202,6 +216,7 @@ public class ShowWordActivity extends AppCompatActivity {
         editor.putInt("defState", defState);
         editor.putInt("desState", desState);
         editor.putInt("senState", senState);
+        editor.putInt("imgState", imgState);
         editor.putInt("mnState", mnState);
 
         editor.commit();
@@ -218,6 +233,7 @@ public class ShowWordActivity extends AppCompatActivity {
         if(listener2!=null)query2.removeEventListener(listener2);
         if(listener3!=null)query3.removeEventListener(listener3);
         if(listener4!=null)query4.removeEventListener(listener4);
+        if(listener5!=null)query5.removeEventListener(listener5);
     }
 
     private void loadWord(){
@@ -255,104 +271,122 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private void setDes(){
 
-        if(wordAllData_.getWordData().getDes().length()<1)descriptionText.setText("(No data)");
-        else descriptionText.setText( fromHtml(wordAllData_.getWordData().getDes().replaceAll("\\n", "<br>")));
+        if(wordAllData_.getWordData().getDes().length()<1){
+            findViewById(R.id.showWordDesLL).setVisibility(View.GONE);
+            return;
+        }
+
+        findViewById(R.id.showWordDesLL).setVisibility(View.VISIBLE);
+
+        descriptionText.setText( fromHtml(wordAllData_.getWordData().getDes().replaceAll("\\n", "<br>")));
+
+        ImageView desButton = (ImageView) findViewById(R.id.showWordDescriptionIB);
 
         if (desState == 1) {
-            ImageView descriptionButton = (ImageView) findViewById(R.id.showWordDescriptionIB);
             descriptionText.setVisibility(View.VISIBLE);
-            descriptionButton.setImageResource(R.drawable.up);
-            descriptionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            desButton.setImageResource(R.drawable.up);
         } else {
-            ImageView descriptionButton = (ImageView) findViewById(R.id.showWordDescriptionIB);
             descriptionText.setVisibility(View.GONE);
-            descriptionButton.setImageResource(R.drawable.down);
-            descriptionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            descriptionText.setTranslationY(-getHeight(descriptionText));
+            desButton.setImageResource(R.drawable.down);
         }
+        desButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
     }
 
     private void setDef(){
-        if(wordAllData_.getWordDefs().size()==0)definitionText.setText("(No data)");
-        else {
-            String def = "";
-            for (int i = 0; i < wordAllData_.getWordDefs().size(); i++) {
-                WordDef d = wordAllData_.getWordDefs().get(i);
-                if (i != 0) def += "<br><br>";
-                def += "<b>" + d.getTitle() + "</b><br>";
-                def += "<i>" + d.getDef() + "</i><br>";
-                if (d.getSyn().length() > 0) {
-                    def += "<b>Synonyms:</b><br>";
-                    def += d.getSyn() + "<br>";
-                }
-
-                if (d.getAnt().length() > 0) {
-                    def += "<b>Antonyms:</b><br>";
-                    def += d.getAnt();
-                }
-            }
-            definitionText.setText(fromHtml(def));
+        if(wordAllData_.getWordDefs().size()==0){
+            findViewById(R.id.showWordDefiLL).setVisibility(View.GONE);
+            return;
         }
+
+        findViewById(R.id.showWordDefiLL).setVisibility(View.VISIBLE);
+
+        String def = "";
+        for (int i = 0; i < wordAllData_.getWordDefs().size(); i++) {
+            WordDef d = wordAllData_.getWordDefs().get(i);
+            if (i != 0) def += "<br><br>";
+            def += "<b>" + d.getTitle() + "</b><br>";
+            def += "<i>" + d.getDef() + "</i><br>";
+            if (d.getSyn().length() > 0) {
+                def += "<b>Synonyms:</b><br>";
+                def += d.getSyn() + "<br>";
+            }
+
+            if (d.getAnt().length() > 0) {
+                def += "<b>Antonyms:</b><br>";
+                def += d.getAnt();
+            }
+        }
+        definitionText.setText(fromHtml(def));
+
+
+        ImageView defButton = (ImageView) findViewById(R.id.showWordDefinitionIB);
 
         if (defState == 1) {
-            ImageView definitionButton = (ImageView) findViewById(R.id.showWordDefinitionIB);
             definitionText.setVisibility(View.VISIBLE);
-            definitionButton.setImageResource(R.drawable.up);
-            definitionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            defButton.setImageResource(R.drawable.up);
         } else {
-            ImageView definitionButton = (ImageView) findViewById(R.id.showWordDefinitionIB);
             definitionText.setVisibility(View.GONE);
-            definitionButton.setImageResource(R.drawable.down);
-            definitionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            definitionText.setTranslationY(-getHeight(definitionText));
+            defButton.setImageResource(R.drawable.down);
         }
+        defButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
     }
 
     private void setSentence(){
 
-        if(wordAllData_.getSentences().size()==0)sentenceText.setText("(No data)");
-        else {
-            String sen = "";
-            for (int i = 0; i < wordAllData_.getSentences().size(); i++) {
-                Sentence s = wordAllData_.getSentences().get(i);
-
-                if (i != 0) sen += "<br>";
-                sen += "<b>" + (i + 1) + ".</b> " + s.getValue() + "<br>";
-            }
-            sentenceText.setText(fromHtml(sen));
+        if(wordAllData_.getSentences().size()==0){
+            findViewById(R.id.showWordSenLL).setVisibility(View.GONE);
+            return;
         }
+        findViewById(R.id.showWordSenLL).setVisibility(View.VISIBLE);
+
+        String sen = "";
+        for (int i = 0; i < wordAllData_.getSentences().size(); i++) {
+            Sentence s = wordAllData_.getSentences().get(i);
+
+            if (i != 0) sen += "<br>";
+            sen += "<b>" + (i + 1) + ".</b> " + s.getValue() + "<br>";
+        }
+        sentenceText.setText(fromHtml(sen));
+
+
+        ImageView sentenceButton = (ImageView) findViewById(R.id.showWordSentenceIB);
 
         if (senState == 1) {
-            ImageView sentenceButton = (ImageView) findViewById(R.id.showWordSentenceIB);
             sentenceText.setVisibility(View.VISIBLE);
             sentenceButton.setImageResource(R.drawable.up);
-            sentenceButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         } else {
-            ImageView sentenceButton = (ImageView) findViewById(R.id.showWordSentenceIB);
             sentenceText.setVisibility(View.GONE);
+            sentenceText.setTranslationY(-getHeight(sentenceText));
             sentenceButton.setImageResource(R.drawable.down);
-            sentenceButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         }
-
+        sentenceButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
     }
 
     private void setMN(){
 
-        if(wordAllData_.getWordData().getMn().length()<1)mnText.setText("(No data)");
-        else {
-            String mn = wordAllData_.getWordData().getMn();
-            mnText.setText(mn);
+        if(wordAllData_.getWordData().getMn().length()<1){
+            findViewById(R.id.showWordMneLL).setVisibility(View.GONE);
+            return;
         }
 
+        String mn = wordAllData_.getWordData().getMn();
+        mnText.setText(mn);
+
+        findViewById(R.id.showWordMneLL).setVisibility(View.VISIBLE);
+
+        ImageView mnButton = (ImageView) findViewById(R.id.showWordMNIB);
+
         if (mnState == 1) {
-            ImageView mnButton = (ImageView) findViewById(R.id.showWordMNIB);
             mnText.setVisibility(View.VISIBLE);
             mnButton.setImageResource(R.drawable.up);
-            mnButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         } else {
-            ImageView mnButton = (ImageView) findViewById(R.id.showWordMNIB);
             mnText.setVisibility(View.GONE);
+            mnText.setTranslationY(-getHeight(mnText));
             mnButton.setImageResource(R.drawable.down);
-            mnButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         }
+        mnButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
     }
 
     private void setTextViews(){
@@ -390,12 +424,23 @@ public class ShowWordActivity extends AppCompatActivity {
             setDes();
             setSentence();;
             setMN();
+            setImages(new ArrayList<WordImage>());
             setLevel();
             scrollSV();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public int getHeight(TextView t) {
+        DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
+        int newWidth = metrics.widthPixels;
+
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(newWidth, View.MeasureSpec.AT_MOST);
+        int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        t.measure(widthMeasureSpec, heightMeasureSpec);
+        return t.getMeasuredHeight();
     }
 
     @SuppressWarnings("deprecation")
@@ -408,97 +453,116 @@ public class ShowWordActivity extends AppCompatActivity {
     }
 
     public void toggleDefinition(View v) {
+        TextView defTV = (TextView) findViewById(R.id.showWordDefinitionText);
+        ImageView defButton = (ImageView) findViewById(R.id.showWordDefinitionIB);
+
         if(defState == 1) {
             defState = 0;
-            TextView definitionText = (TextView) findViewById(R.id.showWordDefinitionText);
-            definitionText.setVisibility(View.GONE);
-            ImageView definitionButton = (ImageView) findViewById(R.id.showWordDefinitionIB);
-            definitionButton.setImageResource(R.drawable.down);
-
-            definitionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            definitionButton.getParent().requestChildFocus(definitionButton,definitionButton);
+            hideView(defTV);
+            defButton.setImageResource(R.drawable.down);
         }
         else {
             defState = 1;
-            TextView definitionText = (TextView) findViewById(R.id.showWordDefinitionText);
-            definitionText.setVisibility(View.VISIBLE);
-            ImageView definitionButton = (ImageView) findViewById(R.id.showWordDefinitionIB);
-            definitionButton.setImageResource(R.drawable.up);
+            showView(defTV);
+            defButton.setImageResource(R.drawable.up);
 
-            definitionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            definitionButton.getParent().requestChildFocus(definitionButton,definitionButton);
         }
+        defButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        defButton.getParent().requestChildFocus(defButton,defButton);
 
     }
 
     public void toggleDescription(View v) {
+        TextView desTV = (TextView) findViewById(R.id.showWordDescriptionText);
+        ImageView desButton = (ImageView) findViewById(R.id.showWordDescriptionIB);
+
         if(desState == 1) {
             desState = 0;
-            TextView descriptionText = (TextView) findViewById(R.id.showWordDescriptionText);
-            descriptionText.setVisibility(View.GONE);
-            ImageView descriptionButton = (ImageView) findViewById(R.id.showWordDescriptionIB);
-            descriptionButton.setImageResource(R.drawable.down);
-
-            descriptionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            descriptionButton.getParent().requestChildFocus(descriptionButton,descriptionButton);
+            hideView(desTV);
+            desButton.setImageResource(R.drawable.down);
         }
         else {
             desState = 1;
-            TextView descriptionText = (TextView) findViewById(R.id.showWordDescriptionText);
-            descriptionText.setVisibility(View.VISIBLE);
-            ImageView descriptionButton = (ImageView) findViewById(R.id.showWordDescriptionIB);
-            descriptionButton.setImageResource(R.drawable.up);
-
-            descriptionButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            descriptionButton.getParent().requestChildFocus(descriptionButton,descriptionButton);
+            showView(desTV);
+            desButton.setImageResource(R.drawable.up);
         }
-
+        desButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        desButton.getParent().requestChildFocus(desButton,desButton);
     }
 
     public void toggleSentence(View v) {
+        TextView senTV = (TextView) findViewById(R.id.showWordSentenceText);
+        ImageView sentenceButton = (ImageView) findViewById(R.id.showWordSentenceIB);
+
         if(senState == 1) {
             senState = 0;
-            TextView sentenceText = (TextView) findViewById(R.id.showWordSentenceText);
-            sentenceText.setVisibility(View.GONE);
-            ImageView sentenceButton = (ImageView) findViewById(R.id.showWordSentenceIB);
+            hideView(senTV);
             sentenceButton.setImageResource(R.drawable.down);
-
-            sentenceButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            sentenceButton.getParent().requestChildFocus(sentenceButton,sentenceButton);
         }
         else {
             senState = 1;
-            TextView sentenceText = (TextView) findViewById(R.id.showWordSentenceText);
-            sentenceText.setVisibility(View.VISIBLE);
-            ImageView sentenceButton = (ImageView) findViewById(R.id.showWordSentenceIB);
+            showView(senTV);
             sentenceButton.setImageResource(R.drawable.up);
 
-            sentenceButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            sentenceButton.getParent().requestChildFocus(sentenceButton,sentenceButton);
         }
+        sentenceButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        sentenceButton.getParent().requestChildFocus(sentenceButton,sentenceButton);
+    }
+
+    public void toggleImage(View v) {
+
+        LinearLayout imageLL = (LinearLayout) findViewById(R.id.showWordImgAddLL);
+        ImageView imageButton = (ImageView) findViewById(R.id.showWordImageIB);
+
+        if(imgState == 1) {
+            imgState = 0;
+            hideView(imageLL);
+            imageButton.setImageResource(R.drawable.down);
+        }
+        else {
+            imgState = 1;
+            showView(imageLL);
+            imageButton.setImageResource(R.drawable.up);
+
+        }
+        imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        imageButton.getParent().requestChildFocus(imageButton,imageButton);
     }
 
     public void toggleMN(View v) {
+        TextView mnTV = (TextView) findViewById(R.id.showWordMNText);
+        ImageView mnButton = (ImageView) findViewById(R.id.showWordMNIB);
+
         if(mnState == 1) {
             mnState = 0;
-            TextView mnText = (TextView) findViewById(R.id.showWordMNText);
-            mnText.setVisibility(View.GONE);
-            ImageView mnButton = (ImageView) findViewById(R.id.showWordMNIB);
+            hideView(mnTV);
             mnButton.setImageResource(R.drawable.down);
-
-            mnButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            mnButton.getParent().requestChildFocus(mnButton,mnButton);
         }
         else {
             mnState = 1;
-            TextView sentenceText = (TextView) findViewById(R.id.showWordMNText);
-            sentenceText.setVisibility(View.VISIBLE);
-            ImageView mnButton = (ImageView) findViewById(R.id.showWordMNIB);
+            showView(mnTV);
             mnButton.setImageResource(R.drawable.up);
 
-            mnButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            mnButton.getParent().requestChildFocus(mnButton,mnButton);
         }
+        mnButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        mnButton.getParent().requestChildFocus(mnButton,mnButton);
+    }
+
+    private void showView(final View v) {
+        v.animate().translationY(0).setDuration(300);
+        v.setVisibility(View.VISIBLE);
+    }
+
+    private void hideView(final View v) {
+        v.animate().setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                v.setVisibility(View.GONE);
+                v.animate().setListener(null);
+            }
+        });
+        v.animate().translationY(-v.getHeight()).setDuration(300);
     }
 
     public void retrieveData(){
@@ -516,10 +580,7 @@ public class ShowWordActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 wordAllData_.setWord(dataSnapshot.getValue(Word.class));
                 setLevel();
-                loadedCount++;
-                if(loadedCount==4){
-                    allLoaded();
-                }
+                countLoaded();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -537,10 +598,7 @@ public class ShowWordActivity extends AppCompatActivity {
                 wordAllData_.setWordData(wd);
                 setDes();
                 setMN();
-                loadedCount++;
-                if(loadedCount==4){
-                    allLoaded();
-                }
+                countLoaded();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -558,10 +616,7 @@ public class ShowWordActivity extends AppCompatActivity {
                 }
                 wordAllData_.setWordDefs(wordDefs);
                 setDef();
-                loadedCount++;
-                if(loadedCount==4){
-                    allLoaded();
-                }
+                countLoaded();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -579,15 +634,100 @@ public class ShowWordActivity extends AppCompatActivity {
                 }
                 wordAllData_.setSentences(sentences);
                 setSentence();
-                loadedCount++;
-                if(loadedCount==4){
-                    allLoaded();
-                }
+                countLoaded();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         };
         query4.addValueEventListener(listener4);
+
+        query5 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.IMAGE).orderByChild("word").equalTo(wordId);
+        listener5 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<String> urls = new ArrayList<>();
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    WordImageFB wordImageFB = ds.getValue(WordImageFB.class);
+                    String url = wordImageFB.getUrl();
+                    urls.add(url);
+                }
+                FetchImage fetchImage = new FetchImage(getApplicationContext(), wordId, urls);
+                fetchImage.execute();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        query5.addValueEventListener(listener5);
+    }
+
+    private void setImages(ArrayList<WordImage> images){
+
+        Log.d("SetImages", " "+ images.size());
+
+        if(images.size()==0){
+            findViewById(R.id.showWordImgLL).setVisibility(View.GONE);
+            countLoaded();
+            return;
+        }
+
+        findViewById(R.id.showWordImgLL).setVisibility(View.VISIBLE);
+
+        LinearLayout imageLL = (LinearLayout) findViewById(R.id.showWordImgAddLL);
+        imageLL.removeAllViews();
+
+        for(WordImage image : images){
+            ImageView imageView = new ImageView(this);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            params.setMargins(10,5,10,5);
+            imageView.setLayoutParams(params);
+            imageView.setAdjustViewBounds(true);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            Bitmap bitmap = image.getImage();
+
+            int imageWidth = bitmap.getWidth();
+            int imageHeight = bitmap.getHeight();
+
+            DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
+
+            int newWidth = metrics.widthPixels;
+            float scaleFactor = (float)newWidth/(float)imageWidth;
+            if(scaleFactor>3)scaleFactor = 3;
+            int newHeight = (int)(imageHeight * scaleFactor);
+            newWidth = (int)(imageWidth * scaleFactor);
+
+            bitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
+
+            imageView.setImageBitmap(bitmap);
+            imageLL.addView(imageView);
+        }
+
+        ImageView imgButton = (ImageView) findViewById(R.id.showWordImageIB);
+
+        if (imgState == 1) {
+            imageLL.setVisibility(View.VISIBLE);
+            imgButton.setImageResource(R.drawable.up);
+
+        } else {
+            imageLL.setVisibility(View.GONE);
+            imageLL.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            imageLL.setTranslationY(-imageLL.getMeasuredHeight());
+            imgButton.setImageResource(R.drawable.down);
+        }
+        imgButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+        countLoaded();
+    }
+
+    void countLoaded(){
+        if(loading) {
+            loadedCount++;
+            if (loadedCount >= 5) {
+                allLoaded();
+            }
+        }
     }
 
     private void allLoaded(){
@@ -617,6 +757,7 @@ public class ShowWordActivity extends AppCompatActivity {
                         WORD.getValue(), true, 1, DB.getCurrentMin(), 1, DB.getCurrentMin()));
 
                 words.get(index).setValidity(1);
+                wordAllData_.setImages(new ArrayList<WordImageFB>());
                 DB.setWordData(wordAllData_, wordId);
                 setContents();
                 scrollSV();
@@ -632,6 +773,19 @@ public class ShowWordActivity extends AppCompatActivity {
                 DB.setWordValidity(wordId, 2);
                 loading = false;
             }
+        }
+    }
+
+    private class FetchImage extends FetchImageAsync{
+
+        public FetchImage(Context context, String wordId, ArrayList<String> urls) {
+            super(context, wordId, urls);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            setImages(images);
         }
     }
 

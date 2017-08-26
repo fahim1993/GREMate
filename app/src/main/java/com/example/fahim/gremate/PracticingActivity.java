@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +53,13 @@ public class PracticingActivity extends AppCompatActivity {
     private int ansIndex;
     private int noQuestions;
     private int noCorrect;
+
+    private LinearLayout wordLevelLL;
+    private SeekBar levelSb;
+    private TextView levelTv;
+    private  int wordLevel;
+
+    private Word word;
 
     private boolean thisJudged;
 
@@ -103,8 +111,12 @@ public class PracticingActivity extends AppCompatActivity {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                if(wordLevel!=word.getLevel()){
+                    DB.setWordLevel(word.getCopyOf(), wordLevel);
+                    Log.d("wordlevel", word.getCopyOf() + " " + wordLevel + " " + word.getLevel());
+                }
                 index++;
-                Log.d("Index: "+index, "Size: "+words.size());
                 if(index==words.size()){
                     index = 0;
                     randomizeWords();
@@ -114,9 +126,47 @@ public class PracticingActivity extends AppCompatActivity {
                 nextButton.setVisibility(View.GONE);
 
                 practicingSV.setVisibility(View.GONE);
+                wordLevelLL.setVisibility(View.GONE);
                 practicingLoading.setVisibility(View.VISIBLE);
                 loadWordDef(words.get(index).getCopyOf());
 
+            }
+        });
+
+        levelSb = (SeekBar) findViewById(R.id.diffSeekBar);
+        levelTv = (TextView) findViewById(R.id.diff);
+        levelTv.setText("Easy");
+        levelTv.setTextColor(Color.parseColor("#006400"));
+
+        wordLevelLL = (LinearLayout) findViewById(R.id.wordLevel);
+        wordLevelLL.setVisibility(View.GONE);
+
+        levelSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                wordLevel = i;
+                switch(i){
+                    case 0:
+                        levelTv.setText("Easy");
+                        levelTv.setTextColor(Color.parseColor("#006400"));
+                        break;
+                    case 1:
+                        levelTv.setText("Medium");
+                        levelTv.setTextColor(Color.parseColor("#00008B"));
+                        break;
+                    case 2:
+                        levelTv.setText("Hard");
+                        levelTv.setTextColor(Color.parseColor("#8B0000"));
+                        break;
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
 
@@ -124,7 +174,16 @@ public class PracticingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
-    private void loadWordDef(String id){
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(wordLevel!=word.getLevel()){
+            DB.setWordLevel(word.getCopyOf(), wordLevel);
+            Log.d("wordlevel", word.getCopyOf() + " " + wordLevel + " " + word.getLevel());
+        }
+    }
+
+    private void loadWordDef(final String id){
         query1 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(FirebaseAuth
                 .getInstance().getCurrentUser().getUid()).child(DB.WORDDEF).orderByChild("word").equalTo(id);
 
@@ -148,6 +207,25 @@ public class PracticingActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {}
         };
         query1.addValueEventListener(listener1);
+
+        FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(FirebaseAuth
+                .getInstance().getCurrentUser().getUid()).child(DB.WORD).child(id).addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        word = dataSnapshot.getValue(Word.class);
+                        word.setCopyOf(id);
+                        wordLevel = word.getLevel();
+                        Log.d("wordlevelFB", " " + wordLevel + " " + word.getCopyOf());
+                        levelSb.setProgress(wordLevel);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                }
+        );
     }
 
     private void setupQuestion(){
@@ -229,6 +307,7 @@ public class PracticingActivity extends AppCompatActivity {
         }
         thisJudged = true;
         nextButton.setVisibility(View.VISIBLE);
+        wordLevelLL.setVisibility(View.VISIBLE);
         setTitle("SCORE: "+noCorrect+"/"+noQuestions);
     }
 

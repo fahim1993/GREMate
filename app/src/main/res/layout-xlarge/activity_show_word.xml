@@ -40,6 +40,7 @@
                 android:layout_height="wrap_content" />
 
             <LinearLayout
+                android:id="@+id/showWordDesLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bottomline"
@@ -77,23 +78,32 @@
                         />
                 </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/showWordDescriptionText"
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="14dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="-6dp"
-                    android:clickable="true"
-                    android:textColor="#000000"
-                    android:textIsSelectable="true"
-                    android:textSize="20sp"
-                    android:visibility="gone" />
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/showWordDescriptionText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="14dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="-6dp"
+                        android:clickable="true"
+                        android:textColor="#000000"
+                        android:textIsSelectable="true"
+                        android:textSize="20sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
             </LinearLayout>
 
 
             <LinearLayout
+                android:id="@+id/showWordDefiLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bottomline"
@@ -132,23 +142,31 @@
 
                 </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/showWordDefinitionText"
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="14dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="-6dp"
-                    android:clickable="true"
-                    android:textColor="#000000"
-                    android:textIsSelectable="true"
-                    android:textSize="20sp"
-                    android:visibility="gone" />
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/showWordDefinitionText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="14dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="-6dp"
+                        android:clickable="true"
+                        android:textColor="#000000"
+                        android:textIsSelectable="true"
+                        android:textSize="20sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/showWordSenLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bottomline"
@@ -187,24 +205,91 @@
 
                 </RelativeLayout>
 
-
-                <TextView
-                    android:id="@+id/showWordSentenceText"
+                <LinearLayout
+                    android:id="@+id/showWordSenAddLL"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="-6dp"
-                    android:clickable="true"
-                    android:textColor="#000000"
-                    android:textIsSelectable="true"
-                    android:textSize="20sp"
-                    android:visibility="gone" />
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/showWordSentenceText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="-6dp"
+                        android:clickable="true"
+                        android:textColor="#000000"
+                        android:textIsSelectable="true"
+                        android:textSize="20sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/showWordImgLL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bottomline"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/showWordImageRL"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_margin="5dp"
+                    android:clickable="true"
+                    android:onClick="toggleImage"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/showWordImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Images"
+                        android:textColor="#000000"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/showWordImageIB"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:background="@color/cardviewItem"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/up"
+
+                        />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:id="@+id/showWordImgAddLL"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/showWordMneLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bottomline"
@@ -243,20 +328,26 @@
 
                 </RelativeLayout>
 
-
-                <TextView
-                    android:id="@+id/showWordMNText"
+                <LinearLayout
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="-6dp"
-                    android:clickable="true"
-                    android:textColor="#000000"
-                    android:textIsSelectable="true"
-                    android:textSize="20sp"
-                    android:visibility="gone" />
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/showWordMNText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="-6dp"
+                        android:clickable="true"
+                        android:textColor="#000000"
+                        android:textIsSelectable="true"
+                        android:textSize="20sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
 
             </LinearLayout>
 

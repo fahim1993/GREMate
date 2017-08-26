@@ -47,6 +47,11 @@ UserWords:
          word:
          value:
 
+   Image:
+       id:
+          word:
+          url:
+
    Friend:
        id:
            name:

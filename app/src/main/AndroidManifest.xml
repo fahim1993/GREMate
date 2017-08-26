@@ -23,7 +23,9 @@
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".LearnActivity" />
         <activity android:name=".NavDrawerActivity" />
-        <activity android:name=".WordSetActivity" android:parentActivityName=".LearnActivity" />
+        <activity
+            android:name=".WordSetActivity"
+            android:parentActivityName=".LearnActivity" />
         <activity
             android:name=".ShowWordActivity"
             android:theme="@style/mydialog" />
@@ -33,7 +35,7 @@
         <activity android:name=".PracticeActivity" />
         <activity android:name=".PracticingActivity" />
         <activity android:name=".EditActivity" />
-        <activity android:name=".FriendActivity"></activity>
+        <activity android:name=".FriendActivity" />
     </application>
 
 </manifest>
