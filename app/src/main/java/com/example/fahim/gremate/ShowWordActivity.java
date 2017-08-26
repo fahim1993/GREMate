@@ -597,9 +597,11 @@ public class ShowWordActivity extends AppCompatActivity {
         listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                WordData wd = new WordData();
+                wordAllData_.setWordData(wd);
                 if(!dataSnapshot.hasChildren()) return;
                 DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
-                WordData wd = ds.getValue(WordData.class);
+                wd = ds.getValue(WordData.class);
                 wordAllData_.setWordData(wd);
                 setDes();
                 setMN();
