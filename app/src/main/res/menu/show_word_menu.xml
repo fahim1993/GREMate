@@ -22,4 +22,10 @@
         android:icon="@drawable/ic_edit"
         app:showAsAction="ifRoom"
         android:title="Edit"/>
+
+    <item
+        android:id="@+id/reload"
+        android:icon="@drawable/reload"
+        app:showAsAction="ifRoom"
+        android:title="Reload"/>
 </menu>

@@ -3,6 +3,7 @@ package com.example.fahim.gremate;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -13,6 +14,7 @@ import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -833,6 +835,31 @@ public class ShowWordActivity extends AppCompatActivity {
                 intent.putExtras(b);
                 startActivity(intent);
                 break;
+
+            case R.id.reload:
+                new AlertDialog.Builder(this)
+                        .setTitle("Confirm Reload")
+                        .setMessage("Are you sure you want to reload this word? ")
+                        .setPositiveButton("Reload", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                removeListeners();
+                                DB.deleteWord(wordId, "", false, true);
+
+                                loading = true;
+                                showWordSV.setVisibility(View.GONE);
+                                errorTextV.setVisibility(View.GONE);
+                                loadingPB.setVisibility(View.VISIBLE);
+
+                                new FetchData().execute(WORD.getValue(), wordId);
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        }).show();
+
         }
 
         return super.onOptionsItemSelected(item);
