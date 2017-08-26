@@ -241,6 +241,7 @@ public class ShowWordActivity extends AppCompatActivity {
         removeListeners();
 
         loading = true;
+        loadFlags = new boolean[] {true, true, true, true, true};
 
         showWordSV.setVisibility(View.GONE);
         errorTextV.setVisibility(View.GONE);
@@ -248,7 +249,6 @@ public class ShowWordActivity extends AppCompatActivity {
 
         WORD = words.get(index);
         wordId = WORD.getCopyOf();
-        Log.d("loadWord wordId", "is: " + wordId );
         DB.setWordLastOpen(wordId);
 
         String titleText = WORD.getValue().toLowerCase();
@@ -401,6 +401,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private void setLevel(){
         wordLevel = wordAllData_.getWord().getLevel();
+
         levelSb.setProgress(wordLevel);
         switch(wordAllData_.getWord().getLevel()){
             case 0:
@@ -425,8 +426,9 @@ public class ShowWordActivity extends AppCompatActivity {
             setTextViews();
             setDef();
             setDes();
-            setSentence();;
+            setSentence();
             setMN();
+
             setImages(new ArrayList<WordImage>());
             setLevel();
             scrollSV();
@@ -570,7 +572,6 @@ public class ShowWordActivity extends AppCompatActivity {
 
     public void retrieveData(){
 
-        loadFlags = new boolean[] {true, true, true, true, true};
         removeListeners();
 
         setTextViews();
@@ -596,6 +597,7 @@ public class ShowWordActivity extends AppCompatActivity {
         listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.hasChildren()) return;
                 DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
                 WordData wd = ds.getValue(WordData.class);
                 wordAllData_.setWordData(wd);
@@ -757,6 +759,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
                 words.get(index).setValidity(1);
                 wordAllData_.setImages(new ArrayList<WordImageFB>());
+
                 DB.setWordData(wordAllData_, wordId);
                 setContents();
                 scrollSV();
