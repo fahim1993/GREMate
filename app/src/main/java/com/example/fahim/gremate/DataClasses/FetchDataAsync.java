@@ -135,6 +135,7 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                 JSONArray sts = obj.getJSONObject("result").getJSONArray("sentences");
                 System.out.println(sts.length());
                 for(int ii=0; ii<sts.length(); ii++){
+                    if(ii==8)break;
                     JSONObject ith = (JSONObject)sts.get(ii);
                     String sentence = (String)ith.get("sentence");
                     JSONArray offset = (JSONArray) ith.get("offsets");
