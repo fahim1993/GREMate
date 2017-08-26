@@ -61,14 +61,13 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private String wordId;
 
-    private int loadedCount;
-
     private ArrayList<Word> words;
     private Word WORD;
     private WordAllData wordAllData_;
 
     private int index;
     private boolean loading;
+    private boolean []loadFlags;
 
     private int defState;
     private int desState;
@@ -163,8 +162,8 @@ public class ShowWordActivity extends AppCompatActivity {
 
         wordTitle = (TextView) findViewById(R.id.wordTitle);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -240,6 +239,7 @@ public class ShowWordActivity extends AppCompatActivity {
         removeListeners();
 
         loading = true;
+
         showWordSV.setVisibility(View.GONE);
         errorTextV.setVisibility(View.GONE);
         loadingPB.setVisibility(View.VISIBLE);
@@ -568,7 +568,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
     public void retrieveData(){
 
-        loadedCount = 0;
+        loadFlags = new boolean[] {true, true, true, true, true};
         removeListeners();
 
         setTextViews();
@@ -581,7 +581,7 @@ public class ShowWordActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 wordAllData_.setWord(dataSnapshot.getValue(Word.class));
                 setLevel();
-                countLoaded();
+                countLoaded(0);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -599,7 +599,7 @@ public class ShowWordActivity extends AppCompatActivity {
                 wordAllData_.setWordData(wd);
                 setDes();
                 setMN();
-                countLoaded();
+                countLoaded(1);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -617,7 +617,7 @@ public class ShowWordActivity extends AppCompatActivity {
                 }
                 wordAllData_.setWordDefs(wordDefs);
                 setDef();
-                countLoaded();
+                countLoaded(2);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -635,7 +635,7 @@ public class ShowWordActivity extends AppCompatActivity {
                 }
                 wordAllData_.setSentences(sentences);
                 setSentence();
-                countLoaded();
+                countLoaded(3);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -668,7 +668,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
         if(images.size()==0){
             findViewById(R.id.showWordImgLL).setVisibility(View.GONE);
-            countLoaded();
+            countLoaded(4);
             return;
         }
 
@@ -717,15 +717,14 @@ public class ShowWordActivity extends AppCompatActivity {
         }
         imgButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
-        countLoaded();
+        countLoaded(4);
     }
 
-    void countLoaded(){
+    void countLoaded(int no){
         if(loading) {
-            loadedCount++;
-            if (loadedCount >= 5) {
-                allLoaded();
-            }
+            loadFlags[no] = false;
+            for(int i=0; i<5; i++) if(loadFlags[i])return;
+            allLoaded();
         }
     }
 
@@ -734,7 +733,6 @@ public class ShowWordActivity extends AppCompatActivity {
         loadingPB.setVisibility(View.GONE);
         showWordSV.setVisibility(View.VISIBLE);
         loading = false;
-        loadedCount = 0;
     }
 
     private void scrollSV(){

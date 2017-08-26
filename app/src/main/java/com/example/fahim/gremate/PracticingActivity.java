@@ -197,7 +197,7 @@ public class PracticingActivity extends AppCompatActivity {
                     defs.add(w.getDef());
                 }
                 Random rn = new Random();
-                int modVal = (defs.size()<2)?defs.size() : 2;
+                int modVal = defs.size();
                 int i = Math.abs(rn.nextInt())%modVal;
                 def = defs.get(i);
 
