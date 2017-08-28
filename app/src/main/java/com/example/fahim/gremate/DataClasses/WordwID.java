@@ -103,7 +103,7 @@ public class WordwID extends Word {
                 return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
             }
             else{
-                return Long.valueOf(w1.getLastOpen()).compareTo(w2.getLastOpen());
+                return w1.getLevel() - w2.getLevel();
             }
         }
     };
