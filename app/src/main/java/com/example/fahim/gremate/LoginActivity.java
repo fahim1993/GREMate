@@ -10,12 +10,10 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.fahim.gremate.DataClasses.DB;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -46,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if(auth.getCurrentUser()!=null){
-            Intent intent = new Intent(LoginActivity.this, LearnActivity.class);
+            Intent intent = new Intent(LoginActivity.this, WordSetActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             LoginActivity.this.finish();
@@ -93,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            Intent intent = new Intent(LoginActivity.this, LearnActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, WordSetActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
                             LoginActivity.this.finish();

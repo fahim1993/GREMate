@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/wordSetCardView"
+    android:id="@+id/cardItem"
     android:layout_margin="2dp"
     card_view:cardBackgroundColor="@color/cardviewItem"
     card_view:cardCornerRadius="3dp"
@@ -16,18 +16,13 @@
     >
 
     <RelativeLayout
+        android:layout_marginStart="5dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <ImageView
-            android:id="@+id/img"
-            android:src="@drawable/ic_green2"
-            android:layout_width="40dp"
-            android:layout_height="50dp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/img"
             android:layout_centerVertical="true"
             android:id="@+id/rl1">
 
@@ -37,21 +32,21 @@
                 android:textSize="18dp"
                 android:textColor="#000"
                 android:maxLines="1"
-                android:id="@+id/wordSetName"/>
+                android:id="@+id/name"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="10dp"
                 android:textColor="#000"
-                android:id="@+id/wordSetData"
-                android:layout_below="@id/wordSetName"/>
+                android:id="@+id/data"
+                android:layout_below="@id/name"/>
 
 
         </RelativeLayout>
 
         <android.support.v7.widget.AppCompatImageButton
-            android:id="@+id/delwordset"
+            android:id="@+id/delete"
             android:padding="8dp"
             android:src="@drawable/deltbtn"
             android:scaleType="fitCenter"

@@ -30,7 +30,7 @@ die ( ) {
 cygwin=false
 msys=false
 darwin=false
-case "`uname`" in
+case "`uName`" in
   CYGWIN* )
     cygwin=true
     ;;

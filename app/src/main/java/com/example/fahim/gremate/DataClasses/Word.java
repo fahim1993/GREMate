@@ -3,44 +3,44 @@ package com.example.fahim.gremate.DataClasses;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
-
 /**
  * Created by fahim on 12/23/16.
  */
 
 public class Word implements Parcelable{
 
+    public static final int VALID = 1;
+    public static final int INVALID = -1;
+    public static final int UNKNOWN = 0;
 
-    private String copyOf, listId, value, sourceListName;
+    public static final int LVL_EASY = 1;
+    public static final int LVL_NORMAL = 2;
+    public static final int LVL_HARD = 3;
+    public static final int LVL_VHARD = 4;
+
+    private String cloneOf, value, sourceListName;
     private boolean practicable;
     private int validity,  level;
-    private long lastOpen, added;
 
-    public static Word newWord(String listId, String listName, String val) {
-        return new Word("", listId, val, listName, false, 0, 0, 1, DB.getCurrentMin());
+    public static Word newWord(String listName, String cloneOf,  String value) {
+        return new Word(listName, cloneOf, value, false, UNKNOWN, LVL_NORMAL);
     }
 
     public Word() {
-        this.copyOf = "";
-        this.listId = "";
+        this.cloneOf = "";
         this.value = "";
         this.practicable = false;
-        this.lastOpen = 0;
         this.validity = 0;
         this.level = 0;
-        this.added = 0;
     }
-    public Word(String copyOf, String listId, String value, String sourceListName, boolean practicable, int validity, long lastOpen, int level, long added) {
-        this.copyOf = copyOf;
-        this.listId = listId;
+    public Word(String sourceListName, String cloneOf, String value,
+                boolean practicable, int validity, int level) {
+        this.cloneOf = cloneOf;
         this.value = value;
         this.sourceListName = sourceListName;
         this.practicable = practicable;
         this.validity = validity;
-        this.lastOpen = lastOpen;
         this.level = level;
-        this.added = added;
     }
 
     public String getSourceListName() {
@@ -49,14 +49,6 @@ public class Word implements Parcelable{
 
     public void setSourceListName(String sourceListName) {
         this.sourceListName = sourceListName;
-    }
-
-    public long getAdded() {
-        return added;
-    }
-
-    public void setAdded(long added) {
-        this.added = added;
     }
 
     public int getLevel() {
@@ -83,14 +75,6 @@ public class Word implements Parcelable{
         this.practicable = practicable;
     }
 
-    public long getLastOpen() {
-        return lastOpen;
-    }
-
-    public void setLastOpen(long lastOpen) {
-        this.lastOpen = lastOpen;
-    }
-
     public int getValidity() {
         return validity;
     }
@@ -104,45 +88,31 @@ public class Word implements Parcelable{
         return 0;
     }
 
-    public String getCopyOf() {
-        return copyOf;
+    public String getCloneOf() {
+        return cloneOf;
     }
 
-    public void setCopyOf(String copyOf) {
-        this.copyOf = copyOf;
-    }
-
-    public String getListId() {
-        return listId;
-    }
-
-    public void setListId(String listId) {
-        this.listId = listId;
+    public void setCloneOf(String cloneOf) {
+        this.cloneOf = cloneOf;
     }
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(copyOf);
-        parcel.writeString(listId);
+        parcel.writeString(cloneOf);
         parcel.writeString(value);
         parcel.writeString(sourceListName);
         parcel.writeValue(practicable);
         parcel.writeInt(validity);
-        parcel.writeLong(lastOpen);
         parcel.writeInt(level);
-        parcel.writeLong(added);
     }
 
     private Word(Parcel in) {
-        copyOf = in.readString();
-        listId = in.readString();
+        cloneOf = in.readString();
         value = in.readString();
         sourceListName = in.readString();
         practicable = (Boolean) in.readValue( null );
         validity = in.readInt();
-        lastOpen = in.readLong();
         level = in.readInt();
-        added = in.readLong();
     }
 
     public static final Parcelable.Creator<Word> CREATOR

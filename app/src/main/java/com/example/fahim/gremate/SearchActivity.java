@@ -2,7 +2,6 @@ package com.example.fahim.gremate;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -12,7 +11,6 @@ import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,25 +18,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.FetchDataAsync;
-import com.example.fahim.gremate.DataClasses.Sentence;
-import com.example.fahim.gremate.DataClasses.Word;
+import com.example.fahim.gremate.DataClasses.WordSentence;
 import com.example.fahim.gremate.DataClasses.WordAllData;
-import com.example.fahim.gremate.DataClasses.WordData;
 import com.example.fahim.gremate.DataClasses.WordDef;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -199,11 +184,11 @@ public class SearchActivity extends AppCompatActivity {
 
     private void setSentence(){
 
-        if(wordAllData_.getSentences().size()==0)sentenceText.setText("(No data)");
+        if(wordAllData_.getWordSentences().size()==0)sentenceText.setText("(No data)");
         else {
             String sen = "";
-            for (int i = 0; i < wordAllData_.getSentences().size(); i++) {
-                Sentence s = wordAllData_.getSentences().get(i);
+            for (int i = 0; i < wordAllData_.getWordSentences().size(); i++) {
+                WordSentence s = wordAllData_.getWordSentences().get(i);
 
                 if (i != 0) sen += "<br>";
                 sen += "<b>" + (i + 1) + ".</b> " + s.getValue() + "<br>";

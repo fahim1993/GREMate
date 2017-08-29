@@ -4,20 +4,27 @@ package com.example.fahim.gremate.DataClasses;
  * Created by fahim on 12/15/16.
  */
 
-public class WordSet {
-    private String name, mainList;
+public class List {
+    private String name;
     private int wordCount;
 
-    public WordSet() { }
 
-    public WordSet(String name, String mainList, int wordCount) {
+    public List() {
+        this.name = "";
+        this.wordCount = 0;
+    }
+
+    public List(String name, int wordCount) {
         this.name = name;
-        this.mainList = mainList;
         this.wordCount = wordCount;
     }
 
-    public static WordSet newWordSet (String name, String mainList){
-        return new WordSet(name, mainList, 0);
+    public static List getNewList(String listName){
+        return new List(listName, 0);
+    }
+
+    public static List getAllList(){
+        return new List("All Words", 0);
     }
 
     public String getName() {
@@ -36,11 +43,4 @@ public class WordSet {
         this.wordCount = wordCount;
     }
 
-    public String getMainList() {
-        return mainList;
-    }
-
-    public void setMainList(String mainList) {
-        this.mainList = mainList;
-    }
 }

@@ -5,21 +5,28 @@ package com.example.fahim.gremate.DataClasses;
  */
 
 public class WordClones {
-    private String wordId;
+    private String cloneId, listId;
 
-    public WordClones(String otherWordId) {
-        this.wordId = otherWordId;
+    public WordClones(String cloneId, String listId) {
+        this.cloneId = cloneId;
+        this.listId = listId;
     }
 
-    public WordClones() {
-        this.wordId = "";
+    public WordClones() { }
+
+    public String getCloneId() {
+        return cloneId;
     }
 
-    public String getWordId() {
-        return wordId;
+    public void setCloneId(String cloneId) {
+        this.cloneId = cloneId;
     }
 
-    public void setWordId(String otherWordId) {
-        this.wordId = otherWordId;
+    public String getListId() {
+        return listId;
+    }
+
+    public void setListId(String listId) {
+        this.listId = listId;
     }
 }

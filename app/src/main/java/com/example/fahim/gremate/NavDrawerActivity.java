@@ -70,20 +70,17 @@ public class NavDrawerActivity extends AppCompatActivity {
     }
 
     private void setName(){
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference mref = FirebaseDatabase.getInstance().getReference().child(DB.USER_DATA).child(uid);
-        mref.addListenerForSingleValueEvent(new ValueEventListener() {
+        DB.initDB();
+        DatabaseReference mRef = DB.USER_DATA.child(DB.USER_ID);
+        mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserData user = dataSnapshot.getValue(UserData.class);
                 ((TextView)findViewById(R.id.menu_username)).setText(user.getUserName());
                 userName = user.getUserName();
             }
-
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
+            public void onCancelled(DatabaseError databaseError) { }
         });
     }
 

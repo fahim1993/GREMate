@@ -1,17 +1,17 @@
 package com.example.fahim.gremate.DataClasses;
 
 /**
- * Created by Fahim on 10-Jan-17.
+ * Created by fahim on 12/16/16.
  */
 
-public class FriendNotf {
+public class WordSentence {
     private String value;
 
-    public FriendNotf() {
+    public WordSentence() {
         value = "";
     }
 
-    public FriendNotf(String value) {
+    public WordSentence(String value) {
         this.value = value;
     }
 

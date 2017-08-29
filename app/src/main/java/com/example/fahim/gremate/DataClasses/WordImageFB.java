@@ -5,24 +5,14 @@ package com.example.fahim.gremate.DataClasses;
  */
 
 public class WordImageFB {
-    private String word, url;
+    private String url;
 
     public WordImageFB() {
-        word = "";
         url = "";
     }
 
     public WordImageFB(String word, String url) {
-        this.word = word;
         this.url = url;
-    }
-
-    public String getWord() {
-        return word;
-    }
-
-    public void setWord(String word) {
-        this.word = word;
     }
 
     public String getUrl() {

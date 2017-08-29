@@ -1,65 +1,36 @@
 package com.example.fahim.gremate.DataClasses;
 
+import android.content.Context;
+
+import com.example.fahim.gremate.R;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 /**
  * Created by Fahim on 06-Jan-17.
  */
 
 public class FeedTestData {
 
-    public String[] getWords() {
-        String[] s = new String[]{
-                "abate", "abdicate", "aberrant", "abeyance", "abjure", "abrasive", "abridge", "abscond", "abstain", "abstemious", "acme", "activism", "adhere", "admonish",
-                "adulterate", "adverse", "advocate", "aesthetic", "affable", "affectation", "aggrandize", "aggregate", "alacrity", "alienate", "alleviate", "amalgamate", "ambiguous",
-                "ambivalence", "ambivalent", "ameliorate", "anachronism", "analogous", "anarchy", "anoint", "anomalous", "anomaly", "antagonize", "antipathy", "antipathy", "apathy",
-                "apocryphal", "appease", "appease", "appreciable", "apprise", "approbation", "appropriate", "arbitrary", "arcane", "archaic", "arduous", "articulate", "artifact",
-                "artless", "ascertain", "ascetic", "assiduous", "assuage", "attenuate", "audacious", "augment", "austere", "autonomous", "aver", "avid", "balk",
-                "banal", "belie", "beneficent", "benign", "bogus", "bolster", "bombastic", "boor", "boorish", "buffer", "bureaucracy", "burgeon", "burnish",
-                "buttress", "bygone", "cacophonous", "cacophony", "candid", "canonical", "capricious", "cartography", "castigate", "castigation", "catalyst", "caustic", "censure",
-                "chauvinism", "chicanery", "chronological", "clamor", "clinch", "coagulate", "coalesce", "coda", "cogent", "commensurate", "compendium", "complacent", "complaisant",
-                "complementary", "compliant", "concede", "conciliatory", "concur", "condone", "confer", "confound", "connoisseur", "console", "consolidate", "constrict", "construe",
-                "contention", "contentious", "contextualize", "contrite", "conundrum", "converge", "conversant", "conversely", "convoluted", "copious", "corroborate", "cosmopolitan", "countenance",
-                "counterpoint", "counterproductive", "covert", "crafty", "craven", "credibility", "credulous", "culminate", "cynical", "daunt", "debase", "debunk", "decorous",
-                "decorum", "deem", "deface", "defamatory", "default", "deference", "deflect", "deleterious", "delineate", "denigrate", "denote", "deride", "derivative",
-                "desiccate", "desultory", "detached", "deterrent", "diatribe", "dichotomy", "didactic", "diffidence", "diffuse", "digress", "digression", "din", "dirge",
-                "disabuse", "discerning", "discordant", "discredit", "discrepancy", "discrete", "discriminating", "disingenuous", "disinterested", "disjointed", "dismiss", "disparage", "disparate",
-                "dispassionate", "dispatch", "disperse", "disposition", "disquieting", "dissemble", "disseminate", "dissent", "dissolution", "dissonance", "distend", "distill", "diverge",
-                "divest", "divine", "document", "dogma", "dogmatic", "dormant", "dubious", "dupe", "ebullient", "eccentric", "eclectic", "eclipse", "efficacy",
-                "effrontery", "egalitarian", "egregious", "elated", "elegy", "elevate", "elicit", "eloquent", "embellish", "eminent", "empirical", "emulate", "endemic",
-                "enervate", "engender", "enhance", "enigma", "entitlement", "enumerate", "ephemeral", "equanimity", "equitable", "equivocate", "erratic", "erroneous", "erudite",
-                "eschew", "esoteric", "estimable", "eulogy", "euphemism", "exacerbate", "exacting", "exculpate", "exhaustive", "exigency", "explicit", "exponent", "extraneous",
-                "extrapolate", "extrapolation", "facetious", "facilitate", "fallacious", "fanatical", "fanciful", "fathom", "fatuous", "fawning", "feasible", "felicitous", "fervor",
-                "fidelity", "figurative", "finesse", "flag", "fledgling", "fleeting", "flout", "foment", "foreshadow", "forestall", "forfeit", "fortify", "fringe",
-                "frugal", "frugality", "futile", "gainsay", "garrulous", "gauche", "gawky", "germane", "gist", "glib", "goad", "goosebumps", "gouge",
-                "gradation", "grandiloquent", "gregarious", "guile", "guileless", "gullible", "hackneyed", "harangue", "hardy", "haven", "hearken", "hedonist", "heterogeneous",
-                "hierarchy", "hodgepodge", "homogeneous", "hyperbole", "iconoclast", "idiosyncrasy", "idolatry", "illiberality", "imminent", "immutable", "impair", "impartial", "impassive",
-                "impede", "impermeable", "imperturbable", "impervious", "implacable", "implication", "implicit", "implode", "inadvertent", "inadvertently", "inasmuch", "incendiary", "incentive",
-                "inchoate", "incipient", "incongruity", "incongruous", "inconsequential", "incorporate", "indeterminate", "indifferent", "indigence", "indolent", "inert", "inform", "ingenuous",
-                "ingrained", "inherent", "innocuous", "insensible", "insinuate", "insipid", "insularity", "intelligible", "intractable", "intransigence", "intrepid", "intrinsic", "inundate",
-                "inured", "invective", "irascible", "irresolute", "itinerary", "jargon", "jocular", "judicious", "juncture", "keen", "kudos", "lackluster", "laconic",
-                "lament", "lampoon", "landmark", "languid", "lassitude", "latent", "laud", "laudable", "lavish", "layperson", "lethargic", "levee", "levity",
-                "levy", "liberal", "libertine", "likewise", "log", "loquacious", "lucid", "lull", "luminous", "magnanimity", "makeshift", "malingerer", "malleable",
-                "maverick", "mendacious", "mercurial", "metamorphosis", "meticulous", "misanthrope", "mitigate", "modest", "mollify", "monotony", "moreover", "mores", "morose",
-                "mundane", "naive", "nascent", "negate", "neophyte", "notoriety", "novel", "nuance", "obdurate", "objective", "obsequious", "obsolete", "obstinate",
-                "obviate", "occlude", "occult", "offhand", "officious", "offset", "onerous", "opaque", "opprobrium", "orthodox", "oscillate", "ostentatious", "outstrip",
-                "overshadow", "paradigm", "paragon", "pariah", "partial", "partisan", "patent", "pathological", "patronizing", "paucity", "peccadillo", "pedantic", "pedestrian",
-                "penchant", "penury", "perennial", "perfidious", "perfunctory", "peripheral", "permeable", "permeate", "pervasive", "philanthropy", "phlegmatic", "phony", "piety",
-                "pious", "pith", "placate", "placid", "plastic", "plasticity", "platitude", "plausible", "plethora", "plummet", "polarized", "ponderous", "porous",
-                "posthumous", "potentate", "pragmatic", "pre-empt", "preamble", "precarious", "precipitate", "precursor", "predisposed", "presumptive", "presumptuous", "pretentious", "prevaricate",
-                "principled", "pristine", "probity", "problematic", "prodigal", "prodigious", "profligate", "profuse", "prohibitive", "proliferate", "prologue", "pronounced", "propensity",
-                "propitiate", "propriety", "prosaic", "proscribe", "prospective", "prudent", "pugnacious", "pungent", "qualified", "quandary", "quibble", "quiescent", "quotidian",
-                "ranks", "rarefied", "reap", "recalcitrant", "recant", "recluse", "recondite", "refractory", "refute", "relegate", "remedial", "render", "replete",
-                "reproach", "reprobate", "repudiate", "requite", "rescind", "resolution", "resolve", "respectively", "restive", "reticent", "retrospective", "reverent", "rhetoric",
-                "rife", "rudimentary", "rustic", "sacrosanct", "sagacious", "sage", "salubrious", "sanction", "sanguine", "sap", "satiate", "satiate", "saturate",
-                "savor", "scant", "scathing", "secrete", "secular", "sedulous", "sentient", "shard", "simultaneous", "skeptic", "skirt", "slack", "slew",
-                "slight", "solicitous", "soporific", "sound", "spartan", "spate", "spearhead", "specious", "spectrum", "speculate", "sporadic", "sportive",
-                "stark", "stigma", "stingy", "stint", "stipulate", "stoic", "stolid", "striated", "strut", "stymie", "subjective", "subpoena", "subside",
-                "substantiate", "succeeding", "supersede", "supplicate", "supposition", "surfeit", "surmise", "sycophant", "synchronous", "table", "tacit", "taciturn", "tangential",
-                "temperance", "tenuous", "timely", "timorous", "tirade", "torpor", "torrid", "tortuous", "tractable", "transgression", "transitory", "trifling", "trite",
-                "truculence", "ubiquitous", "undermine", "underscore", "unearth", "unequivocal", "unprecedented", "unseemly", "vacillate", "venerate", "veracious", "veracity", "verbose",
-                "viable", "vintage", "virtual", "viscous", "vituperate", "vituperative", "volatile", "warranted", "wary", "welter", "whereas", "whimsical", "wily",
-                "zeal", "zealot", "zenith"
-        };
-        return s;
+    public ArrayList<String> getWords(Context context) {
+        InputStream is = context.getResources().openRawResource(R.raw.words);
+        InputStreamReader ir = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(ir);
+
+        ArrayList<String> ret = new ArrayList<>();
+        try {
+            String line;
+            while (( line = br.readLine()) != null) {
+                ret.add(line);
+            }
+        } catch (IOException e) {
+            return null;
+        }
+        return ret;
     }
 
     public String[][] getPracticeWords() {

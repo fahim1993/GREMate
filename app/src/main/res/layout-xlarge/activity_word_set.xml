@@ -7,214 +7,51 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.fahim.gremate.WordSetActivity">
+    tools:context="com.example.fahim.gremate.ListWordsActivity">
 
-    <!--<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
-    <!--android:id="@+id/toolbar"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:minHeight="?attr/actionBarSize"-->
-    <!--android:background="?attr/colorPrimary"-->
-    <!--app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"-->
-    <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>-->
-
+    <TextView
+        android:id="@+id/wordListTitle"
+        android:textColor="#000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:maxLines="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/listWordsCV"
-        app:cardBackgroundColor="@color/cardviewBackground"
+        android:layout_height="0dp"
+        android:layout_weight="27"
+        android:id="@+id/wordSetCardView"
         android:layout_margin="5dp"
-        app:cardCornerRadius="3dp"
-        app:cardElevation="3dp"
-        app:contentPadding="4dp"
+        card_view:cardBackgroundColor="@color/cardviewBackground"
+        card_view:cardCornerRadius="3dp"
+        card_view:cardElevation="3dp"
+        card_view:contentPadding="4dp"
         >
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
-                android:id="@+id/rl1"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-               >
-
-                <TextView
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="3dp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="25sp"
-                    android:textColor="#000"
-                    android:maxLines="1"
-                    android:layout_weight="1"
-                    android:id="@+id/listTitle"/>
-
-                <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/changeList"
-                    android:layout_marginTop="-5dp"
-                    android:padding="3dp"
-                    android:src="@drawable/ic_ws_changelist"
-                    android:scaleType="fitCenter"
-                    app:backgroundTint="@color/cardviewBackground"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"/>
-
-
-
-                <!--<ImageButton-->
-                    <!--android:id="@+id/listOptions"-->
-                    <!--android:layout_marginTop="-5dp"-->
-                    <!--android:padding="6dp"-->
-                    <!--android:src="@drawable/more"-->
-                    <!--android:scaleType="fitCenter"-->
-                    <!--android:backgroundTint="@color/cardviewBackground"-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="40dp"-->
-                    <!--android:layout_weight="2"/>-->
-
-            </LinearLayout>
-            <View
-                android:layout_below="@id/rl1"
-                android:id="@+id/v1"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"/>
-
-            <LinearLayout
-                android:id="@+id/ll1"
-                android:layout_below="@id/rl1"
-                android:layout_marginLeft="50dp"
-                android:layout_marginRight="50dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                >
-
-                <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/addWordBtn"
-                    app:backgroundTint="@color/colorPrimary"
-                    android:tint="#FFF"
-                    android:src="@drawable/ic_ws_add_word"
-                    android:scaleType="fitCenter"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp" />
-
-                <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/searchBtn"
-                    android:src="@drawable/ic_ws_search"
-                    android:scaleType="fitCenter"
-                    app:backgroundTint="@color/colorPrimary"
-                    android:tint="#FFF"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp" />
-
-                <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/sortBtn"
-                    android:src="@drawable/ic_ws_reorder"
-                    android:scaleType="fitCenter"
-                    app:backgroundTint="@color/colorPrimary"
-                    android:tint="#FFF"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp" />
-
-
-
-                <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/practiceBtn"
-                    android:src="@drawable/ic_ws_exercise"
-                    android:scaleType="fitCenter"
-                    app:backgroundTint="@color/colorPrimary"
-                    android:tint="#FFF"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp" />
-
-                <android.support.v7.widget.AppCompatImageButton
-                    android:id="@+id/deleteBtn"
-                    android:src="@drawable/deltbtn"
-                    android:scaleType="fitCenter"
-                    app:backgroundTint="@color/colorPrimary"
-                    android:tint="#FFF"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp" />
-
-
-            </LinearLayout>
-
             <ProgressBar
                 android:layout_centerInParent="true"
                 android:visibility="gone"
-                android:id="@+id/loadWordRV"
+                android:id="@+id/loadWordListRV"
                 android:layout_width="50dp"
                 android:layout_height="50dp" />
 
             <android.support.v7.widget.RecyclerView
-                android:layout_marginTop="5dp"
-                android:id="@+id/wordInListRV"
+                android:id="@+id/rvWordList"
                 android:layout_width="match_parent"
-                android:layout_below="@+id/ll1"
-                android:layout_height="match_parent"
-                android:scrollbars="vertical"
-                android:scrollbarThumbVertical="@android:color/darker_gray"
-                android:scrollbarSize="5dp"
-            />
+                android:layout_height="match_parent" />
 
         </RelativeLayout>
 
     </android.support.v7.widget.CardView>
-
-
-    <!--<LinearLayout-->
-    <!--android:id="@+id/ll"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:weightSum="10">-->
-    <!--<TextView-->
-    <!--android:id="@+id/listTitle"-->
-    <!--android:textColor="#000"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:textSize="20dp"-->
-    <!--android:layout_marginTop="5dp"-->
-    <!--android:layout_weight="6"-->
-    <!--android:ellipsize="end"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:maxLines="1" />-->
-    <!--<Button-->
-    <!--android:id="@+id/changeList"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_weight="2"-->
-    <!--android:text="change"-->
-    <!--android:textSize="10dp"-->
-    <!--android:maxLines="1"-->
-    <!--android:layout_height="wrap_content" />-->
-    <!--<Button-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_weight="2"-->
-    <!--android:text="exercise"-->
-    <!--android:textSize="10dp"-->
-    <!--android:maxLines="1"-->
-    <!--android:layout_height="wrap_content" />-->
-
-    <!--</LinearLayout>-->
-
-    <!--<Button-->
-    <!--android:layout_below="@+id/ll"-->
-    <!--android:id="@+id/addWord"-->
-    <!--android:text="Add Word"-->
-    <!--android:backgroundTint="@color/colorAccent"-->
-    <!--android:textColor="#FFF"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content" />-->
-
-    <!--<android.support.v7.widget.RecyclerView-->
-    <!--android:id="@+id/rvWordList"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_below="@+id/ll"-->
-    <!--android:layout_height="match_parent" />-->
 
 </LinearLayout>

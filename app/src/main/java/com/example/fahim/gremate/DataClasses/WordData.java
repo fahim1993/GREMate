@@ -5,26 +5,16 @@ package com.example.fahim.gremate.DataClasses;
  */
 
 public class WordData {
-    private String word, des, mn;
+    private String des, mn;
 
     public WordData() {
-        this.word = "";
         this.des = "";
         this.mn = "";
     }
 
-    public WordData(String word, String des, String mn) {
-        this.word = word;
+    public WordData(String des, String mn) {
         this.des = des;
         this.mn = mn;
-    }
-
-    public String getWord() {
-        return word;
-    }
-
-    public void setWord(String word) {
-        this.word = word;
     }
 
     public String getDes() {

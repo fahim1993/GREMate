@@ -5,18 +5,16 @@ package com.example.fahim.gremate.DataClasses;
  */
 
 public class WordDef {
-    private String word, title, syn, ant, def;
+    private String title, syn, ant, def;
 
     public WordDef() {
-        this.word = "";
         this.title = "";
         this.syn = "";
         this.ant = "";
         this.def = "";
     }
 
-    public WordDef(String word, String title, String syn, String ant, String def) {
-        this.word = word;
+    public WordDef(String title, String syn, String ant, String def) {
         this.title = title;
         this.syn = syn;
         this.ant = ant;
@@ -30,14 +28,6 @@ public class WordDef {
 
     public void setDef(String def) {
         this.def = def;
-    }
-
-    public String getWord() {
-        return word;
-    }
-
-    public void setWord(String word) {
-        this.word = word;
     }
 
     public String getTitle() {

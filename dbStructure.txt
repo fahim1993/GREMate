@@ -1,69 +1,63 @@
 UserWords:
-   id:
-   WordSet:
-      id:
-         name:
-         owner:
-         wordCount:
-         lastOpen:
-         allList:
+    id:
+        WordSet:
+            id:
+                name:
+                wordCount:
+                mainList:
    
-   WordList:
-      id:
-         wordSet: (WordSetID)
-         name:
-         wordCount:
+        WordList:
+            wordSetId:
+                id:
+                    name:
+                    wordCount:
 
-   WordClones:
-       id:
+        WordClones:
             wordId:
-   Word:
-      id:
-	     copyOf:
-		 listId:
-         value:
-         sourceListName:
-		 practicable: 
-		 validity: 0=Fetch Data, 1=Data is set, 2=Data Fetched with Error
-         lastOpen:
-		 level:
+                id:
+                    cloneId:
+                    listId:
+
+        Word:
+            listId:
+                id:
+                    cloneOf:
+                    value:
+                    sourceListName:
+                    practicable:
+                    validity: 0=Fetch Data, 1=Data is set, 2=Data Fetched with Error
+                    lastOpen:
+                    level:
          
-   WordDef:
-      id:
-         word:
-         title:
-         def:
-         syn:
-         ant:
+        WordDef:
+            word:
+                id:
+                    title:
+                    def:
+                    syn:
+                    ant:
          
-   WordData:
-      id:
-         word: (WordID)
-         des:
-         mn:
+        WordData:
+            word:
+                id:
+                    des:
+                    mn:
 
-   Sentence:
-      id:
-         word:
-         value:
+        Sentence:
+            word:
+                id:
+                    value:
 
-   Image:
-       id:
-          word:
-          url:
+        Image:
+            word:
+                id:
+                    url:
 
-   Friend:
-       id:
-           name:
-           id:
-
-   FriendNotf:
-       id:
-           value:
-
+        LastListId:
+        LastWordSetId:
                      
 UserData:
-	ID:
-             userEmail:
-	     userName:
+    ID:
+        userEmail:
+        userName:
       

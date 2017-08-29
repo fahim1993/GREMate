@@ -5,8 +5,6 @@ package com.example.fahim.gremate.DataClasses;
  */
 
 import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -15,7 +13,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
@@ -24,6 +21,7 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
     private final String url2 = "https://www.vocabulary.com/dictionary/";
     private final String url3 = "http://corpus.vocabulary.com/api/1.0/examples.json?query=";
     private final String url4 = "http://www.mnemonicdictionary.com/?word=";
+    private final String url5 = "http://wordinfo.info/results/";
 
     protected WordAllData wordAllData;
 
@@ -40,8 +38,9 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
             Document doc1 = Jsoup.connect(url2 + word).get();
             Document doc2 = Jsoup.connect(url3 + word + "&maxResults=20").ignoreContentType(true).get();
             Document doc3 = Jsoup.connect(url4 + word).get();
+            Document doc4 = Jsoup.connect(url5 + word).get();
 
-            Elements[] elems = new Elements[8];
+            Elements[] elems = new Elements[9];
 
             elems[0] = doc.select("h3.term");
             elems[1] = doc.select("p.definition");
@@ -50,6 +49,7 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
             elems[4] = doc1.select("p.short");
             elems[5] = doc1.select("p.long");
             elems[7] = doc3.select("div.span9");
+            elems[8] = doc4.select("div.definition").select("img");
 
             if (elems[0].hasText()) error = false;
 
@@ -116,7 +116,7 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                 ArrayList<WordDef> wordDefs = new ArrayList<>();
 
                 for(i=0; i<no; i++){
-                    wordDefs.add(new WordDef(wordId, titles[i], syns[i], ants[i], defs[i]));
+                    wordDefs.add(new WordDef(titles[i], syns[i], ants[i], defs[i]));
                 }
                 wordAllData.setWordDefs(wordDefs);
 
@@ -126,14 +126,13 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                 // Set it from the calling class
                 // Word word1 = new Word(wordSetId, wordListId, word, true, false, false, 0, 0);
 
-                if(shortds.length()<1) wordAllData.setWordData(new WordData(wordId, "", mn));
-                else wordAllData.setWordData(new WordData(wordId, shortds + "\n\n" + longds, mn));
+                if(shortds.length()<1) wordAllData.setWordData(new WordData("", mn));
+                else wordAllData.setWordData(new WordData(shortds + "\n\n" + longds, mn));
 
-                ArrayList<Sentence> sentences = new ArrayList<>();
+                ArrayList<WordSentence> wordSentences = new ArrayList<>();
                 String jsn = doc2.text();
                 JSONObject obj = new JSONObject(jsn);
-                JSONArray sts = obj.getJSONObject("result").getJSONArray("sentences");
-                System.out.println(sts.length());
+                JSONArray sts = obj.getJSONObject("result").getJSONArray("sentences"); 
                 for(int ii=0; ii<sts.length(); ii++){
                     if(ii==8)break;
                     JSONObject ith = (JSONObject)sts.get(ii);
@@ -151,16 +150,24 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                         pv=en;
                     }
                     if(pv < sentence.length()) finalSentence += sentence.substring(pv, sentence.length());
-                    sentences.add(new Sentence(wordId, finalSentence));
+                    wordSentences.add(new WordSentence(finalSentence));
                 }
 
-                wordAllData.setSentences(sentences);
+                wordAllData.setWordSentences(wordSentences);
 
                 for(Element e: elems[7]){
                     String mns = e.text();
                     wordAllData.getWordData().setMn(mns);
                     break;
                 }
+
+                ArrayList<WordImageFB> images = new ArrayList<>();
+                for(Element e: elems[8]){
+                    String imgUrl = e.absUrl("src");
+                    images.add(new WordImageFB(wordId, imgUrl));
+                }
+
+                wordAllData.setImages(images);
             }
 
         } catch (Throwable t) {

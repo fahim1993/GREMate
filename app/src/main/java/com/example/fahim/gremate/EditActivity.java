@@ -12,14 +12,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
-import com.example.fahim.gremate.DataClasses.Sentence;
+import com.example.fahim.gremate.DataClasses.WordSentence;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordAllData;
 import com.example.fahim.gremate.DataClasses.WordData;
@@ -81,7 +79,6 @@ public class EditActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         wordId = bundle.getString("word_id");
-        Log.d("ID", wordId);
 
         final float scale = this.getResources().getDisplayMetrics().density;
         delbtnSize = (int) (45 * scale);
@@ -104,7 +101,7 @@ public class EditActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        editWordSetup();
+//        editWordSetup();
     }
 
     @Override
@@ -127,124 +124,124 @@ public class EditActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    public void editWordSetup() {
-
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        ref1 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORD).child(wordId);
-        listener1 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                wordAllData.setWord(dataSnapshot.getValue(Word.class));
-                TextView wrd = (TextView) findViewById(R.id.WordOperationWord);
-                wrd.setText(wordAllData.getWord().getValue().toUpperCase());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        ref1.addValueEventListener(listener1);
-
-        query2 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDDATA).orderByChild("word").equalTo(wordId);
-        listener2 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getChildrenCount() == 0)return;
-                for(DataSnapshot ds :dataSnapshot.getChildren()){
-                    WordData wd = ds.getValue(WordData.class);
-                    wordAllData.setWordData(wd);
-                    if (wordAllData.getWordData().getDes().length() > 0) {
-                        desLL.addView(addDescLL(true, wordAllData.getWordData().getDes()));
-                    }
-                    if (wordAllData.getWordData().getMn().length() > 0) {
-                        mnLL.addView(addMnLL(true, wordAllData.getWordData().getMn()));
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        };
-        query2.addValueEventListener(listener2);
-
-        query3 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDDEF).orderByChild("word").equalTo(wordId);
-        listener3 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getChildrenCount() == 0)return;
-                ArrayList<WordDef> wordDefs = new ArrayList<WordDef>();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    WordDef w = ds.getValue(WordDef.class);
-                    wordDefs.add(w);
-                }
-                wordAllData.setWordDefs(wordDefs);
-                if (wordDefs.size() > 0) {
-                    for (int i = 0; i < wordDefs.size(); i++) {
-                        LinearLayout ll = addDefiLL(true, wordDefs.get(i));
-                        defsLL.addView(ll, defsLL.getChildCount() - 1);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        };
-        query3.addValueEventListener(listener3);
-
-        query4 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.SENTENCE).orderByChild("word").equalTo(wordId);
-        listener4 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getChildrenCount() == 0)return;
-                ArrayList<Sentence> sentences = new ArrayList<Sentence>();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Sentence w = ds.getValue(Sentence.class);
-                    sentences.add(w);
-                }
-                wordAllData.setSentences(sentences);
-                if (sentences.size() > 0) {
-                    for (int i = 0; i < sentences.size(); i++) {
-                        LinearLayout ll = addSentLL(true, sentences.get(i));
-                        senLL.addView(ll, senLL.getChildCount() - 1);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        };
-        query4.addValueEventListener(listener4);
-
-        query5 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.IMAGE).orderByChild("word").equalTo(wordId);
-        listener5 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<WordImageFB> images = new ArrayList<>();
-                for(DataSnapshot ds: dataSnapshot.getChildren()){
-                    WordImageFB wordImageFB = ds.getValue(WordImageFB.class);
-                    images.add(wordImageFB);
-                }
-                wordAllData.setImages(images);
-                if (images.size() > 0) {
-                    for (int i = 0; i < images.size(); i++) {
-                        LinearLayout ll = addImgLL(true, images.get(i));
-                        imgLL.addView(ll, imgLL.getChildCount() - 1);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        query5.addValueEventListener(listener5);
-    }
+//
+//    public void editWordSetup() {
+//
+//        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//        ref1 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORD).child(wordId);
+//        listener1 = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                wordAllData.setWord(dataSnapshot.getValue(Word.class));
+//                TextView wrd = (TextView) findViewById(R.id.WordOperationWord);
+//                wrd.setText(wordAllData.getWord().getValue().toUpperCase());
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        };
+//        ref1.addValueEventListener(listener1);
+//
+//        query2 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDDATA).child(wordId);
+//        listener2 = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if(dataSnapshot.getChildrenCount() == 0)return;
+//                for(DataSnapshot ds :dataSnapshot.getChildren()){
+//                    WordData wd = ds.getValue(WordData.class);
+//                    wordAllData.setWordData(wd);
+//                    if (wordAllData.getWordData().getDes().length() > 0) {
+//                        desLL.addView(addDescLL(true, wordAllData.getWordData().getDes()));
+//                    }
+//                    if (wordAllData.getWordData().getMn().length() > 0) {
+//                        mnLL.addView(addMnLL(true, wordAllData.getWordData().getMn()));
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//            }
+//        };
+//        query2.addValueEventListener(listener2);
+//
+//        query3 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDDEF).child(wordId);
+//        listener3 = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if(dataSnapshot.getChildrenCount() == 0)return;
+//                ArrayList<WordDef> wordDefs = new ArrayList<WordDef>();
+//                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+//                    WordDef w = ds.getValue(WordDef.class);
+//                    wordDefs.add(w);
+//                }
+//                wordAllData.setWordDefs(wordDefs);
+//                if (wordDefs.size() > 0) {
+//                    for (int i = 0; i < wordDefs.size(); i++) {
+//                        LinearLayout ll = addDefiLL(true, wordDefs.get(i));
+//                        defsLL.addView(ll, defsLL.getChildCount() - 1);
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//            }
+//        };
+//        query3.addValueEventListener(listener3);
+//
+//        query4 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.SENTENCE).child(wordId);
+//        listener4 = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                if(dataSnapshot.getChildrenCount() == 0)return;
+//                ArrayList<WordSentence> wordSentences = new ArrayList<WordSentence>();
+//                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+//                    WordSentence w = ds.getValue(WordSentence.class);
+//                    wordSentences.add(w);
+//                }
+//                wordAllData.setWordSentences(wordSentences);
+//                if (wordSentences.size() > 0) {
+//                    for (int i = 0; i < wordSentences.size(); i++) {
+//                        LinearLayout ll = addSentLL(true, wordSentences.get(i));
+//                        senLL.addView(ll, senLL.getChildCount() - 1);
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//            }
+//        };
+//        query4.addValueEventListener(listener4);
+//
+//        query5 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.IMAGE).child(wordId);
+//        listener5 = new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                ArrayList<WordImageFB> images = new ArrayList<>();
+//                for(DataSnapshot ds: dataSnapshot.getChildren()){
+//                    WordImageFB wordImageFB = ds.getValue(WordImageFB.class);
+//                    images.add(wordImageFB);
+//                }
+//                wordAllData.setImages(images);
+//                if (images.size() > 0) {
+//                    for (int i = 0; i < images.size(); i++) {
+//                        LinearLayout ll = addImgLL(true, images.get(i));
+//                        imgLL.addView(ll, imgLL.getChildCount() - 1);
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        };
+//        query5.addValueEventListener(listener5);
+//    }
 
 
     public void addDesc(View v) {
@@ -439,7 +436,7 @@ public class EditActivity extends AppCompatActivity {
         llp.addView(addSentLL(false, null), llp.getChildCount() - 1);
     }
 
-    private LinearLayout addSentLL(boolean flg, Sentence s) {
+    private LinearLayout addSentLL(boolean flg, WordSentence s) {
 
         SentenceView st = new SentenceView();
 
@@ -452,7 +449,7 @@ public class EditActivity extends AppCompatActivity {
 
         TextView tvSent = new TextView(EditActivity.this);
         tvSent.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        tvSent.setText("Sentence");
+        tvSent.setText("WordSentence");
         EditText edSent = new EditText(EditActivity.this);
         edSent.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         if (flg) edSent.setText(s.getValue());
@@ -563,7 +560,6 @@ public class EditActivity extends AppCompatActivity {
     }
 
     public void save(View v) {
-        Log.d("setWordData21", "smt");
         boolean practicable = false;
         for (DefinitionView dv : definitionViews) {
             String df = dv.edDef.getText().toString().replaceAll("\\s","");
@@ -590,7 +586,6 @@ public class EditActivity extends AppCompatActivity {
     }
 
     public void saveData(){
-        Log.d("setWordData1", "smt");
         DB.deleteWord(wordId, " ", false, true);
 
         Toast.makeText(EditActivity.this, "Saved", Toast.LENGTH_SHORT).show();
@@ -602,24 +597,20 @@ public class EditActivity extends AppCompatActivity {
         }
 
         ArrayList<WordDef> defs = new ArrayList<>();
-        ArrayList<Sentence> sentences = new ArrayList<>();
+        ArrayList<WordSentence> wordSentences = new ArrayList<>();
 
         for (SentenceView sv : sentenceViews) {
             if (sv.edSent.getText().length() > 0) {
-                Sentence s = new Sentence();
-                s.setWord(wordId);
-                s.setValue(sv.edSent.getText().toString());
-                sentences.add(s);
+                wordSentences.add(new WordSentence(sv.edSent.getText().toString()));
             }
         }
-        wordAllData.setSentences(sentences);
+        wordAllData.setWordSentences(wordSentences);
 
         ArrayList<WordImageFB> images = new ArrayList<>();
 
         for (ImageView iv : imageViews) {
             if (iv.edImg.getText().length() > 0) {
                 WordImageFB im = new WordImageFB();
-                im.setWord(wordId);
                 im.setUrl(iv.edImg.getText().toString());
                 images.add(im);
             }
@@ -632,7 +623,6 @@ public class EditActivity extends AppCompatActivity {
                     dv.edSyn.getText().length() > 0 ||
                     dv.edAnt.getText().length() > 0) {
                 WordDef d = new WordDef();
-                d.setWord(wordId);
                 d.setTitle(dv.edTitle.getText().toString());
                 d.setDef(dv.edDef.getText().toString());
                 d.setSyn(dv.edSyn.getText().toString());
@@ -644,7 +634,6 @@ public class EditActivity extends AppCompatActivity {
         wordAllData.getWord().setValidity(1);
 
         WordData wordData = new WordData();
-        wordData.setWord(wordId);
 
         if(description == null)
             wordData.setDes("");
@@ -661,7 +650,6 @@ public class EditActivity extends AppCompatActivity {
 
         wordAllData.getWord().setPracticable(practicable);
 
-        Log.d("setWordData2", "smt");
         DB.setWordData(wordAllData, wordId);
 
         finish();

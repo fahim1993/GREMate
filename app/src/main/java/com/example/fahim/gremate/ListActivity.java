@@ -2,7 +2,9 @@ package com.example.fahim.gremate;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,110 +17,142 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.fahim.gremate.Adapters.WordSetAdapter;
+import com.example.fahim.gremate.Adapters.ListAdapter;
 import com.example.fahim.gremate.DataClasses.DB;
-import com.example.fahim.gremate.DataClasses.UserData;
-import com.example.fahim.gremate.DataClasses.WordList;
-import com.example.fahim.gremate.DataClasses.WordSet;
-import com.example.fahim.gremate.DataClasses.WordSetwID;
+import com.example.fahim.gremate.DataClasses.List;
+import com.example.fahim.gremate.DataClasses.ListWithId;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class LearnActivity extends NavDrawerActivity {
+public class ListActivity extends NavDrawerActivity {
 
-    private ArrayList<WordSetwID> wordSets;
+    String wsId = "";
+    String mainListId = "";
+    String wsTitle = "";
+    String lastListId = "";
 
-    private String uid;
+    RecyclerView listRecyclerView;
+    ProgressBar loadList;
 
-    private RecyclerView wsRecyclerView;
-
-    private ProgressBar loadWordSet;
-
-    private TextView wordSetTitle;
-
-    DatabaseReference ref1;
     ValueEventListener listener1;
+    ValueEventListener listener2;
+    DatabaseReference ref1;
+    DatabaseReference ref2;
+
+    ArrayList<ListWithId> lists;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_learn);
+        setContentView(R.layout.activity_list);
 
         setupNavDrawerClick();
 
-        wordSetTitle = (TextView) findViewById(R.id.wordSetTitle);
+        Bundle extras = getIntent().getExtras();
 
-        setWsTitle();
-        setTitle("LEARN");
+        if(extras == null) finish();
 
-        wsRecyclerView = (RecyclerView)findViewById(R.id.rvWordSet);
-        wsRecyclerView.setHasFixedSize(true);
+
+        wsId = extras.getString("wsId");
+        mainListId = extras.getString("mainListId");
+        wsTitle = extras.getString("wordSetTitle");
+
+        Log.d("List word set id ", wsId);
+        Log.d("List mainListId ", mainListId);
+        Log.d("List wsTitle ", wsTitle);
+
+        ((TextView)findViewById(R.id.wordListTitle)).setText(wsTitle+ " lists: ");
+
+        setTitle("GREMate");
+
+        listRecyclerView = (RecyclerView)findViewById(R.id.rvWordList);
+        listRecyclerView.setHasFixedSize(true);
+
         LinearLayoutManager llm = new LinearLayoutManager(this);
-        wsRecyclerView.setLayoutManager(llm);
+        listRecyclerView.setLayoutManager(llm);
 
-        loadWordSet = (ProgressBar) findViewById(R.id.loadWordSetRV);
-
+        loadList = (ProgressBar) findViewById(R.id.loadWordListRV);
+        lists = new ArrayList<>();
     }
+
+    public void getLastListId(){
+        DB.initDB();
+        ref2 = DB.LAST_LIST;
+        listener2 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists())lastListId = (String) dataSnapshot.getValue();
+                ref2.removeEventListener(listener2);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError){ }
+        };
+        ref2.addValueEventListener(listener2);
+    }
+
 
     @Override
     protected void onResume() {
         super.onResume();
+        getLastListId();
 
-        wsRecyclerView.setVisibility(View.GONE);
-        loadWordSet.setVisibility(View.VISIBLE);
+        listRecyclerView.setVisibility(View.GONE);
+        loadList.setVisibility(View.VISIBLE);
 
-        setWordSet();
+        setWordList();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if(listener1!=null){
-            ref1.removeEventListener(listener1);
-        }
+        if(listener1!=null) ref1.removeEventListener(listener1);
+        if(listener2!=null) ref2.removeEventListener(listener2);
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.learn_menu, menu);
+        inflater.inflate(R.menu.menu_list, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.addSet:
-                AlertDialog.Builder builder = new AlertDialog.Builder(LearnActivity.this);
-                builder.setTitle("WORD SET NAME");
+            case R.id.addList:
+                AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
+                builder.setTitle("Add list");
 
-                final EditText input = new EditText(LearnActivity.this);
-
+                final EditText input = new EditText(ListActivity.this);
+                input.setHint("List name");
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 builder.setView(input);
 
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String wsname = input.getText().toString();
-                        if(wsname.length()<1){
-                            Toast.makeText(LearnActivity.this, "Failed! Name must be at least 1 character long.", Toast.LENGTH_LONG).show();
+                        String listName = input.getText().toString();
+                        if(listName.length()<2){
+                            Toast.makeText(ListActivity.this,
+                                    "Failed! Name must be at least 2 characters long.", Toast.LENGTH_LONG).show();
                         }
                         else{
-                            DB.newWordSet(wsname);
+                            Toast.makeText(ListActivity.this,
+                                    "List "+listName+" created", Toast.LENGTH_LONG).show();
+                            DB.newList(wsId, listName);
                         }
                     }
                 });
@@ -137,45 +171,24 @@ public class LearnActivity extends NavDrawerActivity {
 
     }
 
-    private void setWsTitle(){
-        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference mref = FirebaseDatabase.getInstance().getReference().child(DB.USER_DATA).child(uid);
-        mref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                UserData user = dataSnapshot.getValue(UserData.class);
-                wordSetTitle.setText(user.getUserName() + "'s Word Set");
-            }
+    private void setWordList(){
+        DB.initDB();
+        ref1 = DB.WORD_LIST.child(wsId);
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void setWordSet(){
-        if(listener1 != null){
-            ref1.removeEventListener(listener1);
-        }
-
-        ref1 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDSET);
         listener1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                wordSets = new ArrayList<>();
-                for(DataSnapshot ds: dataSnapshot.getChildren()){
-                    WordSet w = ds.getValue(WordSet.class);
-                    String id = ds.getKey();
-                    WordSetwID wg = new WordSetwID(w, id);
-                    wordSets.add(wg);
+                lists = new ArrayList<>();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    List wl = ds.getValue(List.class);
+                    ListWithId wlId = new ListWithId(wl, ds.getKey());
+                    lists.add(wlId);
                 }
-                Collections.reverse(wordSets);
-                wsRecyclerView.setAdapter(new WordSetAdapter(wordSets, LearnActivity.this));
-                wsRecyclerView.setVisibility(View.VISIBLE);
-                loadWordSet.setVisibility(View.GONE);
+                Collections.reverse(lists);
+                listRecyclerView.setAdapter(new ListAdapter(lists, ListActivity.this, wsId, mainListId, lastListId));
+                listRecyclerView.setVisibility(View.VISIBLE);
+                loadList.setVisibility(View.GONE);
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -192,20 +205,20 @@ public class LearnActivity extends NavDrawerActivity {
                 Intent intent;
                 switch(menuItem.getItemId()){
                     case R.id.nav_learn:
-                        intent = new Intent(LearnActivity.this, LearnActivity.class);
+                        intent = new Intent(ListActivity.this, WordSetActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                         finish();
                         break;
                     case R.id.nav_signout:
-                        new AlertDialog.Builder(LearnActivity.this)
+                        new AlertDialog.Builder(ListActivity.this)
                                 .setTitle("Confirm Sign Out")
                                 .setMessage( "Are you sure you want to sign out?")
                                 .setPositiveButton("Sign Out", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         FirebaseAuth.getInstance().signOut();
-                                        Intent intent = new Intent(LearnActivity.this, LoginActivity.class);
+                                        Intent intent = new Intent(ListActivity.this, LoginActivity.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intent);
                                         finish();
@@ -218,19 +231,14 @@ public class LearnActivity extends NavDrawerActivity {
                                 }).show();
                         break;
                     case R.id.nav_search:
-                        intent = new Intent(LearnActivity.this, SearchActivity.class);
-                        LearnActivity.this.startActivity(intent);
+                        intent = new Intent(ListActivity.this, SearchActivity.class);
+                        ListActivity.this.startActivity(intent);
                         break;
                     case R.id.nav_exercise:
-                        intent = new Intent(LearnActivity.this, PracticeActivity.class);
+                        intent = new Intent(ListActivity.this, PracticeActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
                         finish();
-                        break;
-                    case R.id.nav_friend:
-                        intent = new Intent(LearnActivity.this, FriendActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
                         break;
                 }
                 return true;
@@ -244,23 +252,9 @@ public class LearnActivity extends NavDrawerActivity {
             if(mDrawerLayout.isDrawerOpen(Gravity.LEFT))
                 mDrawerLayout.closeDrawer(Gravity.LEFT);
             else {
-                new AlertDialog.Builder(LearnActivity.this)
-                        .setTitle("Close")
-                        .setMessage("Are you sure you want to close GREMate?")
-                        .setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                finishAffinity();
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                            }
-                        }).show();
+               finish();
             }
         }
         return true;
     }
-
 }

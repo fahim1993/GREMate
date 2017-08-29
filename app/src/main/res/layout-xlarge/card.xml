@@ -16,18 +16,13 @@
     >
 
     <RelativeLayout
+        android:layout_marginStart="5dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <ImageView
-            android:id="@+id/img"
-            android:src="@drawable/ic_green2"
-            android:layout_width="45dp"
-            android:layout_height="55dp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/img"
             android:layout_centerVertical="true"
             android:id="@+id/rl1">
 
@@ -46,7 +41,6 @@
                 android:textColor="#000"
                 android:id="@+id/wordSetData"
                 android:layout_below="@id/wordSetName"/>
-
 
         </RelativeLayout>
 
