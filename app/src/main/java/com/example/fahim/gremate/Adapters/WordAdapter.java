@@ -38,8 +38,9 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     private String mainListId;
     private String currentListId;
 
-    public WordAdapter(ArrayList<WordWithId> wordList, Context context, String wsId, String mainListId, String currentListId) {
+    public WordAdapter(ArrayList<WordWithId> wordList, ArrayList<ListWithId>otherLists, Context context, String wsId, String mainListId, String currentListId) {
         this.wordList = wordList;
+        this.otherLists = otherLists;
         this.context = context;
         this.wsId = wsId;
         this.mainListId = mainListId;
@@ -56,7 +57,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     @Override
     public void onBindViewHolder(WordViewHolder holder, final int position) {
         holder.wordValue.setText(wordList.get(position).getValue().toUpperCase());
-        if ( !wordList.get(position).isClone() || currentListId.equals(mainListId))
+        if (!wordList.get(position).isClone() || currentListId.equals(mainListId))
             holder.sourceListName.setText(wordList.get(position).getSourceListName());
         else holder.sourceListName.setText(wordList.get(position).getSourceListName() + " (c)");
 
@@ -71,10 +72,11 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                     Word w = wordList.get(i).toWord();
                     words.add(w);
                 }
-                Bundle b = new Bundle();
-                b.putParcelableArrayList("words", words);
-                b.putInt("index", position);
-                intent.putExtra("bundle", b);
+                intent.putParcelableArrayListExtra("words", words);
+                intent.putExtra("index", position);
+                intent.putExtra("listId", currentListId);
+                intent.putExtra("wsId", wsId);
+                intent.putExtra("mainListId", mainListId);
                 context.startActivity(intent);
             }
         });
@@ -87,7 +89,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                 builder.setTitle(_word.getValue().toUpperCase());
 
                 CharSequence[] listNames;
-                if ( !_word.isClone() || currentListId.equals(mainListId))
+                if (!_word.isClone() || currentListId.equals(mainListId))
                     listNames = new CharSequence[]{"Add to another list", "Edit", "Delete"};
                 else
                     listNames = new CharSequence[]{"Add to another list", "Edit", "Remove from list", "Delete"};
@@ -96,7 +98,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         if (i == 0) {
-                            if (otherLists==null || otherLists.size() == 0) {
+                            if (otherLists == null || otherLists.size() == 0) {
                                 Toast.makeText(context,
                                         "Please create a new list first!", Toast.LENGTH_LONG).show();
                                 return;
@@ -120,8 +122,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                             });
                             AlertDialog alert = builder.create();
                             alert.show();
-                        }
-                        else if (i == 1) {
+                        } else if (i == 1) {
                             Intent intent = new Intent(context, EditActivity.class);
 
                             Bundle b = new Bundle();
@@ -131,9 +132,8 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                             context.startActivity(intent);
 
                             return;
-                        }
-                        else {
-                            if ( !_word.isClone() || currentListId.equals(mainListId)) {
+                        } else {
+                            if (!_word.isClone() || currentListId.equals(mainListId)) {
                                 new AlertDialog.Builder(context)
                                         .setTitle("Confirm Delete")
                                         .setMessage("Are you sure you want to delete this word?")
@@ -153,9 +153,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                             }
                                         }).show();
 
-                            }
-
-                            else {
+                            } else {
                                 if (i == 2) {
                                     new AlertDialog.Builder(context)
                                             .setTitle("Confirm Remove")
@@ -204,7 +202,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
 
         int lvl = wordList.get(position).getLevel();
-        switch (lvl){
+        switch (lvl) {
             case Word.LVL_EASY:
                 holder.img.setImageResource(R.drawable.easy);
                 break;
@@ -222,14 +220,6 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     @Override
     public int getItemCount() {
         return wordList.size();
-    }
-
-    public ArrayList<ListWithId> getOtherLists() {
-        return otherLists;
-    }
-
-    public void setOtherLists(ArrayList<ListWithId> otherLists) {
-        this.otherLists = otherLists;
     }
 
 

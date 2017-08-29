@@ -13,10 +13,10 @@ public class Word implements Parcelable{
     public static final int INVALID = -1;
     public static final int UNKNOWN = 0;
 
-    public static final int LVL_EASY = 1;
-    public static final int LVL_NORMAL = 2;
-    public static final int LVL_HARD = 3;
-    public static final int LVL_VHARD = 4;
+    public static final int LVL_EASY = 0;
+    public static final int LVL_NORMAL = 1;
+    public static final int LVL_HARD = 2;
+    public static final int LVL_VHARD = 3;
 
     private String cloneOf, value, sourceListName;
     private boolean practicable;

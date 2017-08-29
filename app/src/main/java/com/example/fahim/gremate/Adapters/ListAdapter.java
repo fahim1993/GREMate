@@ -3,10 +3,12 @@ package com.example.fahim.gremate.Adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.ListWithId;
+import com.example.fahim.gremate.ListWordsActivity;
 import com.example.fahim.gremate.R;
 
 import java.util.ArrayList;
@@ -100,11 +103,19 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             public void onClick(View view) {
                 DB.setLastListId(lists.get(position).getId());
 
-//                Intent intent = new Intent(context, ListWordsActivity.class);
-//                intent.putExtra("ListId", WLList.get(position).getId());
-//                intent.putExtra("mainListId", WLList.get(position).getMainList());
-//                intent.putExtra("ListTitle", WLList.get(position).getName());
-//                context.startActivity(intent);
+                ArrayList<ListWithId> otherLists = new ArrayList<ListWithId>();
+                for(int i=0; i< lists.size(); i++){
+                    if(i==position)continue;
+                    if(lists.get(i).getId().equals(mainListId))continue;
+                    otherLists.add(lists.get(i));
+                }
+                Intent intent = new Intent(context, ListWordsActivity.class);
+                intent.putParcelableArrayListExtra("otherLists", otherLists);
+                intent.putExtra("listId", lists.get(position).getId());
+                intent.putExtra("wsId", wsId);
+                intent.putExtra("mainListId", mainListId);
+                intent.putExtra("listTitle", lists.get(position).getName());
+                context.startActivity(intent);
             }
         });
     }

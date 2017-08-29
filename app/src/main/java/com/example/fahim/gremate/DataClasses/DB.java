@@ -75,30 +75,6 @@ public class DB {
         LAST_SET = USER_WORD.child(USER_ID).child("LastWordSetId");
     }
 
-//    public static void setCurrentWordSet(String wsId, Context context) {
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-//        SharedPreferences.Editor editor = prefs.edit();
-//        editor.putString("wordSetId", wsId);
-//        editor.apply();
-//    }
-//
-//    public static String getCurrentWordSet(Context context){
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-//        return prefs.getString("wordSetId", "-1");
-//    }
-//
-//    public static void setCurrentList(String wlId, Context context) {
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-//        SharedPreferences.Editor editor = prefs.edit();
-//        editor.putString("wordListId", wlId);
-//        editor.apply();
-//    }
-//
-//    public static String getCurrentList(Context context){
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-//        return prefs.getString("wordListId", "-1");
-//    }
-
     public static void newWordSet(final String wsName) {
         initDB();
         String wsId = WORD_SET.push().getKey();
@@ -118,7 +94,6 @@ public class DB {
                                final String mainListId, final String wordValue) {
 
         initDB();
-
         String wordId = WORD.child(listId).push().getKey();
         Word w = Word.newWord(listName, wordId, wordValue);
         WORD.child(listId).child(wordId).setValue(w);
@@ -128,7 +103,7 @@ public class DB {
             addWordToAnotherList(wsId, mainListId, w);
         }
 
-        final DatabaseReference mRef1 = WORD_LIST.child(wsId).child(mainListId).child("wordCount");
+        final DatabaseReference mRef1 = WORD_LIST.child(wsId).child(listId).child("wordCount");
         listener1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

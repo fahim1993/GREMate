@@ -51,7 +51,7 @@ public class WordSetActivity extends NavDrawerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_learn);
+        setContentView(R.layout.activity_word_set);
 
 
         setupNavDrawerClick();
