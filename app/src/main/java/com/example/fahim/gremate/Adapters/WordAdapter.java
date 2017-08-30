@@ -125,10 +125,10 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                         } else if (i == 1) {
                             Intent intent = new Intent(context, EditActivity.class);
 
-                            Bundle b = new Bundle();
                             String id = wordList.get(position).getCloneOf();
-                            b.putString("wordId", id);
-                            intent.putExtras(b);
+                            intent.putExtra("word", wordList.get(position).toWord());
+                            intent.putExtra("wsId", wsId);
+                            intent.putExtra("wordId", id);
                             context.startActivity(intent);
 
                             return;

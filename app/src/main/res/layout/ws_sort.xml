@@ -16,18 +16,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="25dp">
-        <RadioButton
-            android:id="@+id/recAdded"
-            android:text="Recently added"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
-        <RadioButton
-            android:id="@+id/recViewed"
-            android:text="Recently viewed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+
         <RadioButton
             android:id="@+id/alphabetical"
             android:text="Alphabetical"

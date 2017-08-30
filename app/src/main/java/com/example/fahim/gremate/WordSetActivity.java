@@ -53,7 +53,6 @@ public class WordSetActivity extends NavDrawerActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_word_set);
 
-
         setupNavDrawerClick();
 
         wordSetTitle = (TextView) findViewById(R.id.wordSetTitle);

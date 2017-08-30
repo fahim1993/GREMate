@@ -1,26 +1,49 @@
 package com.example.fahim.gremate;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v7.widget.AppCompatButton;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.List;
 import com.example.fahim.gremate.DataClasses.ListWithId;
+import com.example.fahim.gremate.DataClasses.Word;
+import com.example.fahim.gremate.DataClasses.WordSet;
 import com.example.fahim.gremate.DataClasses.WordSetWithId;
 import com.example.fahim.gremate.DataClasses.WordWithId;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.jar.Attributes;
+
+import static android.view.View.GONE;
 
 public class PracticeActivity extends NavDrawerActivity {
 
     private String wsId;
     private String listId;
-
-    private String uid;
 
     private Spinner wsSpinner;
     private Spinner listSpinner;
@@ -30,339 +53,380 @@ public class PracticeActivity extends NavDrawerActivity {
 
     private DatabaseReference ref1;
     private DatabaseReference ref2;
-    private Query query3;
+    private DatabaseReference ref3;
 
     private ValueEventListener listener1;
     private ValueEventListener listener2;
     private ValueEventListener listener3;
 
-    private ArrayList<WordSetWithId> wordSets;
-    private ArrayList<String> wordSetNames;
+    private ArrayList<NameIdPair> wordSets;
+    private ArrayList<NameIdPair> wordLists;
 
-    private ArrayList<ListWithId> wordLists;
-    private ArrayList<String> wordListNames;
-    private ArrayList<Integer> wordListInd;
-    private ArrayList<WordWithId> words;
+    private ArrayList<Word> words;
 
     private AppCompatButton loadButton;
-    private AppCompatButton startPracBtn;
+
+    private HashMap<String, ArrayList<NameIdPair>> wordSetListMap;
+    private HashMap<String, ArrayList<Word>> listWordMap;
 
     private ProgressBar loadPracPB;
 
     private LinearLayout ll3;
-
-    private boolean clickLoadButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_practice);
 
-//        setupNavDrawerClick();
-//
-//        setTitle("Practice");
-//
-//        Bundle b = getIntent().getExtras();
-//
-//        clickLoadButton = false;
-//
-//        if(b  != null){
-//            wsId = b.getString("ws_id");
-//            listId = b.getString("list_id");
-//
-//            clickLoadButton = true;
-//        }
-//
-//        ll3 = (LinearLayout)findViewById(R.id.ll3);
-//        ll3.setVisibility(GONE);
-//
-//        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-//
-//        wsSpinner = (Spinner) findViewById(R.id.wsSpinner);
-//        wsSpinner.setVisibility(GONE);
-//        listSpinner = (Spinner) findViewById(R.id.listSpinner);
-//        listSpinner.setVisibility(GONE);
-//
-//        wsPB = (ProgressBar) findViewById(R.id.wsLoading);
-//        listPB = (ProgressBar) findViewById(R.id.listLoading);
-//
-//        loadButton = (AppCompatButton) findViewById(R.id.loadPracBtn);
-//        loadButton.setVisibility(GONE);
-//        loadPracPB =(ProgressBar)findViewById(R.id.pracLoading);
-//        loadPracPB.setVisibility(GONE);
-//        loadButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                wsSpinner.setEnabled(false);
-//                listSpinner.setEnabled(false);
-//                loadPracPB.setVisibility(View.VISIBLE);
-//                ll3.setVisibility(GONE);
-//                getWords();
-//            }
-//        });
-//
-//        startPracBtn = (AppCompatButton)findViewById(R.id.startPracBtn);
-//        startPracBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(PracticeActivity.this, PracticingActivity.class);
-//
-//                ArrayList<Word> words_ = new ArrayList<>();
-//                for (int i=0; i<words.size(); i++) {
-//                    Word w = words.get(i).toWord();
-//                    if(w.getCloneOf().length()<1)w.setCloneOf(words.get(i).getId());
-//                    words_.add(w);
-//                }
-//                Bundle b = new Bundle();
-//                b.putParcelableArrayList("words", words_);
-//                intent.putExtra("bundle", b);
-//                startActivity(intent);
-//            }
-//        });
-//
-//        wsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                if(wordLists == null)return;
-//                wsId = wordSets.get(i).getId();
-//                wordListNames = new ArrayList<>();
-//                wordListInd = new ArrayList<>();
-//                int j = 0;
-//                for(ListWithId lid : wordLists){
-//                    if(lid.getWordSet().equals(wsId)){
-//                        wordListNames.add(lid.getName());
-//                        wordListInd.add(j);
-//                    }
-//                    j++;
-//                }
-//                ArrayAdapter<String> listArrayAdapter = new ArrayAdapter<>(
-//                        PracticeActivity.this, R.layout.spinner_item, wordListNames);
-//                listArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
-//                listSpinner.setAdapter(listArrayAdapter);
-//
-//                listId = wordLists.get(wordListInd.get(0)).getId();
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//
-//            }
-//        });
-//
-//        listSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                listId =  wordLists.get(wordListInd.get(i)).getId();
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//
-//            }
-//        });
-//
-//        getWordSet();
+        setupNavDrawerClick();
+
+        setTitle("Practice");
+
+        Bundle b = getIntent().getExtras();
+        if (b != null) {
+            wsId = b.getString("wsId");
+            listId = b.getString("listId");
+        }
+
+        ll3 = (LinearLayout) findViewById(R.id.ll3);
+        ll3.setVisibility(GONE);
+
+        wsSpinner = (Spinner) findViewById(R.id.wsSpinner);
+        listSpinner = (Spinner) findViewById(R.id.listSpinner);
+
+        wsPB = (ProgressBar) findViewById(R.id.wsLoading);
+        listPB = (ProgressBar) findViewById(R.id.listLoading);
+
+        loadButton = (AppCompatButton) findViewById(R.id.loadPracBtn);
+        loadPracPB = (ProgressBar) findViewById(R.id.pracLoading);
+
+        wsSpinner.setVisibility(GONE);
+        listSpinner.setVisibility(GONE);
+
+        wsPB.setVisibility(View.VISIBLE);
+        listPB.setVisibility(View.VISIBLE);
+
+        loadButton.setVisibility(GONE);
+        loadPracPB.setVisibility(GONE);
+
+        loadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wsSpinner.setEnabled(false);
+                listSpinner.setEnabled(false);
+                loadPracPB.setVisibility(View.VISIBLE);
+                ll3.setVisibility(GONE);
+                getWords();
+            }
+        });
+
+        findViewById(R.id.startPracBtn)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (words.size() == 0) {
+                            Toast.makeText(PracticeActivity.this, "No words selected!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        Intent intent = new Intent(PracticeActivity.this, PracticingActivity.class);
+                        intent.putParcelableArrayListExtra("words", words);
+                        startActivity(intent);
+                    }
+                });
+
+        wsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                wsId = wordSets.get(i).getId();
+                listSpinner.setVisibility(GONE);
+                listPB.setVisibility(View.VISIBLE);
+                getWordList();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        listSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                listId = wordLists.get(i).getId();
+                ll3.setVisibility(GONE);
+                loadPracPB.setVisibility(View.VISIBLE);
+                getWords();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        wordSetListMap = new HashMap<>();
+        listWordMap = new HashMap<>();
+
+        getWordSet();
     }
 
-//
-//  private void getWordSet(){
-//        if(listener1 != null){
-//            ref1.removeEventListener(listener1);
-//        }
-//        ref1 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDSET);
-//        listener1 = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                wordSets = new ArrayList<>();
-//                wordSetNames = new ArrayList<>();
-//                int i=0,wsIndex=-1;
-//                for(DataSnapshot ds: dataSnapshot.getChildren()){
-//                    WordSet w = ds.getValue(WordSet.class);
-//                    String id = ds.getKey();
-//                    WordSetWithId wg = new WordSetWithId(w, id);
-//                    wordSetNames.add(wg.getName());
-//                    wordSets.add(wg);
-//                    if(wsId!= null && wg.getId().equals(wsId))wsIndex = i;
-//                    i++;
-//                }
-//                Collections.reverse(wordSets);
-//                Collections.reverse(wordSetNames);
-//
-//                ArrayAdapter<String> wsArrayAdapter = new ArrayAdapter<>(
-//                        PracticeActivity.this, R.layout.spinner_item, wordSetNames);
-//                wsArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
-//                wsSpinner.setAdapter(wsArrayAdapter);
-//                if(wsIndex!=-1)wsSpinner.setSelection(wordSets.size() - 1 - wsIndex, false);
-//                ref1.removeEventListener(listener1);
-//                getWordList();
-//            }
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {}
-//        };
-//        ref1.addValueEventListener(listener1);
-//    }
-//
-//    private void getWordList(){
-//        if(listener2 != null){
-//            ref2.removeEventListener(listener2);
-//        }
-//        ref2 = FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(uid).child(DB.WORDLIST);
-//        listener2 = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                if(wsId == null) wsId = wordSets.get(0).getId();
-//                wordLists = new ArrayList<>();
-//                wordListNames = new ArrayList<>();
-//                wordListInd = new ArrayList<>();
-//                int i = 0, lsIndex=-1;
-//                for(DataSnapshot ds: dataSnapshot.getChildren()){
-//                    List wl = ds.getValue(List.class);
-//                    String id = ds.getKey();
-//                    ListWithId lid = new ListWithId(wl, id);
-//                    if(lid.getWordSet().equals(wsId)){
-//                        wordListNames.add(lid.getName());
-//                        wordListInd.add(i);
-//                        if(listId != null && lid.getId().equals(listId))lsIndex=wordListNames.size()-1;
-//                    }
-//                    i++;
-//                    wordLists.add(lid);
-//                }
-//                ref2.removeEventListener(listener2);
-//                ArrayAdapter<String> listArrayAdapter = new ArrayAdapter<>(
-//                        PracticeActivity.this, R.layout.spinner_item, wordListNames);
-//                listArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
-//                listSpinner.setAdapter(listArrayAdapter);
-//
-//
-//                if(listId!=null) listSpinner.setSelection(lsIndex, false);
-//                else listId = wordLists.get(wordListInd.get(0)).getId();
-//
-//                listPB.setVisibility(View.GONE);
-//                wsPB.setVisibility(View.GONE);
-//
-//                wsSpinner.setVisibility(View.VISIBLE);
-//                listSpinner.setVisibility(View.VISIBLE);
-//
-//                loadButton.setVisibility(View.VISIBLE);
-//                if(clickLoadButton)loadButton.performClick();
-//            }
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {}
-//        };
-//        ref2.addValueEventListener(listener2);
-//    }
-//
-//    private void getWords(){
-//
-//        if(listId == null){
-//            Toast.makeText(PracticeActivity.this, "No list selected", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        if(query3!= null){
-//            query3.removeEventListener(listener3);
-//        }
-//        query3 = FirebaseDatabase.getInstance().getReference(DB.USER_WORD).child(uid).child(DB.WORD).orderByChild("listId")
-//                .equalTo(listId);
-//        listener3 = new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                words = new ArrayList<WordWithId>();
-//                String s = "";
-//                for(DataSnapshot ds: dataSnapshot.getChildren()){
-//                    Word word = ds.getValue(Word.class);
-//                    WordWithId wordwID = new WordWithId(word, ds.getKey());
-//                    if(wordwID.isPracticable()){
-//                        if(wordwID.getCloneOf().length()<1)wordwID.setCloneOf(wordwID.getId());
-//                        words.add(wordwID);
-//                        if(s.length()<1)s+=wordwID.getValue();
-//                        else s+= ", " + wordwID.getValue();
-//                    }
-//                }
-//                wsSpinner.setEnabled(true);
-//                listSpinner.setEnabled(true);
-//
-//                ll3.setVisibility(View.VISIBLE);
-//                loadPracPB.setVisibility(GONE);
-//                ((TextView)findViewById(R.id.practicableWordsTV)).setText(s);
-//                query3.removeEventListener(listener3);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        };
-//        query3.addValueEventListener(listener3);
-//
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
-//    }
-//
-//    private void setupNavDrawerClick(){
-//        NavigationView mNavigationView = (NavigationView)findViewById(R.id.nav_view);
-//        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-//            @Override
-//            public boolean onNavigationItemSelected(MenuItem menuItem) {
-//                Intent intent;
-//                switch(menuItem.getItemId()){
-//                    case R.id.nav_learn:
-//                        intent = new Intent(PracticeActivity.this, WordSetActivity.class);
-//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        startActivity(intent);
-//                        finish();
-//                        break;
-//                    case R.id.nav_signout:
-//                        new AlertDialog.Builder(PracticeActivity.this)
-//                                .setTitle("Confirm Sign Out")
-//                                .setMessage( "Are you sure you want to sign out?")
-//                                .setPositiveButton("Sign Out", new DialogInterface.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(DialogInterface dialogInterface, int i) {
-//                                        FirebaseAuth.getInstance().signOut();
-//                                        Intent intent = new Intent(PracticeActivity.this, LoginActivity.class);
-//                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                        startActivity(intent);
-//                                        finish();
-//                                    }
-//                                })
-//                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(DialogInterface dialogInterface, int i) {
-//                                    }
-//                                }).show();
-//                        break;
-//                    case R.id.nav_search:
-//                        intent = new Intent(PracticeActivity.this, SearchActivity.class);
-//                        PracticeActivity.this.startActivity(intent);
-//                        break;
-//                    case R.id.nav_exercise:
-//                        intent = new Intent(PracticeActivity.this, PracticeActivity.class);
-//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        startActivity(intent);
-//                        finish();
-//                        break;
-//                    case R.id.nav_friend:
-//                        intent = new Intent(PracticeActivity.this, FriendActivity.class);
-//                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        startActivity(intent);
-//                        break;
-//                }
-//                return true;
-//            }
-//        });
-//    }
-//
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        if (keyCode == KeyEvent.KEYCODE_BACK) {
-//            if(mDrawerLayout.isDrawerOpen(Gravity.LEFT))
-//                mDrawerLayout.closeDrawer(Gravity.LEFT);
-//            else {
-//                onBackPressed();
-//            }
-//        }
-//        return true;
-//    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(listener1!=null) ref1.removeEventListener(listener1);
+        if(listener2!=null) ref2.removeEventListener(listener2);
+        if(listener3!=null) ref3.removeEventListener(listener3);
+    }
 
+    private void getWordSet() {
+        if (listener1 != null) ref1.removeEventListener(listener1);
+
+        DB.initDB();
+        ref1 = DB.WORD_SET;
+        listener1 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                wordSets = new ArrayList<>();
+                int i = 0, wsIndex = -1;
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String wsName = ds.child("name").getValue().toString();
+                    String id = ds.getKey();
+                    wordSets.add(new NameIdPair(wsName, id));
+                    if (wsId != null && id.equals(wsId)) wsIndex = i;
+                    i++;
+                }
+                Collections.reverse(wordSets);
+
+                ArrayAdapter<String> wsArrayAdapter = new ArrayAdapter<>(
+                        PracticeActivity.this, R.layout.spinner_item, getNames(wordSets));
+                wsArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
+                wsSpinner.setAdapter(wsArrayAdapter);
+                if (wsIndex != -1) wsSpinner.setSelection(wordSets.size() - 1 - wsIndex, false);
+                else if(wordSets.size()>0)wsId = wordSets.get(0).getId();
+
+                wsSpinner.setVisibility(View.VISIBLE);
+                wsPB.setVisibility(GONE);
+
+                ref1.removeEventListener(listener1);
+                getWordList();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError){}
+        };
+        ref1.addValueEventListener(listener1);
+    }
+
+    private void getWordList() {
+        if (listener2 != null) {
+            ref2.removeEventListener(listener2);
+        }
+        DB.initDB();
+        if (wordSetListMap.containsKey(wsId)) {
+            wordLists = wordSetListMap.get(wsId);
+            wordListPostProcess();
+        } else {
+            ref2 = DB.WORD_LIST.child(wsId);
+            listener2 = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    ArrayList<NameIdPair> _wordLists = new ArrayList<>();
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        String lsName = ds.child("name").getValue().toString();
+                        String id = ds.getKey();
+                        _wordLists.add(new NameIdPair(lsName, id));
+                    }
+                    wordSetListMap.put(wsId, _wordLists);
+                    wordLists = _wordLists;
+
+                    ref2.removeEventListener(listener2);
+                    wordListPostProcess();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            };
+            ref2.addValueEventListener(listener2);
+        }
+    }
+
+    private void wordListPostProcess() {
+        ArrayAdapter<String> listArrayAdapter = new ArrayAdapter<>(
+                PracticeActivity.this, R.layout.spinner_item, getNames(wordLists));
+        listArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
+        listSpinner.setAdapter(listArrayAdapter);
+
+        int lsIndex = -1, i = 0;
+        for (NameIdPair nameIdPair : wordLists) {
+            if (nameIdPair.getId().equals(listId)) lsIndex = i;
+            i++;
+        }
+
+        if (lsIndex != -1) listSpinner.setSelection(lsIndex, false);
+        else listId = wordLists.get(0).getId();
+
+        listPB.setVisibility(View.GONE);
+        listSpinner.setVisibility(View.VISIBLE);
+
+        if(listId != null && wsId != null)loadButton.performClick();
+    }
+
+    private void getWords() {
+        if (listId == null) {
+            Toast.makeText(PracticeActivity.this, "No list selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (ref3 != null) {ref3.removeEventListener(listener3);}
+
+        if(listId==null)return;
+
+        if(listWordMap.containsKey(listId)){
+            words = listWordMap.get(listId);
+            wordsPostProcess();
+        }
+        else {
+            DB.initDB();
+            ref3 = DB.WORD.child(listId);
+            listener3 = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    ArrayList<Word> _words = new ArrayList<>();
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        Word word = ds.getValue(Word.class);
+                        if (word.isPracticable()) {
+                            _words.add(word);
+                        }
+                    }
+                    listWordMap.put(listId, _words);
+                    words = _words;
+
+                    ref3.removeEventListener(listener3);
+                    wordsPostProcess();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+            ref3.addValueEventListener(listener3);
+        }
+    }
+
+    private void wordsPostProcess(){
+
+        String s = "";
+        for(Word w: words){
+            if (s.length() < 1) s += w.getValue();
+            else s += ", " + w.getValue();
+        }
+        wsSpinner.setEnabled(true);
+        listSpinner.setEnabled(true);
+
+        ll3.setVisibility(View.VISIBLE);
+        loadPracPB.setVisibility(GONE);
+        ((TextView) findViewById(R.id.practicableWordsTV)).setText(s);
+    }
+
+    private void setupNavDrawerClick() {
+        NavigationView mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                Intent intent;
+                switch (menuItem.getItemId()) {
+                    case R.id.nav_learn:
+                        intent = new Intent(PracticeActivity.this, WordSetActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                        break;
+                    case R.id.nav_signout:
+                        new AlertDialog.Builder(PracticeActivity.this)
+                                .setTitle("Confirm Sign Out")
+                                .setMessage("Are you sure you want to sign out?")
+                                .setPositiveButton("Sign Out", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        FirebaseAuth.getInstance().signOut();
+                                        Intent intent = new Intent(PracticeActivity.this, LoginActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                    }
+                                }).show();
+                        break;
+                    case R.id.nav_search:
+                        intent = new Intent(PracticeActivity.this, SearchActivity.class);
+                        PracticeActivity.this.startActivity(intent);
+                        break;
+                    case R.id.nav_exercise:
+                        intent = new Intent(PracticeActivity.this, PracticeActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (mDrawerLayout.isDrawerOpen(Gravity.LEFT))
+                mDrawerLayout.closeDrawer(Gravity.LEFT);
+            else {
+                onBackPressed();
+            }
+        }
+        return true;
+    }
+
+    public ArrayList<String> getNames(ArrayList<NameIdPair> nameIdPairs) {
+        ArrayList<String> ret = new ArrayList<>();
+        for (NameIdPair p : nameIdPairs) {
+            ret.add(p.getName());
+        }
+        return ret;
+    }
+
+    public class NameIdPair {
+        String name, id;
+
+        public NameIdPair() {
+            name = "";
+            id = "";
+        }
+
+        public NameIdPair(String name, String id) {
+            this.name = name;
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+    }
 }

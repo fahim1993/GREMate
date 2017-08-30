@@ -22,6 +22,8 @@ public class SqliteDBHelper extends SQLiteOpenHelper {
     public static final String KEY_URL = "url";
     public static final String KEY_IMAGE = "image";
 
+    protected SQLiteDatabase database;
+
     public static final String CREATE_TABLE = "CREATE TABLE " + DB_TABLE + "(" +
             "id INTEGER PRIMARY KEY, "+
             KEY_WORDID + " TEXT, "+
@@ -46,7 +48,7 @@ public class SqliteDBHelper extends SQLiteOpenHelper {
     }
 
     public void addImage( String wordId, String url, WordImage image) throws SQLiteException {
-        SQLiteDatabase database = this.getWritableDatabase();
+        if(database==null)database = this.getWritableDatabase();
         if(!image.isValid())return;
         WordImage tmp = getImage(wordId, url);
         if(tmp.isValid())return;
@@ -60,16 +62,18 @@ public class SqliteDBHelper extends SQLiteOpenHelper {
 
     public WordImage getImage(String wordId, String url){
         WordImage ret = new WordImage();
-
-        SQLiteDatabase db = this.getReadableDatabase();
+        if(database==null)database = this.getWritableDatabase();
 
         String query = "SELECT "+KEY_IMAGE+" FROM "+DB_TABLE+" WHERE "+KEY_URL+" = '"+url+"' AND " + KEY_WORDID + " = '" + wordId +"'";
-
-        Cursor cursor = db.rawQuery( query, null );
+        Cursor cursor = database.rawQuery( query, null );
         if (cursor.moveToFirst()) {
             ret.setImage(cursor.getBlob(cursor.getColumnIndex(KEY_IMAGE)));
         }
-
+        cursor.close();
         return ret;
+    }
+
+    public void close(){
+        if(database!=null)database.close();
     }
 }

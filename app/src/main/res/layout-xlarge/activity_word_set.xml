@@ -10,7 +10,7 @@
     tools:context="com.example.fahim.gremate.ListWordsActivity">
 
     <TextView
-        android:id="@+id/wordListTitle"
+        android:id="@+id/wordSetTitle"
         android:textColor="#000"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -41,12 +41,12 @@
             <ProgressBar
                 android:layout_centerInParent="true"
                 android:visibility="gone"
-                android:id="@+id/loadWordListRV"
+                android:id="@+id/loadWordSetRV"
                 android:layout_width="50dp"
                 android:layout_height="50dp" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/rvWordList"
+                android:id="@+id/rvWordSet"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 

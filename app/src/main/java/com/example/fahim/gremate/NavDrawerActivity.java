@@ -75,9 +75,16 @@ public class NavDrawerActivity extends AppCompatActivity {
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                UserData user = dataSnapshot.getValue(UserData.class);
-                ((TextView)findViewById(R.id.menu_username)).setText(user.getUserName());
-                userName = user.getUserName();
+                try {
+                    if (dataSnapshot.exists()) {
+                        UserData user = dataSnapshot.getValue(UserData.class);
+                        ((TextView) findViewById(R.id.menu_username)).setText(user.getUserName());
+                        userName = user.getUserName();
+                    }
+                }
+                catch (Exception e){
+                    userName = "";
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) { }

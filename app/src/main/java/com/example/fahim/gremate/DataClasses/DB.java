@@ -1,7 +1,11 @@
 package com.example.fahim.gremate.DataClasses;
 
 import android.content.Context;
+import android.util.Log;
+import android.util.Pair;
+import android.util.SparseArray;
 
+import com.example.fahim.gremate.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -9,7 +13,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Created by Fahim on 24-Dec-16.
@@ -32,24 +42,9 @@ public class DB {
 
     public static String USER_ID = "-1";
 
-    private String lastListId;
-    private String lastSetId;
 
-    private static ValueEventListener listener1;
-    private static ValueEventListener listener2;
-    private static ValueEventListener listener3;
-    private static ValueEventListener listener4;
-    private static ValueEventListener listener5;
-    private static ValueEventListener listener6;
-    private static ValueEventListener listener7;
-    private static ValueEventListener listener8;
-    private static ValueEventListener listener9;
-    private static ValueEventListener listener10;
-    private static ValueEventListener listener11;
-    private static ValueEventListener listener12;
-    private static ValueEventListener listener13;
-
-    private static ArrayList<ValueEventListener> listeners;
+    private static SparseArray<ValueEventListener> listenerMap = new SparseArray<>();
+    private static int listenerCounter = 0;
 
     private static ArrayList<String> listIds1;
 
@@ -75,12 +70,13 @@ public class DB {
         LAST_SET = USER_WORD.child(USER_ID).child("LastWordSetId");
     }
 
-    public static void newWordSet(final String wsName) {
+    public static Pair<String, String> newWordSet(final String wsName) {
         initDB();
         String wsId = WORD_SET.push().getKey();
         String mainListId = WORD_LIST.child(wsId).push().getKey();
         WORD_LIST.child(wsId).child(mainListId).setValue(List.getAllList());
         WORD_SET.child(wsId).setValue(WordSet.newWordSet(wsName, mainListId));
+        return new Pair<>(wsId, mainListId);
     }
 
     public static String newList(final String wsId, final String listName) {
@@ -90,7 +86,7 @@ public class DB {
         return listId;
     }
 
-    public static void newWord(final String wsId, final String listId, final String listName,
+    public static String newWord(final String wsId, final String listId, final String listName,
                                final String mainListId, final String wordValue) {
 
         initDB();
@@ -103,36 +99,47 @@ public class DB {
             addWordToAnotherList(wsId, mainListId, w);
         }
 
+        final int listenerKey1 = ++listenerCounter;
         final DatabaseReference mRef1 = WORD_LIST.child(wsId).child(listId).child("wordCount");
-        listener1 = new ValueEventListener() {
+        ValueEventListener listener1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                long count = (long) dataSnapshot.getValue();
-                mRef1.setValue(count + 1);
-                mRef1.removeEventListener(listener1);
-                listener1 = null;
+                if(dataSnapshot.exists()) {
+                    long count = (long) dataSnapshot.getValue();
+                    mRef1.setValue(count + 1);
+                }
+                if(listenerMap.get(listenerKey1)!=null) {
+                    mRef1.removeEventListener(listenerMap.get(listenerKey1));
+                    listenerMap.remove(listenerKey1);
+                }
             }
-
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
+            public void onCancelled(DatabaseError databaseError){}
         };
         mRef1.addValueEventListener(listener1);
+        listenerMap.put(listenerKey1, listener1);
 
-
+        final int listenerKey2 = ++listenerCounter;
         final DatabaseReference mRef2 = WORD_SET.child(wsId).child("wordCount");
-        listener2 = new ValueEventListener() {
+        ValueEventListener listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                long count = (long) dataSnapshot.getValue();
-                mRef2.setValue(count + 1);
-                mRef2.removeEventListener(listener2);
-                listener2 = null;
+                if(dataSnapshot.exists()) {
+                    long count = (long) dataSnapshot.getValue();
+                    mRef2.setValue(count + 1);
+                }
+                if(listenerMap.get(listenerKey2)!=null) {
+                    mRef2.removeEventListener(listenerMap.get(listenerKey2));
+                    listenerMap.remove(listenerKey2);
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         };
         mRef2.addValueEventListener(listener2);
+        listenerMap.put(listenerKey2, listener2);
+
+        return wordId;
     }
 
     public static void addWordToAnotherList(String wsId, String toListId, Word _word) {
@@ -141,20 +148,25 @@ public class DB {
         WORD.child(toListId).child(wordId).setValue(_word);
         WORD_CLONES.child(_word.getCloneOf()).push().setValue(new WordClones(wordId, toListId));
 
+        final int listenerKey = ++listenerCounter;
         final DatabaseReference mRef = WORD_LIST.child(wsId).child(toListId).child("wordCount");
-        listener3 = new ValueEventListener() {
+        ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                long count = (long) dataSnapshot.getValue();
-                mRef.setValue(count + 1);
-                mRef.removeEventListener(listener3);
-                listener3 = null;
+                if(dataSnapshot.exists()) {
+                    long count = (long) dataSnapshot.getValue();
+                    mRef.setValue(count + 1);
+                }
+                if(listenerMap.get(listenerKey)!=null) {
+                    mRef.removeEventListener(listenerMap.get(listenerKey));
+                    listenerMap.remove(listenerKey);
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         };
-        mRef.addValueEventListener(listener3);
-
+        mRef.addValueEventListener(listener);
+        listenerMap.put(listenerKey, listener);
     }
 
     public static void setWordData(WordAllData wordAllData, String wordId) {
@@ -189,85 +201,97 @@ public class DB {
     public static void setWordLevel(final String wordId, final int level) {
         initDB();
 
+        final int listenerKey = ++listenerCounter;
         final DatabaseReference mRef = WORD_CLONES.child(wordId);
-        listener4 = new ValueEventListener() {
+        ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     WordClones wcl = ds.getValue(WordClones.class);
                     WORD.child(wcl.getListId()).child(wcl.getCloneId()).child("level").setValue(level);
                 }
-                mRef.removeEventListener(listener4);
+                if(listenerMap.get(listenerKey)!=null) {
+                    mRef.removeEventListener(listenerMap.get(listenerKey));
+                    listenerMap.remove(listenerKey);
+                }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         };
-        mRef.addValueEventListener(listener4);
+        mRef.addValueEventListener(listener);
+        listenerMap.put(listenerKey, listener);
     }
 
     public static void setWordPracticable(String wordId, final boolean val) {
         initDB();
 
+        final int listenerKey = ++listenerCounter;
         final DatabaseReference mRef = WORD_CLONES.child(wordId);
-        listener5 = new ValueEventListener() {
+        ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     WordClones wcl = ds.getValue(WordClones.class);
                     WORD.child(wcl.getListId()).child(wcl.getCloneId()).child("practicable").setValue(val);
                 }
-                mRef.removeEventListener(listener5);
+                if(listenerMap.get(listenerKey)!=null) {
+                    mRef.removeEventListener(listenerMap.get(listenerKey));
+                    listenerMap.remove(listenerKey);
+                }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         };
-        mRef.addValueEventListener(listener5);
+        mRef.addValueEventListener(listener);
+        listenerMap.put(listenerKey, listener);
     }
 
     public static void setWordValidity(String wordId, final int val) {
         initDB();
-
+        final int listenerKey = ++listenerCounter;
         final DatabaseReference mRef = WORD_CLONES.child(wordId);
-        listener6 = new ValueEventListener() {
+        ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     WordClones wcl = ds.getValue(WordClones.class);
                     WORD.child(wcl.getListId()).child(wcl.getCloneId()).child("validity").setValue(val);
                 }
-                mRef.removeEventListener(listener6);
+                if(listenerMap.get(listenerKey)!=null){
+                    mRef.removeEventListener(listenerMap.get(listenerKey));
+                    listenerMap.remove(listenerKey);
+                }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         };
-        mRef.addValueEventListener(listener6);
+        mRef.addValueEventListener(listener);
+        listenerMap.put(listenerKey, listener);
     }
 
     public static void deleteWord(final String wsId, final String wordId,
                                   final boolean reduceWordCount, boolean isEdit) {
 
+
         initDB();
 
         IMAGE.child(wordId).setValue(null);
-
         SENTENCE.child(wordId).setValue(null);
-
         WORD_DEF.child(wordId).setValue(null);
-
         WORD_DATA.child(wordId).setValue(null);
 
         if (isEdit) return;
 
         listIds1 = new ArrayList<>();
 
-        final DatabaseReference mRef = WORD_CLONES.child(wordId);
-        listener7 = new ValueEventListener() {
+        final int listenerKey1 = ++listenerCounter;
+        final DatabaseReference mRef1 = WORD_CLONES.child(wordId);
+        ValueEventListener listener1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -277,56 +301,63 @@ public class DB {
                 }
                 if(reduceWordCount)reduceListWordCount(wsId);
                 WORD_CLONES.child(wordId).setValue(null);
-                mRef.removeEventListener(listener7);
-                listener7 = null;
+                if(listenerMap.get(listenerKey1)!=null){
+                    mRef1.removeEventListener(listenerMap.get(listenerKey1));
+                    listenerMap.remove(listenerKey1);
+                }
             }
-
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
+            public void onCancelled(DatabaseError databaseError){}
         };
-        mRef.addValueEventListener(listener7);
+        mRef1.addValueEventListener(listener1);
+        listenerMap.put(listenerKey1, listener1);
 
         if (!reduceWordCount) return;
-
-        final DatabaseReference mRef1 = WORD_SET.child(wsId).child("wordCount");
-        listener8 = new ValueEventListener() {
+        final int listenerKey2 = ++listenerCounter;
+        final DatabaseReference mRef2 = WORD_SET.child(wsId).child("wordCount");
+        ValueEventListener listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                long count = (long) dataSnapshot.getValue();
-                mRef1.setValue(count - 1);
-                mRef1.removeEventListener(listener8);
-                listener8 = null;
+                if(dataSnapshot.exists()) {
+                    long count = (long) dataSnapshot.getValue();
+                    mRef2.setValue(count - 1);
+                }
+                if(listenerMap.get(listenerKey2)!=null){
+                    mRef2.removeEventListener(listenerMap.get(listenerKey2));
+                    listenerMap.remove(listenerKey2);
+                }
             }
-
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
+            public void onCancelled(DatabaseError databaseError){}
         };
-        mRef1.addValueEventListener(listener8);
+        mRef2.addValueEventListener(listener2);
+        listenerMap.put(listenerKey2, listener2);
     }
 
     public static void reduceListWordCount(String wsId) {
-        listeners = new ArrayList<>();
         for (int i = 0; i < listIds1.size(); i++) {
             String listId = listIds1.get(i);
-            final int listenerIndex = i;
+            final int listenerKey = ++listenerCounter;
             final DatabaseReference mRef = WORD_LIST.child(wsId).child(listId).child("wordCount");
-            ValueEventListener mListener = new ValueEventListener() {
+            ValueEventListener listener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    long count = (long) dataSnapshot.getValue();
-                    mRef.setValue(count - 1);
-                    mRef.removeEventListener(listeners.get(listenerIndex));
+                    if(dataSnapshot.exists()) {
+                        long count = (long) dataSnapshot.getValue();
+                        mRef.setValue(count - 1);
+                    }
+                    if(listenerMap.get(listenerKey)!=null){
+                        mRef.removeEventListener(listenerMap.get(listenerKey));
+                        listenerMap.remove(listenerKey);
+                    }
                 }
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                 }
             };
-            mRef.addValueEventListener(mListener);
-            listeners.add(mListener);
+            mRef.addValueEventListener(listener);
+            listenerMap.put(listenerKey, listener);
         }
-        listIds1 = new ArrayList<>();
     }
 
     public static void removeWordClone(final String wsId, final String listId, final String wordId, final String cloneId, boolean reduceCount) {
@@ -347,19 +378,25 @@ public class DB {
         });
 
         if(!reduceCount)return;
-        final DatabaseReference mRef2 = WORD_LIST.child(wsId).child(listId).child("wordCount");
-        listener9 = new ValueEventListener() {
+        final int listenerKey = ++listenerCounter;
+        final DatabaseReference mRef = WORD_LIST.child(wsId).child(listId).child("wordCount");
+        ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                long count = (long) dataSnapshot.getValue();
-                mRef2.setValue(count - 1);
-                mRef2.removeEventListener(listener9);
-                listener9 = null;
+                if(dataSnapshot.exists()) {
+                    long count = (long) dataSnapshot.getValue();
+                    mRef.setValue(count - 1);
+                }
+                if(listenerMap.get(listenerKey)!=null){
+                    mRef.removeEventListener(listenerMap.get(listenerKey));
+                    listenerMap.remove(listenerKey);
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         };
-        mRef2.addValueEventListener(listener9);
+        mRef.addValueEventListener(listener);
+        listenerMap.put(listenerKey, listener);
     }
 
     public static void deleteList(final String wsId, final String listId, final boolean isMainList) {
@@ -370,46 +407,50 @@ public class DB {
             WORD_SET.child(wsId).setValue(null);
             WORD_LIST.child(wsId).setValue(null);
 
-            final DatabaseReference mRef = WORD.child(listId);
-            listener10 = new ValueEventListener() {
+            final int listenerKey1 = ++listenerCounter;
+            final DatabaseReference mRef1 = WORD.child(listId);
+            ValueEventListener listener1 = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        deleteWord(wsId, ds.child("cloneOf").toString(), false, false);
+                        deleteWord(wsId, ds.child("cloneOf").getValue().toString(), false, false);
                     }
-                    mRef.removeEventListener(listener10);
+                    if(listenerMap.get(listenerKey1)!=null){
+                        mRef1.removeEventListener(listenerMap.get(listenerKey1));
+                        listenerMap.remove(listenerKey1);
+                    }
                 }
-
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
+                public void onCancelled(DatabaseError databaseError){}
             };
-            mRef.addValueEventListener(listener10);
+            mRef1.addValueEventListener(listener1);
+            listenerMap.put(listenerKey1, listener1);
+
         } else {
             WORD_LIST.child(wsId).child(listId).setValue(null);
-
-            final DatabaseReference mRef = WORD.child(listId);
-            listener11 = new ValueEventListener() {
+            final int listenerKey2 = ++listenerCounter;
+            final DatabaseReference mRef2 = WORD.child(listId);
+            ValueEventListener listener2 = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
                         String wordId = ds.getKey();
-                        String cloneOf = ds.child("cloneOf").toString();
+                        String cloneOf = ds.child("cloneOf").getValue().toString();
 
                         if (wordId.equals(cloneOf))
-                            deleteWord(wsId, ds.child("cloneOf").toString(), true, false);
+                            deleteWord(wsId, ds.child("cloneOf").getValue().toString(), true, false);
                         else removeWordClone(wsId, listId, wordId, cloneOf, false);
                     }
-                    mRef.removeEventListener(listener11);
-                    listener11 = null;
+                    if(listenerMap.get(listenerKey2)!=null){
+                        mRef2.removeEventListener(listenerMap.get(listenerKey2));
+                        listenerMap.remove(listenerKey2);
+                    }
                 }
-
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
+                public void onCancelled(DatabaseError databaseError){}
             };
-            mRef.addValueEventListener(listener11);
-
+            mRef2.addValueEventListener(listener2);
+            listenerMap.put(listenerKey2, listener2);
         }
     }
 
@@ -441,40 +482,53 @@ public class DB {
 //        }
 //    }
 
-    public static void initNewUser(String uid, String uname, Context context) {
+    public static void initNewUser(String uId, Context context) {
 
-//        if (USER_ID.equals("-1")) initDB();
-//
-//        ArrayList<String> initWords = new FeedTestData().getWords(context);
-//        int sz = initWords.size();
-//
-//        for (int wsi = 0; wsi < 3; wsi++) {
-//
-//            String wsId = WORD_SET.push().getKey();
-//            String allListId = WORD_LIST.child(wsId).push().getKey();
-//
-//            WORD_SET.child(wsId).setValue(new WordSet("GRE: Word Set " + (wsi + 1), initWords.size()));
-//            WORD_LIST.child(wsId).child(allListId).setValue(new List("All words", initWords.size()));
-//
-//            int stIndex = (sz * wsi) / 3;
-//            int enIndex = ((sz * (wsi + 1)) / 3) - 1;
-//            int wordsInSet = enIndex - stIndex + 1;
-//
-//            int numberOfLists = wordsInSet / 50;
-//
-//            ArrayList<String> listIds = new ArrayList<>();
-//
-//            for (int i = 1; i <= numberOfLists + 1; i++) {
-//                int listWordCount = (50 > wordsInSet - ((i - 1) * 50)) ? wordsInSet - ((i - 1) * 50) : 50;
-//                listIds.add(WORD_LIST.child(wsId).push().getKey());
-//                WORD_LIST.child(wsId).child(listIds.get(i - 1)).setValue(new List("List " + i, listWordCount));
-//            }
-//            for (int i = stIndex, j = 0; i <= enIndex; i++, j++) {
-//                String wId = WORD.push().getKey();
-//                int listIndex = (j / 50) + 1;
-//                WORD.child(listIds.get(listIndex - 1)).child(wId).setValue(new Word(wId, initWords.get(i), "All words", false, 0, 1));
-//                DB.addWordToAnotherList(new Word(wId, initWords.get(i), "List " + listIndex, false, 0, 1), listIds.get(listIndex - 1));
-//            }
-//        }
+        DatabaseReference UW_USER = FirebaseDatabase.getInstance().getReference().child("UserWords").child(uId);
+        USER_ID = uId;
+        USER_DATA = FirebaseDatabase.getInstance().getReference().child("UserData");
+        USER_WORD = FirebaseDatabase.getInstance().getReference().child("UserWords");
+        WORD_SET = UW_USER.child("WordSet");
+        WORD_LIST = UW_USER.child("List");
+        WORD = UW_USER.child("Word");
+        WORD_DATA = UW_USER.child("WordData");
+        WORD_DEF = UW_USER.child("WordDef");
+        SENTENCE = UW_USER.child("Sentence");
+        IMAGE = UW_USER.child("Image");
+        WORD_CLONES = UW_USER.child("WordClones");
+        LAST_LIST = UW_USER.child("LastListId");
+        LAST_SET = UW_USER.child("LastWordSetId");
+
+
+        Random random = new Random();
+
+        final String mainListName = "All Words";
+
+        ArrayList<String> initWords = new FeedTestData().getWords(context);
+
+        for (int wsi = 3; wsi >= 1; wsi--) {
+
+            String wsId = WORD_SET.push().getKey();
+            String mainListId = WORD_LIST.child(wsId).push().getKey();
+
+            WORD_SET.child(wsId).setValue(new WordSet("GRE: Word Set "+wsi, mainListId, 350));
+            WORD_LIST.child(wsId).child(mainListId).setValue(new List(mainListName, 350));
+
+            for (int ls = 7; ls >= 1; ls--) {
+                String listId =  WORD_LIST.child(wsId).push().getKey();
+                WORD_LIST.child(wsId).child(listId).setValue(new List("List "+ls, 50));
+                for (int i = 0; i < 50; i++) {
+                    int index = random.nextInt(initWords.size());
+                    String wordValue = initWords.get(index);
+                    initWords.remove(index);
+                    String wordId = WORD.child(mainListId).push().getKey();
+                    String cloneId = WORD.child(listId).push().getKey();
+                    WORD.child(mainListId).child(wordId).setValue(Word.newWord(mainListName, wordId, wordValue));
+                    WORD.child(listId).child(cloneId).setValue(Word.newWord(mainListName, wordId, wordValue));
+                    WORD_CLONES.child(wordId).push().setValue(new WordClones(cloneId, listId));
+                    WORD_CLONES.child(wordId).push().setValue(new WordClones(wordId, mainListId));
+                }
+            }
+        }
     }
 }

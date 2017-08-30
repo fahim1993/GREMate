@@ -68,10 +68,6 @@ public class ListActivity extends NavDrawerActivity {
         mainListId = extras.getString("mainListId");
         wsTitle = extras.getString("wordSetTitle");
 
-        Log.d("List word set id ", wsId);
-        Log.d("List mainListId ", mainListId);
-        Log.d("List wsTitle ", wsTitle);
-
         ((TextView)findViewById(R.id.wordListTitle)).setText(wsTitle+ " lists: ");
 
         setTitle("GREMate");

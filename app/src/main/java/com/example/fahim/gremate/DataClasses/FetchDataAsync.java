@@ -21,7 +21,7 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
     private final String url2 = "https://www.vocabulary.com/dictionary/";
     private final String url3 = "http://corpus.vocabulary.com/api/1.0/examples.json?query=";
     private final String url4 = "http://www.mnemonicdictionary.com/?word=";
-    private final String url5 = "http://wordinfo.info/results/";
+
 
     protected WordAllData wordAllData;
 
@@ -34,11 +34,11 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
         String wordId = strings[1];
 
         try {
-            Document doc = Jsoup.connect(url1 + word).get();
-            Document doc1 = Jsoup.connect(url2 + word).get();
-            Document doc2 = Jsoup.connect(url3 + word + "&maxResults=20").ignoreContentType(true).get();
-            Document doc3 = Jsoup.connect(url4 + word).get();
-            Document doc4 = Jsoup.connect(url5 + word).get();
+            Document doc = Jsoup.connect(url1 + word).timeout(10000).get();
+            Document doc1 = Jsoup.connect(url2 + word).timeout(10000).get();
+            Document doc2 = Jsoup.connect(url3 + word + "&maxResults=20").ignoreContentType(true).timeout(10000).get();
+            Document doc3 = Jsoup.connect(url4 + word).timeout(10000).get();
+
 
             Elements[] elems = new Elements[9];
 
@@ -49,7 +49,6 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
             elems[4] = doc1.select("p.short");
             elems[5] = doc1.select("p.long");
             elems[7] = doc3.select("div.span9");
-            elems[8] = doc4.select("div.definition").select("img");
 
             if (elems[0].hasText()) error = false;
 
@@ -57,7 +56,7 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
             String[] defs;
             String[] syns;
             String[] ants;
-            String shortds, longds, mn="";
+            String shortds, longds, mn = "";
 
             if (!error) {
 
@@ -83,7 +82,7 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                 syns = new String[]{"", "", "", "", "", ""};
                 for (Element e : elems[2]) {
                     String s = "";
-                    if(e.hasText()) {
+                    if (e.hasText()) {
                         Elements x = e.select("li.syn");
                         for (Element ex : x) {
                             s += (ex.text() + ", ");
@@ -100,7 +99,7 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                 ants = new String[]{"", "", "", "", "", ""};
                 for (Element e : elems[3]) {
                     String s = "";
-                    if(e.hasText()) {
+                    if (e.hasText()) {
                         Elements x = e.select("li.ant");
                         for (Element ex : x) {
                             s += (ex.text() + ", ");
@@ -115,7 +114,7 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
 
                 ArrayList<WordDef> wordDefs = new ArrayList<>();
 
-                for(i=0; i<no; i++){
+                for (i = 0; i < no; i++) {
                     wordDefs.add(new WordDef(titles[i], syns[i], ants[i], defs[i]));
                 }
                 wordAllData.setWordDefs(wordDefs);
@@ -126,50 +125,49 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                 // Set it from the calling class
                 // Word word1 = new Word(wordSetId, wordListId, word, true, false, false, 0, 0);
 
-                if(shortds.length()<1) wordAllData.setWordData(new WordData("", mn));
+                if (shortds.length() < 1) wordAllData.setWordData(new WordData("", mn));
                 else wordAllData.setWordData(new WordData(shortds + "\n\n" + longds, mn));
 
                 ArrayList<WordSentence> wordSentences = new ArrayList<>();
                 String jsn = doc2.text();
-                JSONObject obj = new JSONObject(jsn);
-                JSONArray sts = obj.getJSONObject("result").getJSONArray("sentences"); 
-                for(int ii=0; ii<sts.length(); ii++){
-                    if(ii==8)break;
-                    JSONObject ith = (JSONObject)sts.get(ii);
-                    String sentence = (String)ith.get("sentence");
-                    JSONArray offset = (JSONArray) ith.get("offsets");
-                    String finalSentence="";
-                    int pv = 0;
-                    for(int j=0; j<offset.length(); j+=2){
-                        int st = (int)offset.get(j);
-                        int en = (int)offset.get(j+1);
-                        finalSentence += sentence.substring(pv,st);
-                        finalSentence += "<b>";
-                        finalSentence += sentence.substring(st, en);
-                        finalSentence += "</b>";
-                        pv=en;
+                try{
+                    JSONObject obj = new JSONObject(jsn);
+                    JSONArray sts = obj.getJSONObject("result").getJSONArray("sentences");
+                    for (int ii = 0; ii < sts.length(); ii++) {
+                        if (ii == 8) break;
+                        JSONObject ith = (JSONObject) sts.get(ii);
+                        String sentence = (String) ith.get("sentence");
+                        JSONArray offset = (JSONArray) ith.get("offsets");
+                        String finalSentence = "";
+                        int pv = 0;
+                        for (int j = 0; j < offset.length(); j += 2) {
+                            int st = (int) offset.get(j);
+                            int en = (int) offset.get(j + 1);
+                            finalSentence += sentence.substring(pv, st);
+                            finalSentence += "<b>";
+                            finalSentence += sentence.substring(st, en);
+                            finalSentence += "</b>";
+                            pv = en;
+                        }
+                        if (pv < sentence.length()) {
+                            finalSentence += sentence.substring(pv, sentence.length());
+                        }
+                        wordSentences.add(new WordSentence(finalSentence));
                     }
-                    if(pv < sentence.length()) finalSentence += sentence.substring(pv, sentence.length());
-                    wordSentences.add(new WordSentence(finalSentence));
+                }
+                catch (Exception e){
+                    e.printStackTrace();
                 }
 
                 wordAllData.setWordSentences(wordSentences);
 
-                for(Element e: elems[7]){
+                for (Element e : elems[7]) {
                     String mns = e.text();
                     wordAllData.getWordData().setMn(mns);
                     break;
                 }
-
-                ArrayList<WordImageFB> images = new ArrayList<>();
-                for(Element e: elems[8]){
-                    String imgUrl = e.absUrl("src");
-                    images.add(new WordImageFB(wordId, imgUrl));
-                }
-
-                wordAllData.setImages(images);
+                wordAllData.setImages(new ArrayList<WordImageFB>());
             }
-
         } catch (Throwable t) {
             t.printStackTrace();
         }

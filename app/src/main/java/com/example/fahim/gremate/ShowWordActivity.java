@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -67,6 +68,9 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private int index;
     private boolean loading;
+    private boolean fetching;
+    private boolean fetchingData;
+    private boolean fetchingImage;
     private boolean[] loadFlags;
 
     private int defState;
@@ -208,7 +212,7 @@ public class ShowWordActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (WORD.getValidity() != 2 && wordLevel != _wordAllData.getWord().getLevel()) {
+        if (WORD!=null && _wordAllData!=null && WORD.getValidity() != 2 && wordLevel != _wordAllData.getWord().getLevel()) {
             DB.setWordLevel(wordId, wordLevel);
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -239,6 +243,9 @@ public class ShowWordActivity extends AppCompatActivity {
         removeListeners();
 
         loading = true;
+        fetching = false;
+        fetchingData = false;
+        fetchingImage = false;
         loadFlags = new boolean[]{true, true, true, true, true};
 
         showWordSV.setVisibility(View.GONE);
@@ -256,16 +263,23 @@ public class ShowWordActivity extends AppCompatActivity {
         wordTitle.setText(new String(ttext));
 
         switch (WORD.getValidity()) {
-            case 0:
-                if (isNetworkConnected())
+            case Word.UNKNOWN:
+                if (isNetworkConnected()) {
+                    fetching = true;
+                    fetchingData = true;
+                    fetchingImage = true;
                     new FetchData().execute(WORD.getValue(), wordId);
+                    (new FetchImage(getApplicationContext(), wordId, null)).execute("NEW", WORD.getValue().toLowerCase());
+                }
                 break;
-            case 1:
+            case Word.VALID:
                 retrieveData();
                 break;
-            case 2:
+            case Word.INVALID:
+                loading = false;
                 loadingPB.setVisibility(View.GONE);
                 errorTextV.setVisibility(View.VISIBLE);
+                onToNext();
                 break;
         }
     }
@@ -578,9 +592,10 @@ public class ShowWordActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 WordData wd = new WordData();
                 _wordAllData.setWordData(wd);
-                if (!dataSnapshot.hasChildren()) return;
-                DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
-                wd = ds.getValue(WordData.class);
+                if (dataSnapshot.exists()) {
+                    DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
+                    wd = ds.getValue(WordData.class);
+                }
                 _wordAllData.setWordData(wd);
                 setDes();
                 setMN();
@@ -636,7 +651,7 @@ public class ShowWordActivity extends AppCompatActivity {
                     WordImageFB wordImageFB = ds.getValue(WordImageFB.class);
                     images.add(wordImageFB);
                 }
-                (new FetchImage(getApplicationContext(), wordId, images)).execute();
+                (new FetchImage(getApplicationContext(), wordId, images)).execute("NN", "NN");
             }
 
             @Override
@@ -726,15 +741,7 @@ public class ShowWordActivity extends AppCompatActivity {
         loadingPB.setVisibility(View.GONE);
         showWordSV.setVisibility(View.VISIBLE);
         loading = false;
-
-//        if (wordLevel != _wordAllData.getWord().getLevel()) {
-//            DB.setWordLevel(wordId, wordLevel);
-//            words.get(index).setLevel(wordLevel);
-//        }
-//        index++;
-//        if (index >= words.size()) index = 0;
-//        loadWord();
-
+        onToNext();
     }
 
     private void scrollSV() {
@@ -752,18 +759,24 @@ public class ShowWordActivity extends AppCompatActivity {
             if (wordAllData != null) {
                 _wordAllData = wordAllData;
 
+                WORD.setPracticable(true);
+
                 _wordAllData.setWord(WORD);
 
                 words.get(index).setValidity(Word.VALID);
 
                 DB.setWordData(_wordAllData, wordId);
                 setContents();
-                findViewById(R.id.showWordImgLL).setVisibility(View.GONE);
-                scrollSV();
-                loadingPB.setVisibility(View.GONE);
-                showWordSV.setVisibility(View.VISIBLE);
-                loading = false;
-                (new FetchImage(getApplicationContext(), wordId, _wordAllData.getImages())).execute();
+
+                fetchingData = false;
+                if(!fetchingImage) {
+                    fetching = false;
+                    loading = false;
+                    scrollSV();
+                    loadingPB.setVisibility(View.GONE);
+                    showWordSV.setVisibility(View.VISIBLE);
+                    onToNext();
+                }
             } else {
                 loadingPB.setVisibility(View.GONE);
                 showWordSV.setVisibility(View.GONE);
@@ -785,6 +798,16 @@ public class ShowWordActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             setImages(images);
+            fetchingImage = false;
+
+            if(!fetchingData && fetching) {
+                fetching = false;
+                loading = false;
+                scrollSV();
+                loadingPB.setVisibility(View.GONE);
+                showWordSV.setVisibility(View.VISIBLE);
+                onToNext();
+            }
         }
     }
 
@@ -812,7 +835,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
             case R.id.nextWord:
                 if (loading) break;
-                if (wordLevel != _wordAllData.getWord().getLevel()) {
+                if ( WORD != null && wordLevel != WORD.getLevel()) {
                     DB.setWordLevel(wordId, wordLevel);
                     words.get(index).setLevel(wordLevel);
                 }
@@ -850,7 +873,13 @@ public class ShowWordActivity extends AppCompatActivity {
                                 errorTextV.setVisibility(View.GONE);
                                 loadingPB.setVisibility(View.VISIBLE);
 
-                                new FetchData().execute(WORD.getValue(), wordId);
+                                if (isNetworkConnected()) {
+                                    fetchingData = true;
+                                    fetchingImage = true;
+                                    fetching = true;
+                                    new FetchData().execute(WORD.getValue(), wordId);
+                                    (new FetchImage(getApplicationContext(), wordId, null)).execute("NEW", WORD.getValue().toLowerCase());
+                                }
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -862,6 +891,16 @@ public class ShowWordActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void onToNext(){
+//        if (wordLevel != _wordAllData.getWord().getLevel()) {
+//            DB.setWordLevel(wordId, wordLevel);
+//            words.get(index).setLevel(wordLevel);
+//        }
+//        index++;
+//        if (index >= words.size()) index = 0;
+//        loadWord();
     }
 
     private class PlaybackPronunciation extends AsyncTask<String, Void, String> {

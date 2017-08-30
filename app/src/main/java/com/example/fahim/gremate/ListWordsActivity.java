@@ -74,7 +74,6 @@ public class ListWordsActivity extends NavDrawerActivity {
         if (extras == null) finish();
 
         otherLists = extras.getParcelableArrayList("otherLists");
-        Log.d("OTHER LISTS SIZE ", "" + otherLists.size());
         currentListId = extras.getString("listId");
         wsId = extras.getString("wsId");
         mainListId = extras.getString("mainListId");
@@ -242,8 +241,8 @@ public class ListWordsActivity extends NavDrawerActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(ListWordsActivity.this, PracticeActivity.class);
                 Bundle b = new Bundle();
-                b.putString("ws_id", wsId);
-                b.putString("list_id", currentListId);
+                b.putString("wsId", wsId);
+                b.putString("listId", currentListId);
                 intent.putExtras(b);
                 startActivity(intent);
             }

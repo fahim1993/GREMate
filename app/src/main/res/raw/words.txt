@@ -1,3 +1,5 @@
+abase
+abash
 aberrant
 abeyance
 abjure
@@ -152,8 +154,7 @@ credibility
 credulous
 culminate
 cynical
-cynosure
-daunt
+cynosure 
 debase
 debunk
 decadence
