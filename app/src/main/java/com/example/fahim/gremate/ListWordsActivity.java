@@ -304,11 +304,6 @@ public class ListWordsActivity extends NavDrawerActivity {
             }
         });
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         hideWordRv();
         getListWords();
     }

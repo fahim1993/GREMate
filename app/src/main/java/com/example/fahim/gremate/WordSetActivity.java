@@ -38,6 +38,8 @@ public class WordSetActivity extends NavDrawerActivity {
 
     private ArrayList<WordSetWithId> wordSets;
     private RecyclerView wsRecyclerView;
+    private LinearLayoutManager llm;
+
     private ProgressBar loadWordSet;
 
     String lastSetId = "";
@@ -63,15 +65,10 @@ public class WordSetActivity extends NavDrawerActivity {
 
         wsRecyclerView = (RecyclerView)findViewById(R.id.rvWordSet);
         wsRecyclerView.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm = new LinearLayoutManager(this);
         wsRecyclerView.setLayoutManager(llm);
 
         loadWordSet = (ProgressBar) findViewById(R.id.loadWordSetRV);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         getLastSetId();
 
@@ -82,8 +79,8 @@ public class WordSetActivity extends NavDrawerActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         if(listener1!=null) ref1.removeEventListener(listener1);
         if(listener2!=null) ref2.removeEventListener(listener2);
 
@@ -95,8 +92,13 @@ public class WordSetActivity extends NavDrawerActivity {
         listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists())lastSetId = (String) dataSnapshot.getValue();
-                ref2.removeEventListener(listener2);
+                if(dataSnapshot.exists()){
+                    lastSetId = (String) dataSnapshot.getValue();
+                    if(wordSets!=null){
+                        wsRecyclerView.setAdapter(new WordSetAdapter(wordSets, WordSetActivity.this, lastSetId));
+                        scrollToLastId();
+                    }
+                }
             }
 
             @Override
@@ -183,6 +185,7 @@ public class WordSetActivity extends NavDrawerActivity {
                 }
                 Collections.reverse(wordSets);
                 wsRecyclerView.setAdapter(new WordSetAdapter(wordSets, WordSetActivity.this, lastSetId));
+                scrollToLastId();
                 wsRecyclerView.setVisibility(View.VISIBLE);
                 loadWordSet.setVisibility(View.GONE);
             }
@@ -193,6 +196,19 @@ public class WordSetActivity extends NavDrawerActivity {
             }
         };
         ref1.addValueEventListener(listener1);
+    }
+
+    public void scrollToLastId(){
+        if(wordSets!=null && lastSetId!=null){
+            int i = 0;
+            for(WordSetWithId ws: wordSets){
+                if(ws.getId().equals(lastSetId)){
+                    llm.scrollToPositionWithOffset(i, 0);
+                    return;
+                }
+                i++;
+            }
+        }
     }
 
     private void setupNavDrawerClick(){

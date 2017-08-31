@@ -41,6 +41,7 @@ public class ListActivity extends NavDrawerActivity {
     String lastListId = "";
 
     RecyclerView listRecyclerView;
+    LinearLayoutManager llm;
     ProgressBar loadList;
 
     ValueEventListener listener1;
@@ -73,33 +74,12 @@ public class ListActivity extends NavDrawerActivity {
         listRecyclerView = (RecyclerView)findViewById(R.id.rvWordList);
         listRecyclerView.setHasFixedSize(true);
 
-        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm = new LinearLayoutManager(this);
         listRecyclerView.setLayoutManager(llm);
 
         loadList = (ProgressBar) findViewById(R.id.loadWordListRV);
         lists = new ArrayList<>();
-    }
 
-    public void getLastListId(){
-        DBRef db = new DBRef();
-        ref2 = db.lastListRef();
-        listener2 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists())lastListId = (String) dataSnapshot.getValue();
-                ref2.removeEventListener(listener2);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError){ }
-        };
-        ref2.addValueEventListener(listener2);
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         getLastListId();
 
         listRecyclerView.setVisibility(View.GONE);
@@ -108,9 +88,31 @@ public class ListActivity extends NavDrawerActivity {
         setWordList();
     }
 
+    public void getLastListId(){
+        DBRef db = new DBRef();
+        ref2 = db.lastListRef();
+        listener2 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    lastListId = (String) dataSnapshot.getValue();
+                    if(lists!=null){
+                        scrollToLastId();
+                        listRecyclerView.setAdapter(new ListAdapter(lists, ListActivity.this, wsId, mainListId, lastListId));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError){ }
+        };
+        ref2.addValueEventListener(listener2);
+
+    }
+
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         if(listener1!=null) ref1.removeEventListener(listener1);
         if(listener2!=null) ref2.removeEventListener(listener2);
 
@@ -181,6 +183,7 @@ public class ListActivity extends NavDrawerActivity {
                 }
                 Collections.reverse(lists);
                 listRecyclerView.setAdapter(new ListAdapter(lists, ListActivity.this, wsId, mainListId, lastListId));
+                scrollToLastId();
                 listRecyclerView.setVisibility(View.VISIBLE);
                 loadList.setVisibility(View.GONE);
             }
@@ -239,6 +242,19 @@ public class ListActivity extends NavDrawerActivity {
                 return true;
             }
         });
+    }
+
+    public void scrollToLastId(){
+        if(lists!=null && lastListId!=null){
+            int i = 0;
+            for(ListWithId list: lists){
+                if(list.getId().equals(lastListId)){
+                    llm.scrollToPositionWithOffset(i, 0);
+                    return;
+                }
+                i++;
+            }
+        }
     }
 
     @Override
