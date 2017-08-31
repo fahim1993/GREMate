@@ -3,6 +3,8 @@ package com.example.fahim.gremate;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -19,6 +21,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -124,6 +128,57 @@ public class ListWordsActivity extends NavDrawerActivity {
                     }
                 });
 
+                builder.show();
+            }
+        });
+
+        AppCompatImageButton details = (AppCompatImageButton) findViewById(R.id.detailsBtn);
+        details.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(words == null)return;
+                int total = 0, practicable = 0, easy = 0, normal = 0, hard = 0, veryHard = 0;
+                for(WordWithId word: words){
+                    total++;
+                    if(word.isPracticable()){
+                        practicable++;
+                        switch (word.getLevel()){
+                            case Word.LVL_EASY:
+                                easy++; break;
+                            case Word.LVL_NORMAL:
+                                normal++; break;
+                            case Word.LVL_HARD:
+                                hard++; break;
+                            case Word.LVL_VHARD:
+                                veryHard++;
+                        }
+                    }
+                }
+                String text = "Total words: " + total + "\n"+
+                              "Practicable: " + practicable + "\n"+
+                              "Easy: " + easy + "\n"+
+                              "Normal: " + normal + "\n"+
+                              "Hard: " + hard + "\n"+
+                              "Very Hard: " + veryHard + "\n";
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
+                builder.setTitle("Details");
+
+                final TextView dataTV = new TextView(ListWordsActivity.this);
+                dataTV.setTextSize(20);
+                dataTV.setTextColor(Color.parseColor("#000000"));
+                dataTV.setText(text);
+                LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                dataTV.setLayoutParams(llp);
+                dataTV.setPadding(30,30,30,30);
+                builder.setView(dataTV);
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
                 builder.show();
             }
         });

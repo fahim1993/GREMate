@@ -72,6 +72,15 @@
                     android:layout_width="60dp"
                     android:layout_height="60dp" />
 
+                <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/detailsBtn"
+                    android:src="@drawable/details"
+                    android:scaleType="fitCenter"
+                    app:backgroundTint="@color/colorPrimary"
+                    android:tint="#FFF"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp" />
+
             </LinearLayout>
 
             <ProgressBar

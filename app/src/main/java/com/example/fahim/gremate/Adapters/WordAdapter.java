@@ -57,9 +57,12 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
     @Override
     public void onBindViewHolder(WordViewHolder holder, final int position) {
         holder.wordValue.setText(wordList.get(position).getValue().toUpperCase());
+        String text = ""+(position+1) + " - Source List: ";
         if (!wordList.get(position).isClone() || currentListId.equals(mainListId))
-            holder.sourceListName.setText(wordList.get(position).getSourceListName());
-        else holder.sourceListName.setText(wordList.get(position).getSourceListName() + " (c)");
+            text += wordList.get(position).getSourceListName();
+        else text += wordList.get(position).getSourceListName() + " (c)";
+
+        holder.sourceListName.setText(text);
 
         holder.cv.setOnClickListener(new View.OnClickListener() {
             @Override

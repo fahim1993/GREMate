@@ -55,6 +55,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ShowWordActivity extends AppCompatActivity {
 
@@ -261,7 +262,7 @@ public class ShowWordActivity extends AppCompatActivity {
         char[] ttext = titleText.toCharArray();
         ttext[0] = Character.toUpperCase(ttext[0]);
 //        setTitle(new String(ttext));
-        wordTitle.setText(new String(ttext));
+        wordTitle.setText(""+(index+1)+". "+ (new String(ttext)));
 
         switch (WORD.getValidity()) {
             case Word.UNKNOWN:
@@ -927,8 +928,6 @@ public class ShowWordActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT).show();
                             }
                         });
-                        Toast toast = Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT);
-                        toast.show();
                     }
                     return "";
                 } catch (Exception e) {
@@ -938,8 +937,6 @@ public class ShowWordActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT).show();
                         }
                     });
-                    Toast toast = Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT);
-                    toast.show();
                     return "";
                 }
             } else {
@@ -948,8 +945,6 @@ public class ShowWordActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Internet connection required!", Toast.LENGTH_SHORT).show();
                     }
                 });
-                Toast toast = Toast.makeText(getApplicationContext(), "Internet connection required!", Toast.LENGTH_SHORT);
-                toast.show();
                 return "";
             }
         }
