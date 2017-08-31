@@ -56,9 +56,9 @@ public abstract class FetchImageAsync extends AsyncTask<String, Void, String> {
                     if(wordImageFBs.size()>1)break;
                 }
                 if(wordImageFBs.size()>0){
-                    DB.initDB();
+                    DBRef db = new DBRef();
                     for(int i=0; i<wordImageFBs.size(); i++)
-                        DB.IMAGE.child(wordId).push().setValue(wordImageFBs.get(i));
+                        db.setImageData(wordId, wordImageFBs.get(i));
                 }
             }
 

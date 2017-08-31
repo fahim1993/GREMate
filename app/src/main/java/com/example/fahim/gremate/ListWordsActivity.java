@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.example.fahim.gremate.Adapters.WordAdapter;
 import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.ListWithId;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordWithId;
@@ -276,9 +277,9 @@ public class ListWordsActivity extends NavDrawerActivity {
 
     public void getListWords() {
         if (listener1 != null) ref1.removeEventListener(listener1);
-        DB.initDB();
 
-        ref1 = DB.WORD.child(currentListId);
+        DBRef db = new DBRef();
+        ref1 = db.listWordsRef(currentListId);
         listener1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

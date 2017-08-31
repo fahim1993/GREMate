@@ -61,8 +61,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         holder.listName.setText(item.getName());
         holder.listData.setText("" + item.getWordCount() + " words");
         if(lists.get(position).getId().equals(lastListId)){
-            holder.cv.setCardBackgroundColor(Color.parseColor("#f1f1f1"));
-            holder.delBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#f1f1f1")));
+            holder.cv.setCardBackgroundColor(Color.parseColor("#e5e5e5"));
+            holder.delBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#e5e5e5")));
+        }
+        else {
+            holder.cv.setCardBackgroundColor(Color.parseColor("#f8f8f8"));
+            holder.delBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#f8f8f8")));
         }
         holder.delBtn.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.WordSentence;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordAllData;
@@ -133,11 +134,11 @@ public class EditActivity extends AppCompatActivity {
     }
 
     public void editWordSetup() {
+        DBRef db = new DBRef();
         TextView wrd = (TextView) findViewById(R.id.WordOperationWord);
         wrd.setText(wordAllData.getWord().getValue().toUpperCase());
-        DB.initDB();
 
-        ref1 = DB.WORD_DATA.child(wordId);
+        ref1 = db.wordDataRef(wordId);
         listener1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -158,7 +159,7 @@ public class EditActivity extends AppCompatActivity {
         };
         ref1.addValueEventListener(listener1);
 
-        ref2 = DB.WORD_DEF.child(wordId);
+        ref2 = db.wordDefinitionRef(wordId);
         listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -181,7 +182,7 @@ public class EditActivity extends AppCompatActivity {
         };
         ref2.addValueEventListener(listener2);
 
-        ref3 = DB.SENTENCE.child(wordId);
+        ref3 = db.wordSentenceRef(wordId);
         listener3 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -204,7 +205,7 @@ public class EditActivity extends AppCompatActivity {
         };
         ref3.addValueEventListener(listener3);
 
-        ref4 = DB.IMAGE.child(wordId);
+        ref4 = db.wordImageRef(wordId);
         listener4 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

@@ -2,15 +2,12 @@ package com.example.fahim.gremate;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -24,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.fahim.gremate.Adapters.ListAdapter;
 import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.List;
 import com.example.fahim.gremate.DataClasses.ListWithId;
 import com.google.firebase.auth.FirebaseAuth;
@@ -83,8 +81,8 @@ public class ListActivity extends NavDrawerActivity {
     }
 
     public void getLastListId(){
-        DB.initDB();
-        ref2 = DB.LAST_LIST;
+        DBRef db = new DBRef();
+        ref2 = db.lastListRef();
         listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -168,8 +166,9 @@ public class ListActivity extends NavDrawerActivity {
     }
 
     private void setWordList(){
-        DB.initDB();
-        ref1 = DB.WORD_LIST.child(wsId);
+        DBRef db = new DBRef();
+
+        ref1 = db.wordSetListsRef(wsId);
 
         listener1 = new ValueEventListener() {
             @Override

@@ -35,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.FetchDataAsync;
 import com.example.fahim.gremate.DataClasses.FetchImageAsync;
 import com.example.fahim.gremate.DataClasses.WordSentence;
@@ -259,7 +260,7 @@ public class ShowWordActivity extends AppCompatActivity {
         String titleText = WORD.getValue().toLowerCase();
         char[] ttext = titleText.toCharArray();
         ttext[0] = Character.toUpperCase(ttext[0]);
-        setTitle(new String(ttext));
+//        setTitle(new String(ttext));
         wordTitle.setText(new String(ttext));
 
         switch (WORD.getValidity()) {
@@ -579,14 +580,14 @@ public class ShowWordActivity extends AppCompatActivity {
     public void retrieveData() {
 
         removeListeners();
-        DB.initDB();
+        DBRef db = new DBRef();
 
         setTextViews();
         _wordAllData = new WordAllData();
 
         _wordAllData.setWord(words.get(index));
 
-        ref1 = DB.WORD_DATA.child(wordId);
+        ref1 = db.wordDataRef(wordId);
         listener1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -606,7 +607,7 @@ public class ShowWordActivity extends AppCompatActivity {
         };
         ref1.addValueEventListener(listener1);
 
-        ref2 = DB.WORD_DEF.child(wordId);
+        ref2 = db.wordDefinitionRef(wordId);
         listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -624,7 +625,7 @@ public class ShowWordActivity extends AppCompatActivity {
         };
         ref2.addValueEventListener(listener2);
 
-        ref3 = DB.SENTENCE.child(wordId);
+        ref3 = db.wordSentenceRef(wordId);
         listener3 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -642,7 +643,7 @@ public class ShowWordActivity extends AppCompatActivity {
         };
         ref3.addValueEventListener(listener3);
 
-        ref4 = DB.IMAGE.child(wordId);
+        ref4 = db.wordImageRef(wordId);
         listener4 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

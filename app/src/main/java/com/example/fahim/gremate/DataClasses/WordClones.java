@@ -7,7 +7,7 @@ package com.example.fahim.gremate.DataClasses;
 public class WordClones {
     private String cloneId, listId;
 
-    public WordClones(String cloneId, String listId) {
+    public WordClones(String listId, String cloneId) {
         this.cloneId = cloneId;
         this.listId = listId;
     }

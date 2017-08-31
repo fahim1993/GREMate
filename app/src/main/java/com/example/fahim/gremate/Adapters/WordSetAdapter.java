@@ -56,8 +56,12 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
         holder.wordSet.setText(ws.getName());
         holder.wordSetData.setText( "" + ws.getWordCount() + " words" );
         if(wsList.get(position).getId().equals(lastSetId)){
-            holder.cv.setCardBackgroundColor(Color.parseColor("#f1f1f1"));
-            holder.delBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#f1f1f1")));
+            holder.cv.setCardBackgroundColor(Color.parseColor("#e5e5e5"));
+            holder.delBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#e5e5e5")));
+        }
+        else {
+            holder.cv.setCardBackgroundColor(Color.parseColor("#f8f8f8"));
+            holder.delBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#f8f8f8")));
         }
         holder.delBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +88,6 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
         holder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DB.initDB();
                 DB.setLastWordSetId(wsList.get(position).getId());
                 Intent intent = new Intent(context, ListActivity.class);
                 intent.putExtra("wsId", wsList.get(position).getId());

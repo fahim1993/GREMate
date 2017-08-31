@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.UserData;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -70,8 +71,8 @@ public class NavDrawerActivity extends AppCompatActivity {
     }
 
     private void setName(){
-        DB.initDB();
-        DatabaseReference mRef = DB.USER_DATA.child(DB.USER_ID);
+        DBRef db = new DBRef();
+        DatabaseReference mRef = db.userDataRef();
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

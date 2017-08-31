@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.List;
 import com.example.fahim.gremate.DataClasses.ListWithId;
 import com.example.fahim.gremate.DataClasses.Word;
@@ -184,8 +185,8 @@ public class PracticeActivity extends NavDrawerActivity {
     private void getWordSet() {
         if (listener1 != null) ref1.removeEventListener(listener1);
 
-        DB.initDB();
-        ref1 = DB.WORD_SET;
+        DBRef db = new DBRef();
+        ref1 = db.wordSetRef();
         listener1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -223,12 +224,12 @@ public class PracticeActivity extends NavDrawerActivity {
         if (listener2 != null) {
             ref2.removeEventListener(listener2);
         }
-        DB.initDB();
+        DBRef db = new DBRef();
         if (wordSetListMap.containsKey(wsId)) {
             wordLists = wordSetListMap.get(wsId);
             wordListPostProcess();
         } else {
-            ref2 = DB.WORD_LIST.child(wsId);
+            ref2 = db.wordSetListsRef(wsId);
             listener2 = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -288,8 +289,8 @@ public class PracticeActivity extends NavDrawerActivity {
             wordsPostProcess();
         }
         else {
-            DB.initDB();
-            ref3 = DB.WORD.child(listId);
+            DBRef db = new DBRef();
+            ref3 = db.listWordsRef(listId);
             listener3 = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {

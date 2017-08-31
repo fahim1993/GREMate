@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.fahim.gremate.Adapters.WordSetAdapter;
 import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.UserData;
 import com.example.fahim.gremate.DataClasses.WordSet;
 import com.example.fahim.gremate.DataClasses.WordSetWithId;
@@ -89,8 +90,8 @@ public class WordSetActivity extends NavDrawerActivity {
     }
 
     public void getLastSetId(){
-        DB.initDB();
-        ref2 = DB.LAST_SET;
+        DBRef db = new DBRef();
+        ref2 = db.lastWordSetRef();
         listener2 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -151,8 +152,8 @@ public class WordSetActivity extends NavDrawerActivity {
     }
 
     private static void setWsTitle(){
-        DB.initDB();
-        DatabaseReference mRef = DB.USER_DATA.child(DB.USER_ID);
+        DBRef db = new DBRef();
+        DatabaseReference mRef = db.userDataRef();
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -168,8 +169,8 @@ public class WordSetActivity extends NavDrawerActivity {
         if(listener1 != null){
             ref1.removeEventListener(listener1);
         }
-        DB.initDB();
-        ref1 = DB.WORD_SET;
+        DBRef db = new DBRef();
+        ref1 = db.wordSetRef(); 
         listener1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

@@ -39,9 +39,9 @@ UserWords:
          
         WordData:
             word:
-                id:
-                    des:
-                    mn:
+				id:
+					des:
+					mn:
 
         Sentence:
             word:

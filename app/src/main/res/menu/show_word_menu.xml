@@ -14,18 +14,18 @@
     <item
         android:id="@+id/pronounce"
         android:icon="@drawable/icon_play"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:title="Pronounce"/>
 
     <item
         android:id="@+id/edit"
         android:icon="@drawable/ic_edit"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:title="Edit"/>
 
     <item
         android:id="@+id/reload"
         android:icon="@drawable/reload"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:title="Reload"/>
 </menu>

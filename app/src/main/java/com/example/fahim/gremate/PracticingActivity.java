@@ -19,6 +19,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.FeedTestData;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordDef;
@@ -108,7 +109,6 @@ public class PracticingActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 if (wordLevel != word.getLevel()) {
-                    DB.initDB();
                     DB.setWordLevel(word.getCloneOf(), wordLevel);
                 }
                 index++;
@@ -183,14 +183,14 @@ public class PracticingActivity extends AppCompatActivity {
     }
 
     private void loadWordDef(final String id) {
-        DB.initDB();
+        DBRef db = new DBRef();
 
         word = words.get(index);
         wordLevel = word.getLevel();
         wordLevelLL.setVisibility(GONE);
         levelSb.setProgress(wordLevel);
 
-        ref1 = DB.WORD_DEF.child(id);
+        ref1 = db.wordDefinitionRef(id);
         listener1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
