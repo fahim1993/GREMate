@@ -61,7 +61,7 @@ public class WordWithId extends Word {
     public static Comparator<WordWithId> difficulty_Asc = new Comparator<WordWithId>() {
         public int compare(WordWithId w1, WordWithId w2) {
             if(w1.getLevel() == w2.getLevel()){
-                return w2.getValue().toUpperCase().compareTo(w1.getValue().toUpperCase());
+                return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
             }
             else{
                 return w1.getLevel() - w2.getLevel();
