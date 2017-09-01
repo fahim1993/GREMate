@@ -41,7 +41,8 @@
                     android:src="@drawable/ic_ws_add_word"
                     android:scaleType="fitCenter"
                     android:layout_width="60dp"
-                    android:layout_height="60dp" />
+                    android:layout_height="60dp"
+                    android:onClick="addButtonClick"/>
 
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/searchBtn"
@@ -50,7 +51,8 @@
                     app:backgroundTint="@color/colorPrimary"
                     android:tint="#FFF"
                     android:layout_width="60dp"
-                    android:layout_height="60dp" />
+                    android:layout_height="60dp"
+                    android:onClick="searchButtonClick"/>
 
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/sortBtn"
@@ -59,7 +61,8 @@
                     app:backgroundTint="@color/colorPrimary"
                     android:tint="#FFF"
                     android:layout_width="60dp"
-                    android:layout_height="60dp" />
+                    android:layout_height="60dp"
+                    android:onClick="sortButtonClick"/>
 
 
 
@@ -70,7 +73,8 @@
                     app:backgroundTint="@color/colorPrimary"
                     android:tint="#FFF"
                     android:layout_width="60dp"
-                    android:layout_height="60dp" />
+                    android:layout_height="60dp"
+                    android:onClick="practiceButtonClick"/>
 
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/detailsBtn"
@@ -79,7 +83,8 @@
                     app:backgroundTint="@color/colorPrimary"
                     android:tint="#FFF"
                     android:layout_width="60dp"
-                    android:layout_height="60dp" />
+                    android:layout_height="60dp"
+                    android:onClick="detailsButtonClick"/>
 
             </LinearLayout>
 

@@ -93,217 +93,6 @@ public class ListWordsActivity extends NavDrawerActivity {
 
         loadWordRV = (ProgressBar) findViewById(R.id.loadWordRV);
 
-        AppCompatImageButton addWord = (AppCompatImageButton) findViewById(R.id.addWordBtn);
-        addWord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
-                builder.setTitle("Add Word");
-
-                final EditText input = new EditText(ListWordsActivity.this);
-
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                input.setHint("Word");
-                builder.setView(input);
-
-                builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String word = input.getText().toString();
-                        if (word.length() < 1) {
-                            Toast.makeText(ListWordsActivity.this,
-                                    "Failed! Word must be at least 1 character long.", Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(ListWordsActivity.this,
-                                    word + " added", Toast.LENGTH_SHORT).show();
-                            DB.newWord(wsId, currentListId, currentListName, mainListId, word);
-                        }
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                builder.show();
-            }
-        });
-
-        AppCompatImageButton details = (AppCompatImageButton) findViewById(R.id.detailsBtn);
-        details.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if(words == null)return;
-                int total = 0, practicable = 0, easy = 0, normal = 0, hard = 0, veryHard = 0;
-                for(WordWithId word: words){
-                    total++;
-                    if(word.isPracticable()){
-                        practicable++;
-                        switch (word.getLevel()){
-                            case Word.LVL_EASY:
-                                easy++; break;
-                            case Word.LVL_NORMAL:
-                                normal++; break;
-                            case Word.LVL_HARD:
-                                hard++; break;
-                            case Word.LVL_VHARD:
-                                veryHard++;
-                        }
-                    }
-                }
-                String text = "Total words: " + total + "\n"+
-                              "Practicable: " + practicable + "\n"+
-                              "Easy: " + easy + "\n"+
-                              "Normal: " + normal + "\n"+
-                              "Hard: " + hard + "\n"+
-                              "Very Hard: " + veryHard + "\n";
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
-                builder.setTitle("Details");
-
-                final TextView dataTV = new TextView(ListWordsActivity.this);
-                dataTV.setTextSize(20);
-                dataTV.setTextColor(Color.parseColor("#000000"));
-                dataTV.setText(text);
-                LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                dataTV.setLayoutParams(llp);
-                dataTV.setPadding(30,30,30,30);
-                builder.setView(dataTV);
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                builder.show();
-            }
-        });
-
-        AppCompatImageButton sortBtn = (AppCompatImageButton) findViewById(R.id.sortBtn);
-        sortBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
-                LayoutInflater inflater = (ListWordsActivity.this).getLayoutInflater();
-
-                builder.setTitle("Sort Words");
-                final View layout = inflater.inflate(R.layout.ws_sort, null);
-                final RadioButton alph = (RadioButton) layout.findViewById(R.id.alphabetical);
-                final RadioButton diff = (RadioButton) layout.findViewById(R.id.difficulty);
-
-                final RadioButton asc = (RadioButton) layout.findViewById(R.id.ascending);
-                final RadioButton dsc = (RadioButton) layout.findViewById(R.id.descending);
-
-                if (sortOrder == 31) {
-                    alph.setChecked(true);
-                    asc.setChecked(true);
-                } else if (sortOrder == 32) {
-                    alph.setChecked(true);
-                    dsc.setChecked(true);
-                } else if (sortOrder == 41) {
-                    diff.setChecked(true);
-                    asc.setChecked(true);
-                } else if (sortOrder == 42) {
-                    diff.setChecked(true);
-                    dsc.setChecked(true);
-                }
-
-                final int prevSortOrder = sortOrder;
-
-                builder.setView(layout)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                if (alph.isChecked() && asc.isChecked()) {
-                                    sortOrder = 31;
-                                } else if (alph.isChecked() && dsc.isChecked()) {
-                                    sortOrder = 32;
-                                } else if (diff.isChecked() && asc.isChecked()) {
-                                    sortOrder = 41;
-                                } else if (diff.isChecked() && dsc.isChecked()) {
-                                    sortOrder = 42;
-                                }
-                                if (prevSortOrder == sortOrder) return;
-                                setListSortOrder();
-                                sortWords(true);
-                            }
-                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                });
-                builder.create();
-                builder.show();
-            }
-        });
-
-        AppCompatImageButton searchButton = (AppCompatImageButton) findViewById(R.id.searchBtn);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (words == null) return;
-                AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
-                builder.setTitle("Search Word");
-
-                final EditText input = new EditText(ListWordsActivity.this);
-
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                input.setHint("Word");
-                builder.setView(input);
-
-                builder.setPositiveButton("Search", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        char[] word = input.getText().toString().toLowerCase().toCharArray();
-                        for (int i = 0; i < words.size(); i++) {
-                            char[] listWord = words.get(i).getValue().toLowerCase().toCharArray();
-                            if (listWord.length < word.length) continue;
-                            boolean match = true;
-                            for (int j = 0; j < word.length; j++) {
-                                if (word[j] != listWord[j]) {
-                                    match = false;
-                                    break;
-                                }
-                            }
-                            if (match) {
-                                llm.scrollToPositionWithOffset(i, 0);
-                                return;
-                            }
-                        }
-                        Toast.makeText(ListWordsActivity.this,
-                                input.getText().toString() + " was not found in this list!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                builder.show();
-            }
-        });
-
-        AppCompatImageButton practiceButton = (AppCompatImageButton) findViewById(R.id.practiceBtn);
-        practiceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ListWordsActivity.this, PracticeActivity.class);
-                Bundle b = new Bundle();
-                b.putString("wsId", wsId);
-                b.putString("listId", currentListId);
-                intent.putExtras(b);
-                startActivity(intent);
-            }
-        });
-
         hideWordRv();
         getListWords();
     }
@@ -319,6 +108,194 @@ public class ListWordsActivity extends NavDrawerActivity {
     protected void onDestroy() {
         super.onDestroy();
         removeListeners();
+    }
+
+    public void addButtonClick(View v){
+        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
+        builder.setTitle("Add Word");
+
+        final EditText input = new EditText(ListWordsActivity.this);
+
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setHint("Word");
+        builder.setView(input);
+
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String word = input.getText().toString();
+                if (word.length() < 1) {
+                    Toast.makeText(ListWordsActivity.this,
+                            "Failed! Word must be at least 1 character long.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(ListWordsActivity.this,
+                            word + " added", Toast.LENGTH_SHORT).show();
+                    DB.newWord(wsId, currentListId, currentListName, mainListId, word);
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    public void searchButtonClick(View v){
+        if (words == null) return;
+        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
+        builder.setTitle("Search Word");
+
+        final EditText input = new EditText(ListWordsActivity.this);
+
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setHint("Word");
+        builder.setView(input);
+
+        builder.setPositiveButton("Search", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                char[] word = input.getText().toString().toLowerCase().toCharArray();
+                for (int i = 0; i < words.size(); i++) {
+                    char[] listWord = words.get(i).getValue().toLowerCase().toCharArray();
+                    if (listWord.length < word.length) continue;
+                    boolean match = true;
+                    for (int j = 0; j < word.length; j++) {
+                        if (word[j] != listWord[j]) {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (match) {
+                        llm.scrollToPositionWithOffset(i, 0);
+                        return;
+                    }
+                }
+                Toast.makeText(ListWordsActivity.this,
+                        input.getText().toString() + " was not found in this list!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    public void sortButtonClick(View v){
+        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
+        LayoutInflater inflater = (ListWordsActivity.this).getLayoutInflater();
+
+        builder.setTitle("Sort Words");
+        final View layout = inflater.inflate(R.layout.ws_sort, null);
+        final RadioButton alph = (RadioButton) layout.findViewById(R.id.alphabetical);
+        final RadioButton diff = (RadioButton) layout.findViewById(R.id.difficulty);
+
+        final RadioButton asc = (RadioButton) layout.findViewById(R.id.ascending);
+        final RadioButton dsc = (RadioButton) layout.findViewById(R.id.descending);
+
+        if (sortOrder == 31) {
+            alph.setChecked(true);
+            asc.setChecked(true);
+        } else if (sortOrder == 32) {
+            alph.setChecked(true);
+            dsc.setChecked(true);
+        } else if (sortOrder == 41) {
+            diff.setChecked(true);
+            asc.setChecked(true);
+        } else if (sortOrder == 42) {
+            diff.setChecked(true);
+            dsc.setChecked(true);
+        }
+
+        final int prevSortOrder = sortOrder;
+
+        builder.setView(layout)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        if (alph.isChecked() && asc.isChecked()) {
+                            sortOrder = 31;
+                        } else if (alph.isChecked() && dsc.isChecked()) {
+                            sortOrder = 32;
+                        } else if (diff.isChecked() && asc.isChecked()) {
+                            sortOrder = 41;
+                        } else if (diff.isChecked() && dsc.isChecked()) {
+                            sortOrder = 42;
+                        }
+                        if (prevSortOrder == sortOrder) return;
+                        setListSortOrder();
+                        sortWords(true);
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        builder.create();
+        builder.show();
+    }
+
+    public void practiceButtonClick(View v){
+        Intent intent = new Intent(ListWordsActivity.this, PracticeActivity.class);
+        Bundle b = new Bundle();
+        b.putString("wsId", wsId);
+        b.putString("listId", currentListId);
+        intent.putExtras(b);
+        startActivity(intent);
+    }
+
+    public void detailsButtonClick(View v){
+        if(words == null)return;
+        int total = 0, practicable = 0, easy = 0, normal = 0, hard = 0, veryHard = 0;
+        for(WordWithId word: words){
+            total++;
+            if(word.isPracticable()){
+                practicable++;
+                switch (word.getLevel()){
+                    case Word.LVL_EASY:
+                        easy++; break;
+                    case Word.LVL_NORMAL:
+                        normal++; break;
+                    case Word.LVL_HARD:
+                        hard++; break;
+                    case Word.LVL_VHARD:
+                        veryHard++;
+                }
+            }
+        }
+        String text = "Total words: " + total + "\n"+
+                "Practicable: " + practicable + "\n"+
+                "Easy: " + easy + "\n"+
+                "Normal: " + normal + "\n"+
+                "Hard: " + hard + "\n"+
+                "Very Hard: " + veryHard + "\n";
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
+        builder.setTitle("Details");
+
+        final TextView dataTV = new TextView(ListWordsActivity.this);
+        dataTV.setTextSize(20);
+        dataTV.setTextColor(Color.parseColor("#000000"));
+        dataTV.setText(text);
+        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        dataTV.setLayoutParams(llp);
+        dataTV.setPadding(30,30,30,30);
+        builder.setView(dataTV);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
     }
 
     private void removeListeners() {
@@ -351,6 +328,8 @@ public class ListWordsActivity extends NavDrawerActivity {
     }
 
     private void sortWords(boolean resetList) {
+
+        getListSortOrder();
 
         if (words == null) return;
         else if (sortOrder == 31) {
@@ -477,36 +456,3 @@ public class ListWordsActivity extends NavDrawerActivity {
         });
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
