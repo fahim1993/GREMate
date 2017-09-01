@@ -203,7 +203,7 @@ public class WordSetActivity extends NavDrawerActivity {
             int i = 0;
             for(WordSetWithId ws: wordSets){
                 if(ws.getId().equals(lastSetId)){
-                    llm.scrollToPositionWithOffset(i, 0);
+                    llm.scrollToPositionWithOffset((i==0)?i:i-1, 0);
                     return;
                 }
                 i++;

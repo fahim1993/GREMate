@@ -249,7 +249,7 @@ public class ListActivity extends NavDrawerActivity {
             int i = 0;
             for(ListWithId list: lists){
                 if(list.getId().equals(lastListId)){
-                    llm.scrollToPositionWithOffset(i, 0);
+                    llm.scrollToPositionWithOffset((i==0)?i:i-1, 0);
                     return;
                 }
                 i++;
