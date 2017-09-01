@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -42,6 +43,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -110,7 +114,7 @@ public class ListWordsActivity extends NavDrawerActivity {
         removeListeners();
     }
 
-    public void addButtonClick(View v){
+    public void addButtonClick(View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
         builder.setTitle("Add Word");
 
@@ -144,7 +148,7 @@ public class ListWordsActivity extends NavDrawerActivity {
         builder.show();
     }
 
-    public void searchButtonClick(View v){
+    public void searchButtonClick(View v) {
         if (words == null) return;
         AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
         builder.setTitle("Search Word");
@@ -188,7 +192,7 @@ public class ListWordsActivity extends NavDrawerActivity {
         builder.show();
     }
 
-    public void sortButtonClick(View v){
+    public void sortButtonClick(View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
         LayoutInflater inflater = (ListWordsActivity.this).getLayoutInflater();
 
@@ -243,7 +247,7 @@ public class ListWordsActivity extends NavDrawerActivity {
         builder.show();
     }
 
-    public void practiceButtonClick(View v){
+    public void practiceButtonClick(View v) {
         Intent intent = new Intent(ListWordsActivity.this, PracticeActivity.class);
         Bundle b = new Bundle();
         b.putString("wsId", wsId);
@@ -252,30 +256,33 @@ public class ListWordsActivity extends NavDrawerActivity {
         startActivity(intent);
     }
 
-    public void detailsButtonClick(View v){
-        if(words == null)return;
+    public void detailsButtonClick(View v) {
+        if (words == null) return;
         int total = 0, practicable = 0, easy = 0, normal = 0, hard = 0, veryHard = 0;
-        for(WordWithId word: words){
+        for (WordWithId word : words) {
             total++;
-            if(word.isPracticable()){
+            if (word.isPracticable()) {
                 practicable++;
-                switch (word.getLevel()){
+                switch (word.getLevel()) {
                     case Word.LVL_EASY:
-                        easy++; break;
+                        easy++;
+                        break;
                     case Word.LVL_NORMAL:
-                        normal++; break;
+                        normal++;
+                        break;
                     case Word.LVL_HARD:
-                        hard++; break;
+                        hard++;
+                        break;
                     case Word.LVL_VHARD:
                         veryHard++;
                 }
             }
         }
-        String text = "Total words: " + total + "\n"+
-                "Practicable: " + practicable + "\n"+
-                "Easy: " + easy + "\n"+
-                "Normal: " + normal + "\n"+
-                "Hard: " + hard + "\n"+
+        String text = "Total words: " + total + "\n" +
+                "Practicable: " + practicable + "\n" +
+                "Easy: " + easy + "\n" +
+                "Normal: " + normal + "\n" +
+                "Hard: " + hard + "\n" +
                 "Very Hard: " + veryHard + "\n";
 
         AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
@@ -287,12 +294,59 @@ public class ListWordsActivity extends NavDrawerActivity {
         dataTV.setText(text);
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         dataTV.setLayoutParams(llp);
-        dataTV.setPadding(30,30,30,30);
+        dataTV.setPadding(30, 30, 30, 30);
         builder.setView(dataTV);
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
+    }
+
+    public void saveButtonClick(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
+        builder.setTitle("Save List");
+
+        final TextView dataTV = new TextView(ListWordsActivity.this);
+        dataTV.setTextSize(20);
+        dataTV.setTextColor(Color.parseColor("#000000"));
+        dataTV.setText("This will save the current list in GREMate folder of your device.");
+        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        dataTV.setLayoutParams(llp);
+        dataTV.setPadding(30, 30, 30, 30);
+        builder.setView(dataTV);
+
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    if(words==null)throw new Exception("words is null");
+                    File root = new File(Environment.getExternalStorageDirectory(), "GREMate");
+                    if (!root.exists()) {
+                        root.mkdirs();
+                    }
+                    File listFile = new File(root, currentListName + ".txt");
+                    FileWriter writer = new FileWriter(listFile);
+                    StringBuilder output = new StringBuilder();
+                    for(WordWithId word: words){
+                        output.append(word.getValue()).append("\n");
+                    }
+                    writer.append(output);
+                    writer.flush();
+                    writer.close();
+                    Toast.makeText(ListWordsActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(ListWordsActivity.this, "Error...", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
             }
         });
         builder.show();

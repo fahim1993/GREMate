@@ -86,6 +86,16 @@
                     android:layout_height="60dp"
                     android:onClick="detailsButtonClick"/>
 
+                <android.support.v7.widget.AppCompatImageButton
+                    android:id="@+id/saveBtn"
+                    android:src="@drawable/save"
+                    android:scaleType="fitCenter"
+                    app:backgroundTint="@color/colorPrimary"
+                    android:tint="#FFF"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:onClick="saveButtonClick"/>
+
             </LinearLayout>
 
             <ProgressBar
