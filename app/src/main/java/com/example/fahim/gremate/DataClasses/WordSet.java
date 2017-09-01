@@ -6,18 +6,16 @@ package com.example.fahim.gremate.DataClasses;
 
 public class WordSet {
     private String name, mainList;
-    private int wordCount;
 
     public WordSet() { }
 
-    public WordSet(String name, String mainList, int wordCount) {
+    public WordSet(String name, String mainList) {
         this.name = name;
         this.mainList = mainList;
-        this.wordCount = wordCount;
     }
 
     public static WordSet newWordSet (String name, String mainList){
-        return new WordSet(name, mainList, 0);
+        return new WordSet(name, mainList);
     }
 
     public String getName() {
@@ -26,14 +24,6 @@ public class WordSet {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getWordCount() {
-        return wordCount;
-    }
-
-    public void setWordCount(int wordCount) {
-        this.wordCount = wordCount;
     }
 
     public String getMainList() {

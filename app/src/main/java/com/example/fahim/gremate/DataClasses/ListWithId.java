@@ -10,13 +10,13 @@ import android.os.Parcelable;
 public class ListWithId extends List implements Parcelable {
     String id;
 
-    public ListWithId(String name, int wordCount, String id) {
-        super(name, wordCount);
+    public ListWithId(String name, String id) {
+        super(name);
         this.id = id;
     }
 
     public ListWithId(List wordList, String id) {
-        super(wordList.getName(), wordList.getWordCount());
+        super(wordList.getName());
         this.id = id;
     }
 
@@ -41,13 +41,11 @@ public class ListWithId extends List implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(getName());
-        parcel.writeInt(getWordCount());
         parcel.writeString(getId());
     }
 
     private ListWithId(Parcel in) {
         setName(in.readString());
-        setWordCount(in.readInt());
         setId(in.readString());
     }
 

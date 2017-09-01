@@ -8,6 +8,7 @@ import java.util.Comparator;
 
 public class WordWithId extends Word {
     private String id;
+    private int serial;
 
     public WordWithId() {
         super();
@@ -18,15 +19,17 @@ public class WordWithId extends Word {
 //                boolean practicable, int validity, int level)
 
     public WordWithId(String listName, String cloneOf, String value, boolean practicable,
-                      int validity, int level, String id) {
+                      int validity, int level, String id, int serial) {
         super(listName, cloneOf, value, practicable, validity, level);
         this.id = id;
+        this.serial = serial;
     }
 
-    public WordWithId(Word word, String id){
+    public WordWithId(Word word, String id, int serial){
         super(word.getSourceListName(), word.getCloneOf(), word.getValue(), word.isPracticable(),
                 word.getValidity(), word.getLevel());
         this.id = id;
+        this.serial = serial;
     }
 
     public boolean isClone(){
@@ -80,5 +83,23 @@ public class WordWithId extends Word {
         }
     };
 
+    public static Comparator<WordWithId> addedTime_Asc = new Comparator<WordWithId>() {
+        public int compare(WordWithId w1, WordWithId w2) {
+            return w1.getSerial() - w2.getSerial();
+        }
+    };
 
+    public static Comparator<WordWithId> addedTime_Dsc = new Comparator<WordWithId>() {
+        public int compare(WordWithId w1, WordWithId w2) {
+            return w2.getSerial() - w1.getSerial();
+        }
+    };
+
+    public int getSerial() {
+        return serial;
+    }
+
+    public void setSerial(int serial) {
+        this.serial = serial;
+    }
 }

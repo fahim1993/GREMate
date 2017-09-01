@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/cardItem"
-    android:layout_margin="2dp"
+    android:layout_margin="3dp"
     card_view:cardBackgroundColor="@color/cardviewItem"
     card_view:cardCornerRadius="3dp"
     card_view:cardElevation="2dp"
@@ -33,15 +33,6 @@
                 android:textColor="#000"
                 android:maxLines="1"
                 android:id="@+id/name"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="10sp"
-                android:textColor="#000"
-                android:id="@+id/data"
-                android:layout_below="@id/name"/>
-
 
         </RelativeLayout>
 

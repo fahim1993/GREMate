@@ -199,12 +199,19 @@ public class ListWordsActivity extends NavDrawerActivity {
         builder.setTitle("Sort Words");
         final View layout = inflater.inflate(R.layout.ws_sort, null);
         final RadioButton alph = (RadioButton) layout.findViewById(R.id.alphabetical);
+        final RadioButton time = (RadioButton) layout.findViewById(R.id.timeAdded);
         final RadioButton diff = (RadioButton) layout.findViewById(R.id.difficulty);
 
         final RadioButton asc = (RadioButton) layout.findViewById(R.id.ascending);
         final RadioButton dsc = (RadioButton) layout.findViewById(R.id.descending);
 
-        if (sortOrder == 31) {
+        if (sortOrder == 21) {
+            time.setChecked(true);
+            asc.setChecked(true);
+        } else if (sortOrder == 22) {
+            time.setChecked(true);
+            dsc.setChecked(true);
+        } else if (sortOrder == 31) {
             alph.setChecked(true);
             asc.setChecked(true);
         } else if (sortOrder == 32) {
@@ -224,7 +231,11 @@ public class ListWordsActivity extends NavDrawerActivity {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        if (alph.isChecked() && asc.isChecked()) {
+                        if (time.isChecked() && asc.isChecked()) {
+                            sortOrder = 21;
+                        } else if (time.isChecked() && dsc.isChecked()) {
+                            sortOrder = 22;
+                        } else if (alph.isChecked() && asc.isChecked()) {
                             sortOrder = 31;
                         } else if (alph.isChecked() && dsc.isChecked()) {
                             sortOrder = 32;
@@ -365,9 +376,10 @@ public class ListWordsActivity extends NavDrawerActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 words = new ArrayList<>();
+                int serial = 0;
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Word word = ds.getValue(Word.class);
-                    WordWithId wordWithId = new WordWithId(word, ds.getKey());
+                    WordWithId wordWithId = new WordWithId(word, ds.getKey(), ++serial);
                     words.add(wordWithId);
                 }
                 sortWords(false);
@@ -386,7 +398,12 @@ public class ListWordsActivity extends NavDrawerActivity {
         getListSortOrder();
 
         if (words == null) return;
-        else if (sortOrder == 31) {
+        else if (sortOrder == 21){
+            Collections.sort(words, WordWithId.addedTime_Asc);
+        }
+        else if (sortOrder == 22) {
+            Collections.sort(words, WordWithId.addedTime_Dsc);
+        } else if (sortOrder == 31) {
             Collections.sort(words, WordWithId.alphabetical_Asc);
         } else if (sortOrder == 32) {
             Collections.sort(words, WordWithId.alphabetical_Dsc);
@@ -413,7 +430,7 @@ public class ListWordsActivity extends NavDrawerActivity {
 
     private void getListSortOrder() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        sortOrder = prefs.getInt(currentListId + "`~", 31);
+        sortOrder = prefs.getInt(currentListId + "`~", 21);
     }
 
     private void resetListState() {

@@ -881,7 +881,7 @@ public class ShowWordActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 removeListeners();
-                                DB.deleteWord(wordId, "", false, true);
+                                DB.deleteWord(wordId, "", true);
 
                                 loading = true;
                                 showWordSV.setVisibility(View.GONE);

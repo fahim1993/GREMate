@@ -9,12 +9,12 @@ public class WordSetWithId extends WordSet {
 
 //    public WordSet(String name, String mainList, int wordCount)
 
-    public WordSetWithId(String name, String mainList, int wordCount, String id) {
-        super(name, mainList, wordCount);
+    public WordSetWithId(String name, String mainList, String id) {
+        super(name, mainList);
         this.id = id;
     }
     public WordSetWithId(WordSet ws, String id) {
-        super(ws.getName(), ws.getMainList(), ws.getWordCount());
+        super(ws.getName(), ws.getMainList());
         this.id = id;
     }
     public WordSetWithId() {

@@ -59,7 +59,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     public void onBindViewHolder(ListViewHolder holder, final int position) {
         ListWithId item = lists.get(position);
         holder.listName.setText(item.getName());
-        holder.listData.setText("" + item.getWordCount() + " words");
         if(lists.get(position).getId().equals(lastListId)){
             holder.cv.setCardBackgroundColor(Color.parseColor("#e5e5e5"));
             holder.delBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#e5e5e5")));
@@ -132,14 +131,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     public static class ListViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         TextView listName;
-        TextView listData;
         AppCompatImageButton delBtn;
 
         public ListViewHolder(View itemView) {
             super(itemView);
             cv = (CardView) itemView.findViewById(R.id.cardItem);
             listName = (TextView) itemView.findViewById(R.id.name);
-            listData = (TextView) itemView.findViewById(R.id.data);
             delBtn = (AppCompatImageButton) itemView.findViewById(R.id.delete);
         }
     }

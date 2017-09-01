@@ -570,7 +570,7 @@ public class EditActivity extends AppCompatActivity {
     }
 
     public void saveData() {
-        DB.deleteWord(wsId, wordId, false, true);
+        DB.deleteWord(wsId, wordId, true);
 
         Toast.makeText(EditActivity.this, "Saved", Toast.LENGTH_SHORT).show();
 

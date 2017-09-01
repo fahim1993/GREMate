@@ -145,7 +145,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 String wid = _word.getCloneOf();
 
-                                                DB.deleteWord(wsId, wid, true, false);
+                                                DB.deleteWord(wsId, wid, false);
                                                 Toast.makeText(context,
                                                         "Deleted " + _word.getValue(), Toast.LENGTH_LONG).show();
                                             }
@@ -164,7 +164,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                             .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                                    DB.removeWordClone(wsId, currentListId, _word.getCloneOf(), _word.getId(), true);
+                                                    DB.removeWordClone(wsId, currentListId, _word.getCloneOf(), _word.getId());
                                                     Toast.makeText(context,
                                                             "Removed " + _word.getValue() + " from this list", Toast.LENGTH_LONG).show();
                                                 }
@@ -183,7 +183,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                             .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                                    DB.deleteWord(wsId, _word.getCloneOf(), true, false);
+                                                    DB.deleteWord(wsId, _word.getCloneOf(), false);
                                                     Toast.makeText(context,
                                                             "Deleted " + _word.getValue(), Toast.LENGTH_LONG).show();
                                                 }
@@ -205,18 +205,23 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
 
 
         int lvl = wordList.get(position).getLevel();
-        switch (lvl) {
-            case Word.LVL_EASY:
-                holder.img.setImageResource(R.drawable.easy);
-                break;
-            case Word.LVL_NORMAL:
-                holder.img.setImageResource(R.drawable.normal);
-                break;
-            case Word.LVL_HARD:
-                holder.img.setImageResource(R.drawable.hard);
-                break;
-            case Word.LVL_VHARD:
-                holder.img.setImageResource(R.drawable.vhard);
+        if(wordList.get(position).isPracticable()) {
+            switch (lvl) {
+                case Word.LVL_EASY:
+                    holder.img.setImageResource(R.drawable.easy);
+                    break;
+                case Word.LVL_NORMAL:
+                    holder.img.setImageResource(R.drawable.normal);
+                    break;
+                case Word.LVL_HARD:
+                    holder.img.setImageResource(R.drawable.hard);
+                    break;
+                case Word.LVL_VHARD:
+                    holder.img.setImageResource(R.drawable.vhard);
+            }
+        }
+        else{
+            holder.img.setImageResource(R.drawable.grey);
         }
     }
 

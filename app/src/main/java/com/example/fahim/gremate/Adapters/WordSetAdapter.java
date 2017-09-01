@@ -54,7 +54,6 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
     public void onBindViewHolder(WSViewHolder holder, final int position) {
         WordSetWithId ws = wsList.get(position);
         holder.wordSet.setText(ws.getName());
-        holder.wordSetData.setText( "" + ws.getWordCount() + " words" );
         if(wsList.get(position).getId().equals(lastSetId)){
             holder.cv.setCardBackgroundColor(Color.parseColor("#e5e5e5"));
             holder.delBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#e5e5e5")));
@@ -107,14 +106,12 @@ public class WordSetAdapter extends RecyclerView.Adapter<WordSetAdapter.WSViewHo
     public static class WSViewHolder extends RecyclerView.ViewHolder{
         CardView cv;
         TextView wordSet;
-        TextView wordSetData;
         AppCompatImageButton delBtn;
 
         public WSViewHolder(View itemView) {
             super(itemView);
             cv = (CardView) itemView.findViewById(R.id.cardItem);
             wordSet = (TextView) itemView.findViewById(R.id.name);
-            wordSetData = (TextView) itemView.findViewById(R.id.data);
             delBtn = (AppCompatImageButton) itemView.findViewById(R.id.delete);
         }
     }
