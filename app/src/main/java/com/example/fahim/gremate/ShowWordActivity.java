@@ -90,6 +90,7 @@ public class ShowWordActivity extends AppCompatActivity {
     private SeekBar levelSb;
 
     private ScrollView sv;
+    private LinearLayout dummyFocus;
 
     private ScrollView showWordSV;
     private ProgressBar loadingPB;
@@ -123,6 +124,8 @@ public class ShowWordActivity extends AppCompatActivity {
         wsId = extras.getString("wsId");
         currentListId = extras.getString("listId");
         mainListId = extras.getString("mainListId");
+
+        dummyFocus = (LinearLayout)findViewById(R.id.showWordDummyFocus);
 
         showWordSV = (ScrollView) findViewById(R.id.showWordSV);
         loadingPB = (ProgressBar) findViewById(R.id.loadWordPB);
@@ -204,7 +207,7 @@ public class ShowWordActivity extends AppCompatActivity {
             imgState = 0;
             editor.putInt("mnState", 0);
             mnState = 0;
-            editor.commit();
+            editor.apply();
         }
         sv = (ScrollView) findViewById(R.id.showWordSV);
         loadWord();
@@ -308,6 +311,8 @@ public class ShowWordActivity extends AppCompatActivity {
             desButton.setImageResource(R.drawable.down);
         }
         desButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+        scrollSV();
     }
 
     private void setDef() {
@@ -348,6 +353,8 @@ public class ShowWordActivity extends AppCompatActivity {
             defButton.setImageResource(R.drawable.down);
         }
         defButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+        scrollSV();
     }
 
     private void setSentence() {
@@ -379,6 +386,8 @@ public class ShowWordActivity extends AppCompatActivity {
             sentenceButton.setImageResource(R.drawable.down);
         }
         sentenceButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+        scrollSV();
     }
 
     private void setMN() {
@@ -404,6 +413,8 @@ public class ShowWordActivity extends AppCompatActivity {
             mnButton.setImageResource(R.drawable.down);
         }
         mnButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+        scrollSV();
     }
 
     private void setTextViews() {
@@ -445,7 +456,6 @@ public class ShowWordActivity extends AppCompatActivity {
 
             setLevel();
             scrollSV();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -727,6 +737,7 @@ public class ShowWordActivity extends AppCompatActivity {
         }
         imgButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
+        scrollSV();
         countLoaded(3);
     }
 
@@ -747,11 +758,13 @@ public class ShowWordActivity extends AppCompatActivity {
     }
 
     private void scrollSV() {
-        sv.post(new Runnable() {
-            public void run() {
-                sv.scrollTo(0, 0);
-            }
-        });
+//        sv.post(new Runnable() {
+//            public void run() {
+//                sv.scrollTo(0, 0);
+//                Log.d("SCROLL", "DONE");
+//            }
+//        });
+        dummyFocus.requestFocus();
     }
 
     private class FetchData extends FetchDataAsync {
