@@ -143,11 +143,17 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                         .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
-                                                String wid = _word.getCloneOf();
+                                                try {
+                                                    String wid = _word.getCloneOf();
+                                                    DB.deleteWord(wid, false);
+                                                    Toast.makeText(context,
+                                                            "Deleted " + _word.getValue(), Toast.LENGTH_LONG).show();
+                                                } catch (Exception e) {
+                                                    Toast.makeText(context,
+                                                            "Error deleting... " + _word.getValue(), Toast.LENGTH_LONG).show();
+                                                    e.printStackTrace();
+                                                }
 
-                                                DB.deleteWord(wsId, wid, false);
-                                                Toast.makeText(context,
-                                                        "Deleted " + _word.getValue(), Toast.LENGTH_LONG).show();
                                             }
                                         })
                                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -164,7 +170,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                             .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                                    DB.removeWordClone(wsId, currentListId, _word.getCloneOf(), _word.getId());
+                                                    DB.removeWordClone(currentListId, _word.getCloneOf(), _word.getId());
                                                     Toast.makeText(context,
                                                             "Removed " + _word.getValue() + " from this list", Toast.LENGTH_LONG).show();
                                                 }
@@ -183,9 +189,16 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                             .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                                    DB.deleteWord(wsId, _word.getCloneOf(), false);
-                                                    Toast.makeText(context,
-                                                            "Deleted " + _word.getValue(), Toast.LENGTH_LONG).show();
+                                                    try {
+                                                        DB.deleteWord(_word.getCloneOf(), false);
+                                                        Toast.makeText(context,
+                                                                "Deleted " + _word.getValue(), Toast.LENGTH_LONG).show();
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                        Toast.makeText(context,
+                                                                "Error deleting... " + _word.getValue(), Toast.LENGTH_LONG).show();
+                                                    }
+
                                                 }
                                             })
                                             .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

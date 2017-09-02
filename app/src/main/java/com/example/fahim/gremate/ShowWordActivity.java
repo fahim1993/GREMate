@@ -880,20 +880,25 @@ public class ShowWordActivity extends AppCompatActivity {
                         .setPositiveButton("Reload", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                removeListeners();
-                                DB.deleteWord(wordId, "", true);
 
-                                loading = true;
-                                showWordSV.setVisibility(View.GONE);
-                                errorTextV.setVisibility(View.GONE);
-                                loadingPB.setVisibility(View.VISIBLE);
+                                try {
+                                    removeListeners();
+                                    DB.deleteWord(wordId, true);
 
-                                if (isNetworkConnected()) {
-                                    fetchingData = true;
-                                    fetchingImage = true;
-                                    fetching = true;
-                                    new FetchData().execute(WORD.getValue(), wordId);
-                                    (new FetchImage(getApplicationContext(), wordId, null)).execute("NEW", WORD.getValue().toLowerCase());
+                                    loading = true;
+                                    showWordSV.setVisibility(View.GONE);
+                                    errorTextV.setVisibility(View.GONE);
+                                    loadingPB.setVisibility(View.VISIBLE);
+
+                                    if (isNetworkConnected()) {
+                                        fetchingData = true;
+                                        fetchingImage = true;
+                                        fetching = true;
+                                        new FetchData().execute(WORD.getValue(), wordId);
+                                        (new FetchImage(getApplicationContext(), wordId, null)).execute("NEW", WORD.getValue().toLowerCase());
+                                    }
+                                }catch (Exception e){
+                                    e.printStackTrace();
                                 }
                             }
                         })

@@ -570,73 +570,79 @@ public class EditActivity extends AppCompatActivity {
     }
 
     public void saveData() {
-        DB.deleteWord(wsId, wordId, true);
+        try {
+            DB.deleteWord(wordId, true);
 
-        Toast.makeText(EditActivity.this, "Saved", Toast.LENGTH_SHORT).show();
-
-        boolean practicable = false;
-        for (DefinitionView dv : definitionViews) {
-            String df = dv.edDef.getText().toString().replaceAll("\\s", "");
-            if (df.length() > 0) practicable = true;
-        }
-
-        ArrayList<WordDef> defs = new ArrayList<>();
-        ArrayList<WordSentence> wordSentences = new ArrayList<>();
-
-        for (SentenceView sv : sentenceViews) {
-            if (sv.edSent.getText().length() > 0) {
-                wordSentences.add(new WordSentence(sv.edSent.getText().toString()));
+            boolean practicable = false;
+            for (DefinitionView dv : definitionViews) {
+                String df = dv.edDef.getText().toString().replaceAll("\\s", "");
+                if (df.length() > 0) practicable = true;
             }
-        }
-        wordAllData.setWordSentences(wordSentences);
 
-        ArrayList<WordImageFB> images = new ArrayList<>();
+            ArrayList<WordDef> defs = new ArrayList<>();
+            ArrayList<WordSentence> wordSentences = new ArrayList<>();
 
-        for (ImageView iv : imageViews) {
-            if (iv.edImg.getText().length() > 0) {
-                WordImageFB im = new WordImageFB();
-                im.setUrl(iv.edImg.getText().toString());
-                images.add(im);
+            for (SentenceView sv : sentenceViews) {
+                if (sv.edSent.getText().length() > 0) {
+                    wordSentences.add(new WordSentence(sv.edSent.getText().toString()));
+                }
             }
-        }
-        wordAllData.setImages(images);
+            wordAllData.setWordSentences(wordSentences);
 
-        for (DefinitionView dv : definitionViews) {
-            if (dv.edTitle.getText().length() > 0 ||
-                    dv.edDef.getText().length() > 0 ||
-                    dv.edSyn.getText().length() > 0 ||
-                    dv.edAnt.getText().length() > 0) {
-                WordDef d = new WordDef();
-                d.setTitle(dv.edTitle.getText().toString());
-                d.setDef(dv.edDef.getText().toString());
-                d.setSyn(dv.edSyn.getText().toString());
-                d.setAnt(dv.edAnt.getText().toString());
-                defs.add(d);
+            ArrayList<WordImageFB> images = new ArrayList<>();
+
+            for (ImageView iv : imageViews) {
+                if (iv.edImg.getText().length() > 0) {
+                    WordImageFB im = new WordImageFB();
+                    im.setUrl(iv.edImg.getText().toString());
+                    images.add(im);
+                }
             }
+            wordAllData.setImages(images);
+
+            for (DefinitionView dv : definitionViews) {
+                if (dv.edTitle.getText().length() > 0 ||
+                        dv.edDef.getText().length() > 0 ||
+                        dv.edSyn.getText().length() > 0 ||
+                        dv.edAnt.getText().length() > 0) {
+                    WordDef d = new WordDef();
+                    d.setTitle(dv.edTitle.getText().toString());
+                    d.setDef(dv.edDef.getText().toString());
+                    d.setSyn(dv.edSyn.getText().toString());
+                    d.setAnt(dv.edAnt.getText().toString());
+                    defs.add(d);
+                }
+            }
+            wordAllData.setWordDefs(defs);
+            wordAllData.getWord().setValidity(1);
+
+            WordData wordData = new WordData();
+
+            if (description == null)
+                wordData.setDes("");
+            else
+                wordData.setDes(description.getText().toString());
+
+            if (mnemonic == null)
+                wordData.setMn("");
+            else
+                wordData.setMn(mnemonic.getText().toString());
+
+
+            wordAllData.setWordData(wordData);
+
+            wordAllData.getWord().setPracticable(practicable);
+
+            DB.setWordData(wordAllData, wordId);
+
+            Toast.makeText(EditActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+
+            finish();
+        } catch (Exception e) {
+            Toast.makeText(EditActivity.this, "Edit Failed!", Toast.LENGTH_SHORT).show();
+            finish();
+            e.printStackTrace();
         }
-        wordAllData.setWordDefs(defs);
-        wordAllData.getWord().setValidity(1);
-
-        WordData wordData = new WordData();
-
-        if (description == null)
-            wordData.setDes("");
-        else
-            wordData.setDes(description.getText().toString());
-
-        if (mnemonic == null)
-            wordData.setMn("");
-        else
-            wordData.setMn(mnemonic.getText().toString());
-
-
-        wordAllData.setWordData(wordData);
-
-        wordAllData.getWord().setPracticable(practicable);
-
-        DB.setWordData(wordAllData, wordId);
-
-        finish();
     }
 
     private class SentenceView {

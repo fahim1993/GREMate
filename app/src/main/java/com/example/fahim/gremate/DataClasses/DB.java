@@ -226,8 +226,11 @@ public class DB {
         listenerMap.put(listenerKey, listener);
     }
 
-    public static void deleteWord(final String wsId, final String wordId, boolean isEdit) {
+    public static void deleteWord(final String wordId, boolean isEdit) throws Exception {
 
+        if(wordId.length()<5){
+            throw new Exception("Word Length Invalid!");
+        }
 
         final DBRef db = new DBRef();
         db.deleteWordData(wordId);
@@ -257,7 +260,7 @@ public class DB {
         listenerMap.put(listenerKey1, listener1);
     }
 
-    public static void removeWordClone(final String wsId, final String listId, final String wordId, final String cloneId) {
+    public static void removeWordClone(final String listId, final String wordId, final String cloneId) {
 
         final DBRef db = new DBRef();
         db.deleteWord(listId, cloneId);
@@ -288,7 +291,11 @@ public class DB {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        deleteWord(wsId, ds.child("cloneOf").getValue().toString(), false);
+                        try {
+                            deleteWord(ds.child("cloneOf").getValue().toString(), false);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                     if(listenerMap.get(listenerKey1)!=null){
                         mRef1.removeEventListener(listenerMap.get(listenerKey1));
@@ -313,10 +320,13 @@ public class DB {
                         String cloneOf = ds.child("cloneOf").getValue().toString();
 
                         if (wordId.equals(cloneOf)){
-                            Log.d("DELETE: ", ds.child("cloneOf").getValue().toString());
-                            deleteWord(wsId, ds.child("cloneOf").getValue().toString(), false);
+                            try {
+                                deleteWord(ds.child("cloneOf").getValue().toString(), false);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-                        else removeWordClone(wsId, listId, wordId, cloneOf);
+                        else removeWordClone(listId, wordId, cloneOf);
                     }
                     if(listenerMap.get(listenerKey2)!=null){
                         mRef2.removeEventListener(listenerMap.get(listenerKey2));
@@ -359,15 +369,12 @@ public class DB {
 //        }
 //    }
 
-    public static void initNewUser(String uId, Context context) {
+    public static void initNewUser(String uId, Context context){
 
         DBRef db = new DBRef(uId);
-
-        Random random = new Random();
-
         final String mainListName = "All Words";
-
         ArrayList<String> initWords = new FeedTestData().getWords(context);
+        int index = 1049;
 
         for (int wsi = 1; wsi >= 1; wsi--) {
 
@@ -381,7 +388,6 @@ public class DB {
                 String listId = db.getListKey(wsId);
                 db.setListData(wsId, listId, new List("List "+ls));
                 for (int i = 0; i < 50; i++) {
-                    int index = random.nextInt(initWords.size());
                     String wordValue = initWords.get(index);
                     initWords.remove(index);
                     String wordId = db.getWordId(mainListId);
@@ -390,6 +396,7 @@ public class DB {
                     db.setWordData(listId, cloneId, Word.newWord(mainListName, wordId, wordValue));
                     db.setWordClone(listId, wordId, cloneId);
                     db.setWordClone(mainListId, wordId, wordId);
+                    index--;
                 }
             }
         }
