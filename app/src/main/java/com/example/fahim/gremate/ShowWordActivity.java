@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -49,14 +48,11 @@ import com.example.fahim.gremate.DataClasses.WordImageFB;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ShowWordActivity extends AppCompatActivity {
 
@@ -74,7 +70,6 @@ public class ShowWordActivity extends AppCompatActivity {
     private boolean fetching;
     private boolean fetchingData;
     private boolean fetchingImage;
-    private boolean fetchingPronunciation;
     private boolean[] loadFlags;
 
     private int defState;
@@ -253,7 +248,6 @@ public class ShowWordActivity extends AppCompatActivity {
         fetching = false;
         fetchingData = false;
         fetchingImage = false;
-        fetchingPronunciation = false;
         loadFlags = new boolean[]{true, true, true, true, true};
 
         showWordSV.setVisibility(View.GONE);
@@ -282,7 +276,6 @@ public class ShowWordActivity extends AppCompatActivity {
                 break;
             case Word.VALID:
                 if(WORD.getPronunciation().length()<1){
-                    fetchingPronunciation = true;
                     new FetchPronunciation().execute(WORD.getValue(), wordId);
                 }
                 retrieveData();
@@ -841,7 +834,6 @@ public class ShowWordActivity extends AppCompatActivity {
             if(link.length()>0){
                 WORD.setPronunciation(link);
                 words.get(index).setPronunciation(link);
-                fetchingPronunciation = false;
             }
         }
     }
