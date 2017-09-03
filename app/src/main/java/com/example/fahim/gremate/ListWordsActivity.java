@@ -3,31 +3,28 @@ package com.example.fahim.gremate;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
-import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.Manifest;
 
 import com.example.fahim.gremate.Adapters.WordAdapter;
 import com.example.fahim.gremate.DataClasses.DB;
@@ -39,13 +36,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -69,6 +63,12 @@ public class ListWordsActivity extends NavDrawerActivity {
     private ProgressBar loadWordRV;
 
     private int sortOrder;
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -333,21 +333,17 @@ public class ListWordsActivity extends NavDrawerActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try {
-                    if(words==null)throw new Exception("words is null");
-                    File root = new File(Environment.getExternalStorageDirectory(), "GREMate");
-                    if (!root.exists()) {
-                        root.mkdirs();
+                    int permission = ActivityCompat.checkSelfPermission(ListWordsActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                    if (permission != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(
+                                ListWordsActivity.this,
+                                PERMISSIONS_STORAGE,
+                                REQUEST_EXTERNAL_STORAGE
+                        );
+                    } else{
+                        saveToStorage();
                     }
-                    File listFile = new File(root, currentListName + ".txt");
-                    FileWriter writer = new FileWriter(listFile);
-                    StringBuilder output = new StringBuilder();
-                    for(WordWithId word: words){
-                        output.append(word.getValue()).append("\n");
-                    }
-                    writer.append(output);
-                    writer.flush();
-                    writer.close();
-                    Toast.makeText(ListWordsActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(ListWordsActivity.this, "Error...", Toast.LENGTH_SHORT).show();
@@ -361,6 +357,42 @@ public class ListWordsActivity extends NavDrawerActivity {
             }
         });
         builder.show();
+    }
+
+    public void saveToStorage() throws Exception {
+        if(words==null)throw new Exception("words is null");
+        File root = new File(Environment.getExternalStorageDirectory(), "GREMate");
+        if (!root.exists()) {
+            root.mkdirs();
+        }
+        File listFile = new File(root, currentListName + ".txt");
+        FileWriter writer = new FileWriter(listFile);
+        StringBuilder output = new StringBuilder();
+        for(WordWithId word: words){
+            output.append(word.getValue()).append("\n");
+        }
+        writer.append(output);
+        writer.flush();
+        writer.close();
+        Toast.makeText(ListWordsActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    try {
+                        saveToStorage();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                return;
+            }
+        }
     }
 
     private void removeListeners() {
