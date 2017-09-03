@@ -38,6 +38,7 @@ import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.FetchDataAsync;
 import com.example.fahim.gremate.DataClasses.FetchImageAsync;
+import com.example.fahim.gremate.DataClasses.FetchVocabLinkAsync;
 import com.example.fahim.gremate.DataClasses.WordSentence;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordAllData;
@@ -73,6 +74,7 @@ public class ShowWordActivity extends AppCompatActivity {
     private boolean fetching;
     private boolean fetchingData;
     private boolean fetchingImage;
+    private boolean fetchingPronunciation;
     private boolean[] loadFlags;
 
     private int defState;
@@ -251,6 +253,7 @@ public class ShowWordActivity extends AppCompatActivity {
         fetching = false;
         fetchingData = false;
         fetchingImage = false;
+        fetchingPronunciation = false;
         loadFlags = new boolean[]{true, true, true, true, true};
 
         showWordSV.setVisibility(View.GONE);
@@ -278,6 +281,10 @@ public class ShowWordActivity extends AppCompatActivity {
                 }
                 break;
             case Word.VALID:
+                if(WORD.getPronunciation().length()<1){
+                    fetchingPronunciation = true;
+                    new FetchPronunciation().execute(WORD.getValue(), wordId);
+                }
                 retrieveData();
                 break;
             case Word.INVALID:
@@ -775,6 +782,7 @@ public class ShowWordActivity extends AppCompatActivity {
                 _wordAllData = wordAllData;
 
                 WORD.setPracticable(true);
+                if(pronunciationLink.length()>0)WORD.setPronunciation(pronunciationLink);
 
                 _wordAllData.setWord(WORD);
 
@@ -822,6 +830,18 @@ public class ShowWordActivity extends AppCompatActivity {
                 loadingPB.setVisibility(View.GONE);
                 showWordSV.setVisibility(View.VISIBLE);
                 onToNext();
+            }
+        }
+    }
+
+    private class FetchPronunciation extends FetchVocabLinkAsync {
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if(link.length()>0){
+                WORD.setPronunciation(link);
+                words.get(index).setPronunciation(link);
+                fetchingPronunciation = false;
             }
         }
     }
@@ -928,7 +948,11 @@ public class ShowWordActivity extends AppCompatActivity {
         protected String doInBackground(String... strings) {
             if (isNetworkConnected()) {
                 try {
-                    String link = "https://ssl.gstatic.com/dictionary/static/sounds/de/0/" + WORD.getValue().toLowerCase() + ".mp3";
+//                    String link = "https://ssl.gstatic.com/dictionary/static/sounds/de/0/" + WORD.getValue().toLowerCase() + ".mp3";
+
+                    String link = WORD.getPronunciation();
+                    if(link.length()<1) return "";
+
                     URL url = new URL(link);
                     HttpURLConnection con = (HttpURLConnection) url.openConnection();
                     con.setRequestMethod("HEAD");
@@ -947,6 +971,7 @@ public class ShowWordActivity extends AppCompatActivity {
                             }
                         });
                     }
+
                     return "";
                 } catch (Exception e) {
                     e.printStackTrace();

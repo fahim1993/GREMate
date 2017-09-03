@@ -18,16 +18,16 @@ public class WordWithId extends Word {
 //    public Word(String sourceListName, String cloneOf, String value,
 //                boolean practicable, int validity, int level)
 
-    public WordWithId(String listName, String cloneOf, String value, boolean practicable,
+    public WordWithId(String listName, String cloneOf, String value, String pronunciation, boolean practicable,
                       int validity, int level, String id, int serial) {
-        super(listName, cloneOf, value, practicable, validity, level);
+        super(listName, cloneOf, value, pronunciation, practicable, validity, level);
         this.id = id;
         this.serial = serial;
     }
 
     public WordWithId(Word word, String id, int serial){
-        super(word.getSourceListName(), word.getCloneOf(), word.getValue(), word.isPracticable(),
-                word.getValidity(), word.getLevel());
+        super(word.getSourceListName(), word.getCloneOf(), word.getValue(), word.getPronunciation(),
+                word.isPracticable(), word.getValidity(), word.getLevel());
         this.id = id;
         this.serial = serial;
     }
@@ -45,8 +45,8 @@ public class WordWithId extends Word {
     }
 
     public Word toWord(){
-        return new Word(getSourceListName(), getCloneOf(), getValue(), isPracticable(),
-                getValidity(), getLevel());
+        return new Word(getSourceListName(), getCloneOf(), getValue(), getPronunciation(),
+                isPracticable(), getValidity(), getLevel());
     }
 
     public static Comparator<WordWithId> alphabetical_Asc = new Comparator<WordWithId>() {

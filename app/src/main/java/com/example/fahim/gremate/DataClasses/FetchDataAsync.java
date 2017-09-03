@@ -5,6 +5,7 @@ package com.example.fahim.gremate.DataClasses;
  */
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -21,9 +22,11 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
     private final String url2 = "https://www.vocabulary.com/dictionary/";
     private final String url3 = "http://corpus.vocabulary.com/api/1.0/examples.json?query=";
     private final String url4 = "http://www.mnemonicdictionary.com/?word=";
+    private final String LINK_VOC = "https://audio.vocab.com/1.0/us/";
 
 
     protected WordAllData wordAllData;
+    protected String pronunciationLink = "";
 
     private boolean error = true;
 
@@ -154,6 +157,11 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                         }
                         wordSentences.add(new WordSentence(finalSentence));
                     }
+
+                    String pl = doc1.select(".audio").first().attr("data-audio");
+                    if(pl.length()>0) pronunciationLink = LINK_VOC + pl +".mp3";
+
+                    Log.d("FetchDataAsync", pronunciationLink);
                 }
                 catch (Exception e){
                     e.printStackTrace();

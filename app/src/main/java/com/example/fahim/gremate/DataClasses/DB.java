@@ -126,9 +126,11 @@ public class DB {
 
     public static void setWordData(WordAllData wordAllData, String wordId) {
         DBRef db = new DBRef();
+
         setWordPracticable(wordId, wordAllData.getWord().isPracticable());
         setWordValidity(wordId, wordAllData.getWord().getValidity());
         setWordLevel(wordId, wordAllData.getWord().getLevel());
+        setWordPronunciation(wordId, wordAllData.getWord().getPronunciation());
 
         if (wordAllData.getWordData() != null) {
             db.setWordDataData(wordId, wordAllData.getWordData());
@@ -172,6 +174,32 @@ public class DB {
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
+        };
+        mRef.addValueEventListener(listener);
+        listenerMap.put(listenerKey, listener);
+    }
+
+    public static void setWordPronunciation(final String wordId, final String pronunciation){
+        if(wordId == null || pronunciation == null || wordId.length()<1 || pronunciation.length()<1)return;
+
+        final DBRef db = new DBRef();
+
+        final int listenerKey = ++listenerCounter;
+        final DatabaseReference mRef = db.wordCloneRef(wordId);
+        ValueEventListener listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    WordClones wcl = ds.getValue(WordClones.class);
+                    db.setWordPronunciation(wcl.getListId(), wcl.getCloneId(), pronunciation);
+                }
+                if(listenerMap.get(listenerKey)!=null) {
+                    mRef.removeEventListener(listenerMap.get(listenerKey));
+                    listenerMap.remove(listenerKey);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError){}
         };
         mRef.addValueEventListener(listener);
         listenerMap.put(listenerKey, listener);

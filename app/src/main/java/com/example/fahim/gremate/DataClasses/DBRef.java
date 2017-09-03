@@ -194,4 +194,8 @@ public class DBRef {
     public DatabaseReference wordSetRef(){
         return userWord.child(WORD_SET);
     }
+
+    public void setWordPronunciation(String listId, String wordId, String link){
+        userWord.child(WORD).child(listId).child(wordId).child("pronunciation").setValue(link);
+    }
 }
