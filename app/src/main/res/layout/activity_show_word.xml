@@ -59,13 +59,14 @@
                 <RelativeLayout
                     android:id="@+id/showWordDescriptionRL"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:clickable="true"
                     android:onClick="toggleDescription"
                     android:orientation="horizontal">
 
                     <TextView
+                        android:layout_margin="10dp"
                         android:id="@+id/showWordDescription"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -97,9 +98,9 @@
                         android:id="@+id/showWordDescriptionText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="14dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="15dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
                         android:clickable="true"
                         android:textColor="#000000"
                         android:textIsSelectable="true"
@@ -121,7 +122,7 @@
                 <RelativeLayout
                     android:id="@+id/showWordDefinitionRL"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:clickable="true"
                     android:onClick="toggleDefinition"
@@ -129,6 +130,7 @@
 
                     <TextView
                         android:id="@+id/showWordDefinition"
+                        android:layout_margin="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
@@ -160,9 +162,9 @@
                         android:id="@+id/showWordDefinitionText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="14dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="15dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
                         android:clickable="true"
                         android:textColor="#000000"
                         android:textIsSelectable="true"
@@ -183,13 +185,14 @@
                 <RelativeLayout
                     android:id="@+id/showWordSentenceRL"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:clickable="true"
                     android:onClick="toggleSentence"
                     android:orientation="horizontal">
 
                     <TextView
+                        android:layout_margin="10dp"
                         android:id="@+id/showWordSentence"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -222,9 +225,9 @@
                         android:id="@+id/showWordSentenceText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="15dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
                         android:clickable="true"
                         android:textColor="#000000"
                         android:textIsSelectable="true"
@@ -245,13 +248,14 @@
                 <RelativeLayout
                     android:id="@+id/showWordImageRL"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:clickable="true"
                     android:onClick="toggleImage"
                     android:orientation="horizontal">
 
                     <TextView
+                        android:layout_margin="10dp"
                         android:id="@+id/showWordImage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -304,13 +308,14 @@
                 <RelativeLayout
                     android:id="@+id/showWordMNRL"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:clickable="true"
                     android:onClick="toggleMN"
                     android:orientation="horizontal">
 
                     <TextView
+                        android:layout_margin="10dp"
                         android:id="@+id/showWordMN"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -344,9 +349,9 @@
                         android:id="@+id/showWordMNText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
+                        android:layout_marginBottom="15dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
                         android:clickable="true"
                         android:textColor="#000000"
                         android:textIsSelectable="true"
@@ -360,7 +365,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_margin="15dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 

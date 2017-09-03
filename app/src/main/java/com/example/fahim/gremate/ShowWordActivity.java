@@ -20,6 +20,9 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -50,6 +53,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -77,6 +82,7 @@ public class ShowWordActivity extends AppCompatActivity {
     private int senState;
     private int imgState;
     private int mnState;
+    private float textSize;
 
     private TextView mnText;
     private TextView sentenceText;
@@ -86,7 +92,6 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private SeekBar levelSb;
 
-    private ScrollView sv;
     private LinearLayout dummyFocus;
 
     private ScrollView showWordSV;
@@ -122,6 +127,9 @@ public class ShowWordActivity extends AppCompatActivity {
         currentListId = extras.getString("listId");
         mainListId = extras.getString("mainListId");
 
+        getSharedPrefValues();
+        setTextViews();
+
         dummyFocus = (LinearLayout)findViewById(R.id.showWordDummyFocus);
 
         showWordSV = (ScrollView) findViewById(R.id.showWordSV);
@@ -130,6 +138,8 @@ public class ShowWordActivity extends AppCompatActivity {
 
         levelSb = (SeekBar) findViewById(R.id.diffSeekBar);
         levelTv = (TextView) findViewById(R.id.diff);
+
+
 
 //        levelSb.setVisibility(View.GONE);
 //        levelTv.setVisibility(View.GONE);
@@ -166,8 +176,6 @@ public class ShowWordActivity extends AppCompatActivity {
             }
         });
 
-        wordTitle = (TextView) findViewById(R.id.wordTitle);
-
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -184,32 +192,8 @@ public class ShowWordActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if (prefs.getInt("defState", -1) != -1) {
-            defState = prefs.getInt("defState", -1);
-            desState = prefs.getInt("desState", -1);
-            senState = prefs.getInt("senState", -1);
-            imgState = prefs.getInt("imgState", -1);
-            mnState = prefs.getInt("mnState", -1);
-        } else {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt("defState", 0);
-            defState = 0;
-            editor.putInt("desState", 0);
-            desState = 0;
-            editor.putInt("senState", 0);
-            senState = 0;
-            editor.putInt("imgState", 0);
-            imgState = 0;
-            editor.putInt("mnState", 0);
-            mnState = 0;
-            editor.apply();
-        }
-        sv = (ScrollView) findViewById(R.id.showWordSV);
         loadWord();
     }
-
 
     @Override
     protected void onPause() {
@@ -224,9 +208,39 @@ public class ShowWordActivity extends AppCompatActivity {
         editor.putInt("senState", senState);
         editor.putInt("imgState", imgState);
         editor.putInt("mnState", mnState);
+        editor.putFloat("textSize", textSize);
 
-        editor.commit();
+        editor.apply();
         removeListeners();
+    }
+
+    private void getSharedPrefValues(){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if (prefs.getInt("defState", -1) != -1) {
+            defState = prefs.getInt("defState", -1);
+            desState = prefs.getInt("desState", -1);
+            senState = prefs.getInt("senState", -1);
+            imgState = prefs.getInt("imgState", -1);
+            mnState = prefs.getInt("mnState", -1);
+            textSize = prefs.getFloat("textSize", 25);
+        } else {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("defState", 0);
+            defState = 0;
+            editor.putInt("desState", 0);
+            desState = 0;
+            editor.putInt("senState", 0);
+            senState = 0;
+            editor.putInt("imgState", 0);
+            imgState = 0;
+            editor.putInt("mnState", 0);
+            mnState = 0;
+
+            textSize = 25;
+            editor.putFloat("textSize", textSize);
+
+            editor.apply();
+        }
     }
 
     @Override
@@ -422,6 +436,20 @@ public class ShowWordActivity extends AppCompatActivity {
         sentenceText = (TextView) findViewById(R.id.showWordSentenceText);
         definitionText = (TextView) findViewById(R.id.showWordDefinitionText);
         descriptionText = (TextView) findViewById(R.id.showWordDescriptionText);
+
+        wordTitle = (TextView) findViewById(R.id.wordTitle);
+
+        mnText.setTextSize(textSize);
+        sentenceText.setTextSize(textSize);
+        definitionText.setTextSize(textSize);
+        descriptionText.setTextSize(textSize);
+
+        wordTitle.setTextSize(textSize+2);
+        ((TextView) findViewById(R.id.showWordDescription)).setTextSize(textSize + 2);
+        ((TextView) findViewById(R.id.showWordDefinition)).setTextSize(textSize + 2);
+        ((TextView) findViewById(R.id.showWordSentence)).setTextSize(textSize + 2);
+        ((TextView) findViewById(R.id.showWordImage)).setTextSize(textSize + 2);
+        ((TextView) findViewById(R.id.showWordMN)).setTextSize(textSize + 2);
     }
 
     private void setLevel() {
@@ -448,7 +476,6 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private void setContents() {
         try {
-            setTextViews();
             setDef();
             setDes();
             setSentence();
@@ -919,6 +946,47 @@ public class ShowWordActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialogInterface, int i) {
                             }
                         }).show();
+                break;
+            case R.id.text_size:
+                AlertDialog.Builder builder = new AlertDialog.Builder(ShowWordActivity.this);
+                LayoutInflater inflater = (ShowWordActivity.this).getLayoutInflater();
+
+                builder.setTitle("Set Text Size");
+                final View layout = inflater.inflate(R.layout.text_size_view, null);
+                final SeekBar textSizePB = (SeekBar) layout.findViewById(R.id.textSizeSB);
+                final TextView exampleTV = (TextView) layout.findViewById(R.id.exampleText);
+
+                textSizePB.setProgress((int)((textSize-10)/3));
+                exampleTV.setTextSize(textSize);
+
+                textSizePB.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        if(fromUser){
+                            textSize = (float) ((progress*3.0)+10);
+                            exampleTV.setTextSize(textSize);
+                        }
+                    }
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar){}
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar){}
+                });
+
+                builder.setView(layout)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                setTextViews();
+                            }
+                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+                builder.create();
+                builder.show();
 
         }
 
@@ -983,6 +1051,43 @@ public class ShowWordActivity extends AppCompatActivity {
                 return "";
             }
         }
+    }
+
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int action = event.getAction();
+        int keyCode = event.getKeyCode();
+
+        switch (keyCode){
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if(action == KeyEvent.ACTION_DOWN){
+                    if (loading) break;
+                    if (wordLevel != _wordAllData.getWord().getLevel()) {
+                        DB.setWordLevel(wordId, wordLevel);
+                        words.get(index).setLevel(wordLevel);
+                    }
+                    index--;
+                    if (index < 0) index = words.size() - 1;
+                    loadWord();
+                }
+                break;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if(action == KeyEvent.ACTION_DOWN){
+                    if (loading) break;
+                    if ( WORD != null && wordLevel != WORD.getLevel()) {
+                        DB.setWordLevel(wordId, wordLevel);
+                        words.get(index).setLevel(wordLevel);
+                    }
+                    index++;
+                    if (index >= words.size()) index = 0;
+                    loadWord();
+                }
+                break;
+            case KeyEvent.KEYCODE_BACK:
+                finish();
+        }
+        return true;
     }
 }
 
