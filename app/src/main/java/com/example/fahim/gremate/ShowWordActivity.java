@@ -103,6 +103,8 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private int wordLevel;
 
+    MediaPlayer player;
+
     DatabaseReference ref1;
     DatabaseReference ref2;
     DatabaseReference ref3;
@@ -139,7 +141,7 @@ public class ShowWordActivity extends AppCompatActivity {
         levelSb = (SeekBar) findViewById(R.id.diffSeekBar);
         levelTv = (TextView) findViewById(R.id.diff);
 
-
+        player = new MediaPlayer();
 
 //        levelSb.setVisibility(View.GONE);
 //        levelTv.setVisibility(View.GONE);
@@ -211,6 +213,7 @@ public class ShowWordActivity extends AppCompatActivity {
         editor.putFloat("textSize", textSize);
 
         editor.apply();
+        player.reset();
         removeListeners();
     }
 
@@ -246,6 +249,7 @@ public class ShowWordActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        player.release();
     }
 
     private void removeListeners() {
@@ -900,8 +904,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
             case R.id.pronounce:
                 if (loading) break;
-                PlaybackPronunciation playback = new PlaybackPronunciation();
-                playback.execute();
+                (new PlaybackPronunciation()).execute();
                 break;
 
             case R.id.edit:
@@ -1018,7 +1021,6 @@ public class ShowWordActivity extends AppCompatActivity {
                     con.setRequestMethod("HEAD");
                     con.connect();
                     if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                        MediaPlayer player = new MediaPlayer();
                         player.reset();
                         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                         player.setDataSource(link);

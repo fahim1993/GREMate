@@ -28,7 +28,6 @@ UserWords:
                     validity: 0=Fetch Data, 1=Data is set, 2=Data Fetched with Error
                     lastOpen:
                     level:
-                    pronunciation:
          
         WordDef:
             word:
@@ -43,6 +42,7 @@ UserWords:
 				id:
 					des:
 					mn:
+					pronunciation:
 
         Sentence:
             word:
