@@ -56,146 +56,191 @@ import com.google.firebase.database.Query;
 
 
 public class DBRef {
-    private final String   USER_DATA = "UserData";
-    private final String   USER_WORD = "UserWords";
-    private final String   WORD_SET = "WordSet";
-    private final String   WORD_LIST = "List";
-    private final String   WORD = "Word";
-    private final String   WORD_DATA = "WordData";
-    private final String   WORD_DEF = "WordDef";
-    private final String   SENTENCE = "Sentence";
-    private final String   IMAGE = "Image";
-    private final String   WORD_CLONES = "WordClones";
-    private final String   LAST_LIST = "LastListId";
-    private final String   LAST_SET = "LastWordSetId";
+    private final String USER_DATA = "UserData";
+    private final String USER_WORD = "UserWords";
+    private final String WORD_SET = "WordSet";
+    private final String WORD_LIST = "List";
+    private final String WORD = "Word";
+    private final String WORD_DATA = "WordData";
+    private final String WORD_DEF = "WordDef";
+    private final String SENTENCE = "Sentence";
+    private final String IMAGE = "Image";
+    private final String WORD_CLONES = "WordClones";
+    private final String LAST_LIST = "LastListId";
+    private final String LAST_SET = "LastWordSetId";
 
     private String uId;
     private DatabaseReference userWord;
-    public DBRef(){
+
+    public DBRef() {
         uId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         userWord = FirebaseDatabase.getInstance().getReference().child(USER_WORD).child(uId);
     }
-    public DBRef(String uId){
+
+    public DBRef(String uId) {
         this.uId = uId;
         userWord = FirebaseDatabase.getInstance().getReference().child(USER_WORD).child(uId);
     }
-    public String getWordSetKey(){
+
+    public String getWordSetKey() {
         return userWord.child(WORD_SET).push().getKey();
     }
-    public String getListKey(String wsId){
+
+    public String getListKey(String wsId) {
         return userWord.child(WORD_LIST).child(wsId).push().getKey();
     }
-    public void setWordSetData(String wsId, WordSet data){
+
+    public void setWordSetData(String wsId, WordSet data) {
         userWord.child(WORD_SET).child(wsId).setValue(data);
     }
-    public void setListData(String wsId, String listId, List data){
+
+    public void setListData(String wsId, String listId, List data) {
         userWord.child(WORD_LIST).child(wsId).child(listId).setValue(data);
     }
-    public String getWordId(String listId){
+
+    public String getWordId(String listId) {
         return userWord.child(WORD).child(listId).push().getKey();
     }
-    public void setWordData(String listId, String wordId, Word data){
+
+    public void setWordData(String listId, String wordId, Word data) {
         userWord.child(WORD).child(listId).child(wordId).setValue(data);
     }
-    public void setWordClone(String listId, String wordId, String cloneId){
+
+    public void setWordClone(String listId, String wordId, String cloneId) {
         userWord.child(WORD_CLONES).child(wordId).push().setValue(new WordClones(listId, cloneId));
     }
-    public DatabaseReference listCountRef(String wsId, String listId){
+
+    public DatabaseReference listCountRef(String wsId, String listId) {
         return userWord.child(WORD_LIST).child(wsId).child(listId).child("wordCount");
     }
-    public DatabaseReference wordSetCountRef(String wsId){
+
+    public DatabaseReference wordSetCountRef(String wsId) {
         return userWord.child(WORD_SET).child(wsId).child("wordCount");
     }
-    public void setWordDataData(String wordId, WordData data){
+
+    public void setWordDataData(String wordId, WordData data) {
         userWord.child(WORD_DATA).child(wordId).push().setValue(data);
     }
-    public void setWordDefData(String wordId, WordDef data){
+
+    public void setWordDefData(String wordId, WordDef data) {
         userWord.child(WORD_DEF).child(wordId).push().setValue(data);
     }
-    public void setSentenceData(String wordId, WordSentence sentence){
+
+    public void setSentenceData(String wordId, WordSentence sentence) {
         userWord.child(SENTENCE).child(wordId).push().setValue(sentence);
     }
-    public void setImageData(String wordId, WordImageFB image){
+
+    public void setImageData(String wordId, WordImageFB image) {
         userWord.child(IMAGE).child(wordId).push().setValue(image);
     }
-    public DatabaseReference wordCloneRef(String wordId){
+
+    public DatabaseReference wordCloneRef(String wordId) {
         return userWord.child(WORD_CLONES).child(wordId);
     }
-    public void setWordLevel(String listId, String wordId, int level){
+
+    public void setWordLevel(String listId, String wordId, int level) {
         userWord.child(WORD).child(listId).child(wordId).child("level").setValue(level);
     }
-    public void setWordPracticable(String listId, String wordId, boolean practicable){
+
+    public void setWordPracticable(String listId, String wordId, boolean practicable) {
         userWord.child(WORD).child(listId).child(wordId).child("practicable").setValue(practicable);
     }
-    public void setWordValidity(String listId, String wordId, int validity){
+
+    public void setWordValidity(String listId, String wordId, int validity) {
         userWord.child(WORD).child(listId).child(wordId).child("validity").setValue(validity);
     }
-    public void deleteWordData(String wordId){
+
+    public void deleteWordData(String wordId) {
         userWord.child(IMAGE).child(wordId).setValue(null);
         userWord.child(SENTENCE).child(wordId).setValue(null);
         userWord.child(WORD_DEF).child(wordId).setValue(null);
         userWord.child(WORD_DATA).child(wordId).setValue(null);
     }
-    public void deleteWord(String listId, String wordId){
+
+    public void deleteWord(String listId, String wordId) {
         userWord.child(WORD).child(listId).child(wordId).setValue(null);
     }
-    public void deleteWordClones(String wordId){
+
+    public void deleteWordClones(String wordId) {
         userWord.child(WORD_CLONES).child(wordId).setValue(null);
     }
-    public void deleteWordSingleClone(String wordId, String cloneKey){
+
+    public void deleteWordSingleClone(String wordId, String cloneKey) {
         userWord.child(WORD_CLONES).child(wordId).child(cloneKey).setValue(null);
     }
-    public Query getClonesQuery(String wordId, String cloneId){
+
+    public Query getClonesQuery(String wordId, String cloneId) {
         return userWord.child(WORD_CLONES).child(wordId).orderByChild("cloneId").equalTo(cloneId);
     }
-    public void setLastList(String listId){
+
+    public void setLastList(String listId) {
         userWord.child(LAST_LIST).setValue(listId);
     }
-    public DatabaseReference lastListRef(){
+
+    public DatabaseReference lastListRef() {
         return userWord.child(LAST_LIST);
     }
-    public void setLastWordSet(String wsId){
+
+    public void setLastWordSet(String wsId) {
         userWord.child(LAST_SET).setValue(wsId);
     }
-    public DatabaseReference lastWordSetRef(){
+
+    public DatabaseReference lastWordSetRef() {
         return userWord.child(LAST_SET);
     }
-    public void deleteWordSet(String wsId){
+
+    public void deleteWordSet(String wsId) {
         userWord.child(WORD_SET).child(wsId).setValue(null);
     }
-    public void deleteWordList(String wsId, String listId, boolean isMainList){
-        if(!isMainList) userWord.child(WORD_LIST).child(wsId).child(listId).setValue(null);
+
+    public void deleteWordList(String wsId, String listId, boolean isMainList) {
+        if (!isMainList) userWord.child(WORD_LIST).child(wsId).child(listId).setValue(null);
         else userWord.child(WORD_LIST).child(wsId).setValue(null);
     }
-    public DatabaseReference wordListWordsRef(String listId){
+
+    public DatabaseReference wordListWordsRef(String listId) {
         return userWord.child(WORD).child(listId);
     }
-    public DatabaseReference wordDataRef(String wordId){
+
+    public DatabaseReference wordDataRef(String wordId) {
         return userWord.child(WORD_DATA).child(wordId);
     }
-    public DatabaseReference wordDefinitionRef(String wordId){
+
+    public DatabaseReference wordDefinitionRef(String wordId) {
         return userWord.child(WORD_DEF).child(wordId);
     }
-    public DatabaseReference wordSentenceRef(String wordId){
+
+    public DatabaseReference wordSentenceRef(String wordId) {
         return userWord.child(SENTENCE).child(wordId);
     }
-    public DatabaseReference wordImageRef(String wordId){
+
+    public DatabaseReference wordImageRef(String wordId) {
         return userWord.child(IMAGE).child(wordId);
     }
-    public DatabaseReference wordSetListsRef(String wsId){
+
+    public DatabaseReference wordSetListsRef(String wsId) {
         return userWord.child(WORD_LIST).child(wsId);
     }
-    public DatabaseReference listWordsRef(String listId){
+
+    public DatabaseReference listWordsRef(String listId) {
         return userWord.child(WORD).child(listId);
     }
-    public DatabaseReference userDataRef(){
+
+    public DatabaseReference userDataRef() {
         return FirebaseDatabase.getInstance().getReference().child(USER_DATA).child(uId);
     }
-    public DatabaseReference wordSetRef(){
+
+    public DatabaseReference wordSetRef() {
         return userWord.child(WORD_SET);
     }
 
-    public void setWordPronunciation(String listId, String wordId, String link){
+    public void setWordPronunciation(String listId, String wordId, String link) {
         userWord.child(WORD).child(listId).child(wordId).child("pronunciation").setValue(link);
+    }
+    public DatabaseReference wordRef(){
+        return userWord.child(WORD);
+    }
+    public DatabaseReference wordDataRef(){
+        return userWord.child(WORD_DATA);
     }
 }

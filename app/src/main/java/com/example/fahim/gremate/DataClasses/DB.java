@@ -130,7 +130,6 @@ public class DB {
         setWordPracticable(wordId, wordAllData.getWord().isPracticable());
         setWordValidity(wordId, wordAllData.getWord().getValidity());
         setWordLevel(wordId, wordAllData.getWord().getLevel());
-        setWordPronunciation(wordId, wordAllData.getWord().getPronunciation());
 
         if (wordAllData.getWordData() != null) {
             db.setWordDataData(wordId, wordAllData.getWordData());
@@ -429,4 +428,5 @@ public class DB {
             }
         }
     }
+
 }

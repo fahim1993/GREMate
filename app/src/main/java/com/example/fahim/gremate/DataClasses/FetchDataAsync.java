@@ -128,8 +128,8 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                 // Set it from the calling class
                 // Word word1 = new Word(wordSetId, wordListId, word, true, false, false, 0, 0);
 
-                if (shortds.length() < 1) wordAllData.setWordData(new WordData("", mn));
-                else wordAllData.setWordData(new WordData(shortds + "\n\n" + longds, mn));
+                if (shortds.length() < 1) wordAllData.setWordData(new WordData("", mn, ""));
+                else wordAllData.setWordData(new WordData(shortds + "\n\n" + longds, mn, ""));
 
                 ArrayList<WordSentence> wordSentences = new ArrayList<>();
                 String jsn = doc2.text();
@@ -159,9 +159,11 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                     }
 
                     String pl = doc1.select(".audio").first().attr("data-audio");
-                    if(pl.length()>0) pronunciationLink = LINK_VOC + pl +".mp3";
+                    if(pl.length()>0) {
+                        pronunciationLink = LINK_VOC + pl +".mp3";
+                        wordAllData.getWordData().setPronunciation(pronunciationLink);
+                    }
 
-                    Log.d("FetchDataAsync", pronunciationLink);
                 }
                 catch (Exception e){
                     e.printStackTrace();

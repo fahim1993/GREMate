@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,7 +39,6 @@ import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.FetchDataAsync;
 import com.example.fahim.gremate.DataClasses.FetchImageAsync;
-import com.example.fahim.gremate.DataClasses.FetchVocabLinkAsync;
 import com.example.fahim.gremate.DataClasses.WordSentence;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordAllData;
@@ -52,8 +50,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -293,9 +289,6 @@ public class ShowWordActivity extends AppCompatActivity {
                 }
                 break;
             case Word.VALID:
-                if(WORD.getPronunciation().length()<1){
-                    new FetchPronunciation().execute(WORD.getValue(), wordId);
-                }
                 retrieveData();
                 break;
             case Word.INVALID:
@@ -806,7 +799,6 @@ public class ShowWordActivity extends AppCompatActivity {
                 _wordAllData = wordAllData;
 
                 WORD.setPracticable(true);
-                if(pronunciationLink.length()>0)WORD.setPronunciation(pronunciationLink);
 
                 _wordAllData.setWord(WORD);
 
@@ -854,17 +846,6 @@ public class ShowWordActivity extends AppCompatActivity {
                 loadingPB.setVisibility(View.GONE);
                 showWordSV.setVisibility(View.VISIBLE);
                 onToNext();
-            }
-        }
-    }
-
-    private class FetchPronunciation extends FetchVocabLinkAsync {
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            if(link.length()>0){
-                WORD.setPronunciation(link);
-                words.get(index).setPronunciation(link);
             }
         }
     }
@@ -1013,8 +994,15 @@ public class ShowWordActivity extends AppCompatActivity {
                 try {
 //                    String link = "https://ssl.gstatic.com/dictionary/static/sounds/de/0/" + WORD.getValue().toLowerCase() + ".mp3";
 
-                    String link = WORD.getPronunciation();
-                    if(link.length()<1) return "";
+                    String link = _wordAllData.getWordData().getPronunciation();
+                    if(link.length()<1){
+                        ShowWordActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Pronunciation not found!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        return "";
+                    }
 
                     URL url = new URL(link);
                     HttpURLConnection con = (HttpURLConnection) url.openConnection();
