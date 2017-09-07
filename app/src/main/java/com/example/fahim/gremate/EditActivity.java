@@ -38,6 +38,7 @@ public class EditActivity extends AppCompatActivity {
 
     private String wordId;
     private String wsId;
+    private String pronunciationLink;
 
     private Word WORD;
 
@@ -143,15 +144,22 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getChildrenCount() == 0) return;
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    WordData wd = ds.getValue(WordData.class);
-                    wordAllData.setWordData(wd);
-                    if (wordAllData.getWordData().getDes().length() > 0) {
-                        desLL.addView(addDescLL(true, wordAllData.getWordData().getDes()));
+                try{
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        WordData wd = ds.getValue(WordData.class);
+                        wordAllData.setWordData(wd);
+                        if (wordAllData.getWordData().getDes().length() > 0) {
+                            desLL.addView(addDescLL(true, wordAllData.getWordData().getDes()));
+                        }
+                        if (wordAllData.getWordData().getMn().length() > 0) {
+                            mnLL.addView(addMnLL(true, wordAllData.getWordData().getMn()));
+                        }
+                        pronunciationLink = "";
+                        pronunciationLink = wd.getPronunciation();
                     }
-                    if (wordAllData.getWordData().getMn().length() > 0) {
-                        mnLL.addView(addMnLL(true, wordAllData.getWordData().getMn()));
-                    }
+                }
+                catch(Exception e){
+                    e.printStackTrace();
                 }
             }
             @Override
@@ -627,6 +635,8 @@ public class EditActivity extends AppCompatActivity {
                 wordData.setMn("");
             else
                 wordData.setMn(mnemonic.getText().toString());
+
+            wordData.setPronunciation(pronunciationLink);
 
 
             wordAllData.setWordData(wordData);
