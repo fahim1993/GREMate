@@ -370,14 +370,13 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:textAlignment="textEnd"
                     android:layout_margin="10dp"
                     android:text="Difficulty:"
                     android:textColor="#000"
-                    android:textSize="16dp" />
+                    android:textSize="15sp" />
 
 
 
@@ -385,6 +384,8 @@
                     android:id="@+id/diffSeekBar"
                     android:layout_width="0dp"
                     android:layout_weight="1"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="20dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:max="3" />
@@ -392,12 +393,11 @@
 
                 <TextView
                     android:id="@+id/diff"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:textAlignment="textStart"
                     android:layout_margin="10dp"
-                    android:textSize="15dp" />
+                    android:textSize="15sp" />
 
             </LinearLayout>
 

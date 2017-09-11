@@ -373,8 +373,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:textAlignment="textEnd"
                     android:layout_margin="10dp"
@@ -390,13 +389,14 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:paddingTop="25dp"
+                    android:paddingBottom="25dp"
                     android:max="3" />
 
 
                 <TextView
                     android:id="@+id/diff"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:textAlignment="textStart"
                     android:layout_margin="10dp"
