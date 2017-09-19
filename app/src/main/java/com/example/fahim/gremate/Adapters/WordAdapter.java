@@ -3,8 +3,10 @@ package com.example.fahim.gremate.Adapters;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.CardView;
@@ -75,8 +77,11 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                     Word w = wordList.get(i).toWord();
                     words.add(w);
                 }
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("index", position);
+                editor.apply();
                 intent.putParcelableArrayListExtra("words", words);
-                intent.putExtra("index", position);
                 intent.putExtra("listId", currentListId);
                 intent.putExtra("wsId", wsId);
                 intent.putExtra("mainListId", mainListId);

@@ -207,6 +207,7 @@ public class ShowWordActivity extends AppCompatActivity {
         editor.putInt("imgState", imgState);
         editor.putInt("mnState", mnState);
         editor.putFloat("textSize", textSize);
+        editor.putInt("index", index);
 
         editor.apply();
         player.reset();
@@ -215,6 +216,8 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private void getSharedPrefValues(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        index = prefs.getInt("index", -1);
+        if(index==-1)finish();
         if (prefs.getInt("defState", -1) != -1) {
             defState = prefs.getInt("defState", -1);
             desState = prefs.getInt("desState", -1);
