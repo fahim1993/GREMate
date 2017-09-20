@@ -320,9 +320,10 @@ public class PracticeActivity extends NavDrawerActivity {
     private void wordsPostProcess(){
 
         String s = "";
+        int i = 1;
         for(Word w: words){
-            if (s.length() < 1) s += w.getValue();
-            else s += ", " + w.getValue();
+            s += ""+i+". "+w.getValue()+"\n";
+            i++;
         }
         wsSpinner.setEnabled(true);
         listSpinner.setEnabled(true);
