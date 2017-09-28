@@ -401,7 +401,7 @@ public class DB {
         DBRef db = new DBRef(uId);
         final String mainListName = "All Words";
         ArrayList<String> initWords = new FeedTestData().getWords(context);
-        int index = 1049;
+        int index = 799;
 
         for (int wsi = 1; wsi >= 1; wsi--) {
 
@@ -411,7 +411,7 @@ public class DB {
             db.setWordSetData(wsId, new WordSet("GRE: Word Set", mainListId));
             db.setListData(wsId, mainListId, new List(mainListName));
 
-            for (int ls = 21; ls >= 1; ls--) {
+            for (int ls = 16; ls >= 1; ls--) {
                 String listId = db.getListKey(wsId);
                 db.setListData(wsId, listId, new List("List "+ls));
                 for (int i = 0; i < 50; i++) {
@@ -424,6 +424,12 @@ public class DB {
                     db.setWordClone(listId, wordId, cloneId);
                     db.setWordClone(mainListId, wordId, wordId);
                     index--;
+                    try {
+                        Log.d("INIT", ""+index);
+                        Thread.sleep(250);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
