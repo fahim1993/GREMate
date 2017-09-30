@@ -34,4 +34,9 @@
         android:icon="@drawable/text_size"
         app:showAsAction="ifRoom"
         android:title="Change text size"/>
+
+    <item
+        android:id="@+id/auto_pronounce"
+        app:showAsAction="never"
+        android:title="Auto pronounce"/>
 </menu>

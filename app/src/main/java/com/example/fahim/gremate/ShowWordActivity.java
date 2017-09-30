@@ -73,6 +73,7 @@ public class ShowWordActivity extends AppCompatActivity {
     private boolean fetchingImage;
     private boolean[] loadFlags;
 
+    private int autoPronounce=0;
     private int defState;
     private int desState;
     private int senState;
@@ -184,6 +185,14 @@ public class ShowWordActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.show_word_menu, menu);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        autoPronounce = prefs.getInt("autoPronounce", 0);
+        if(autoPronounce == 0){
+            menu.findItem(R.id.auto_pronounce).setTitle("Auto pronounce");
+        }
+        else {
+            menu.findItem(R.id.auto_pronounce).setTitle("Stop auto pronounce");
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -781,6 +790,9 @@ public class ShowWordActivity extends AppCompatActivity {
         loadingPB.setVisibility(View.GONE);
         showWordSV.setVisibility(View.VISIBLE);
         loading = false;
+        if(autoPronounce==1){
+            (new PlaybackPronunciation()).execute();
+        }
         onToNext();
     }
 
@@ -974,6 +986,22 @@ public class ShowWordActivity extends AppCompatActivity {
                 });
                 builder.create();
                 builder.show();
+                break;
+
+            case R.id.auto_pronounce:
+                if(autoPronounce == 0){
+                    autoPronounce = 1;
+                    item.setTitle("Stop auto pronounce");
+                }
+                else {
+                    autoPronounce = 0;
+                    item.setTitle("Auto pronounce");
+                }
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("autoPronounce", autoPronounce);
+                editor.apply();
+                break;
 
         }
 
