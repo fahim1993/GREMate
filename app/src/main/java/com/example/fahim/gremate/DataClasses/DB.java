@@ -401,20 +401,26 @@ public class DB {
         DBRef db = new DBRef(uId);
         final String mainListName = "All Words";
         ArrayList<String> initWords = new FeedTestData().getWords(context);
-        int index = 799;
+        int index = initWords.size()-1;
 
-        for (int wsi = 1; wsi >= 1; wsi--) {
+        int wordsetCount = 5;
+        int listInWordset = 10;
+        int wordsInList = 40;
+
+        for (int wsi = wordsetCount; wsi >= 1; wsi--) {
 
             String wsId = db.getWordSetKey();
             String mainListId = db.getListKey(wsId);
 
-            db.setWordSetData(wsId, new WordSet("GRE: Word Set", mainListId));
+            db.setWordSetData(wsId, new WordSet("GRE: Word Set "+wsi, mainListId));
             db.setListData(wsId, mainListId, new List(mainListName));
 
-            for (int ls = 16; ls >= 1; ls--) {
+            for (int ls = listInWordset; ls >= 1; ls--) {
+                if(wsi == 5 && ls == 10)continue;
                 String listId = db.getListKey(wsId);
                 db.setListData(wsId, listId, new List("List "+ls));
-                for (int i = 0; i < 50; i++) {
+                for (int i = 0; i < wordsInList; i++) {
+                    if(wsi == 5 && ls == 9 && i == 21)break;
                     String wordValue = initWords.get(index);
                     initWords.remove(index);
                     String wordId = db.getWordId(mainListId);
@@ -423,9 +429,11 @@ public class DB {
                     db.setWordData(listId, cloneId, Word.newWord(mainListName, wordId, wordValue));
                     db.setWordClone(listId, wordId, cloneId);
                     db.setWordClone(mainListId, wordId, wordId);
+
+                    if(index == 0) return;
                     index--;
                     try {
-                        Log.d("INIT", ""+index);
+                        Log.d("INIT", ""+index + " " + wordValue);
                         Thread.sleep(250);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -434,5 +442,4 @@ public class DB {
             }
         }
     }
-
 }

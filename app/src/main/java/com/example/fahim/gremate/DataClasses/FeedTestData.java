@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class FeedTestData {
 
     public ArrayList<String> getWords(Context context) {
-        InputStream is = context.getResources().openRawResource(R.raw.words);
+        InputStream is = context.getResources().openRawResource(R.raw.words2);
         InputStreamReader ir = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(ir);
 
