@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -778,6 +779,7 @@ public class ShowWordActivity extends AppCompatActivity {
     }
 
     void countLoaded(int no) {
+        Log.d("Show Word", "loaded: " + no);
         if (loading) {
             loadFlags[no] = false;
             for (int i = 0; i < 4; i++) if (loadFlags[i]) return;
@@ -1009,18 +1011,18 @@ public class ShowWordActivity extends AppCompatActivity {
     }
 
     private void onToNext() {
-        if (wordLevel != _wordAllData.getWord().getLevel()) {
-            DB.setWordLevel(wordId, wordLevel);
-            words.get(index).setLevel(wordLevel);
-        }
-        index++;
-        if (index >= words.size()) index = 0;
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        loadWord();
+//        if (wordLevel != _wordAllData.getWord().getLevel()) {
+//            DB.setWordLevel(wordId, wordLevel);
+//            words.get(index).setLevel(wordLevel);
+//        }
+//        index++;
+//        if (index >= words.size()) index = 0;
+//        try {
+//            Thread.sleep(300);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        loadWord();
     }
 
     private class PlaybackPronunciation extends AsyncTask<String, Void, String> {

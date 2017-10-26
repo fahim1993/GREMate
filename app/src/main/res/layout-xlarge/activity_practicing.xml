@@ -207,10 +207,11 @@
                     android:id="@+id/nextBtn"
                     app:backgroundTint="@color/colorAccent"
                     android:textColor="#FFF"
-                    android:textSize="18sp"
-                    android:layout_width="120dp"
+                    android:textSize="24sp"
+                    android:layout_width="match_parent"
                     android:text="Next"
-                    android:layout_height="wrap_content" />
+                    android:padding="15dp"
+                    android:layout_height="80dp" />
 
             </RelativeLayout>
         </LinearLayout>
