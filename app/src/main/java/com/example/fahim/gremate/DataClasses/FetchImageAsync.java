@@ -15,6 +15,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -27,17 +28,21 @@ public abstract class FetchImageAsync extends AsyncTask<String, Void, String> {
     protected ArrayList<WordImage> images;
     protected SqliteDBHelper db;
     private ArrayList<WordImageFB> wordImageFBs;
-    private Context context;
+    private WeakReference<Context> contextRef;
 
-    public FetchImageAsync(Context context, String wordId, ArrayList<WordImageFB> wordImageFBs) {
-        this.context = context;
+    public FetchImageAsync(Context contextRef, String wordId, ArrayList<WordImageFB> wordImageFBs) {
+        this.contextRef = new WeakReference<>(contextRef);
         this.wordId = wordId;
         this.wordImageFBs = wordImageFBs;
     }
 
     @Override
     protected String doInBackground(String... strings) {
+        Context context = contextRef.get();
         images = new ArrayList<>();
+        if(context==null){
+            return null;
+        }
         db = new SqliteDBHelper(context);
 
         String st = strings[0];

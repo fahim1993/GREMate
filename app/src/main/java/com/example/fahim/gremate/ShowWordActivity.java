@@ -723,6 +723,8 @@ public class ShowWordActivity extends AppCompatActivity {
 //            loadWord();
 //        }
 
+        Log.d("Show Word", "loading image");
+
         if (images.size() == 0) {
             findViewById(R.id.showWordImgLL).setVisibility(View.GONE);
             countLoaded(3);
