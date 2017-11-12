@@ -96,7 +96,6 @@ public class ShowWordActivity extends AppCompatActivity {
     private ProgressBar loadingPB;
     private TextView errorTextV;
 
-
     private TextView wordTitle;
 
     private int wordLevel;
