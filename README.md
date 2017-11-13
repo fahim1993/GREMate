@@ -13,14 +13,14 @@ GREMate is packed with a lot of functionality but it is also easy to use. Follow
 To add a word you need to select a wordset and then a list. After adding a word, when you tap on it, it will automatically collect word data and save it in firebase. 
 
 <div>
-  <a href="https://www.youtube.com/watch?v=CdutKEK1iG4"><img src="https://i.imgur.com/hwbQ2Ag.png" width="50%" height="50%" alt="Add Word"></a>
+  <a href="https://vimeo.com/242524762"><img src="https://i.imgur.com/wlV218x.png" width="50%" height="50%" alt="Add Word"></a>
 </div>
 
 ### Edit words
 Sometimes you need to add your own data (description, definition, sentence, image and mnemonic) of a word. GREMate lets you edit a word to match your necessity. 
 
 <div>
-  <a href="https://www.youtube.com/watch?v=C6xhU5iS2aE"><img src="https://i.imgur.com/TueHIIx.png" width="50%" height="50%" alt="Edit Word"></a>
+  <a href="https://vimeo.com/242524811"><img src="https://i.imgur.com/3arF6rc.png" width="50%" height="50%" alt="Edit Word"></a>
 </div>
 
 
@@ -28,7 +28,7 @@ Sometimes you need to add your own data (description, definition, sentence, imag
 After learning you need to test your knowledge. GREMate provides challenging practice questions. You can practice any word which has a definition.
 
 <div>
-  <a href="https://www.youtube.com/watch?v=kd5z9jLho-Q"><img src="https://i.imgur.com/oNQt0I5.png" width="50%" height="50%" alt="Add Word"></a>
+  <a href="https://vimeo.com/242524836"><img src="https://i.imgur.com/fNmFns1.png" width="50%" height="50%" alt="Add Word"></a>
 </div>
 
 ## Currently working on
