@@ -179,6 +179,7 @@ public class ShowWordActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+        Log.d("ShowWordActivity ", " onCreate");
     }
 
     @Override

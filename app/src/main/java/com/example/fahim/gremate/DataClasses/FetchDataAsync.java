@@ -26,7 +26,6 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
 
 
     protected WordAllData wordAllData;
-    protected String pronunciationLink = "";
 
     private boolean error = true;
 
@@ -160,7 +159,7 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
 
                     String pl = doc1.select(".audio").first().attr("data-audio");
                     if(pl.length()>0) {
-                        pronunciationLink = LINK_VOC + pl +".mp3";
+                        String pronunciationLink = LINK_VOC + pl + ".mp3";
                         wordAllData.getWordData().setPronunciation(pronunciationLink);
                     }
 

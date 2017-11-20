@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -86,6 +87,7 @@ public class ListActivity extends NavDrawerActivity {
         loadList.setVisibility(View.VISIBLE);
 
         setWordList();
+        Log.d("ListActivity ", " onCreate");
     }
 
     public void getLastListId(){
@@ -107,7 +109,6 @@ public class ListActivity extends NavDrawerActivity {
             public void onCancelled(DatabaseError databaseError){ }
         };
         ref2.addValueEventListener(listener2);
-
     }
 
     @Override
@@ -115,7 +116,6 @@ public class ListActivity extends NavDrawerActivity {
         super.onDestroy();
         if(listener1!=null) ref1.removeEventListener(listener1);
         if(listener2!=null) ref2.removeEventListener(listener2);
-
     }
 
     @Override
@@ -181,6 +181,7 @@ public class ListActivity extends NavDrawerActivity {
                     ListWithId wlId = new ListWithId(wl, ds.getKey());
                     lists.add(wlId);
                 }
+                Log.d("ListActivity ", "setWordList(), lists size = " + lists.size());
                 Collections.reverse(lists);
                 listRecyclerView.setAdapter(new ListAdapter(lists, ListActivity.this, wsId, mainListId, lastListId));
                 scrollToLastId();
@@ -260,8 +261,8 @@ public class ListActivity extends NavDrawerActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if(mDrawerLayout.isDrawerOpen(Gravity.LEFT))
-                mDrawerLayout.closeDrawer(Gravity.LEFT);
+            if(mDrawerLayout.isDrawerOpen(Gravity.START))
+                mDrawerLayout.closeDrawer(Gravity.START);
             else {
                finish();
             }

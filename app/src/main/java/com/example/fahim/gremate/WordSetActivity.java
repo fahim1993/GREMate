@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -44,7 +45,7 @@ public class WordSetActivity extends NavDrawerActivity {
 
     String lastSetId = "";
 
-    private static TextView wordSetTitle;
+    private TextView wordSetTitle;
 
     DatabaseReference ref1;
     DatabaseReference ref2;
@@ -76,6 +77,7 @@ public class WordSetActivity extends NavDrawerActivity {
         loadWordSet.setVisibility(View.VISIBLE);
 
         setWordSet();
+        Log.d("WordSetActivity ", " onCreate");
     }
 
     @Override
@@ -86,6 +88,7 @@ public class WordSetActivity extends NavDrawerActivity {
 
     }
 
+    // For highlighting last opened word set
     public void getLastSetId(){
         DBRef db = new DBRef();
         ref2 = db.lastWordSetRef();
@@ -153,14 +156,19 @@ public class WordSetActivity extends NavDrawerActivity {
 
     }
 
-    private static void setWsTitle(){
+    private void setWsTitle(){
         DBRef db = new DBRef();
         DatabaseReference mRef = db.userDataRef();
         mRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserData user = dataSnapshot.getValue(UserData.class);
-                wordSetTitle.setText(user.getUserName() + "'s Word Set");
+                try {
+                    wordSetTitle.setText(user.getUserName() + "'s Word Sets");
+                }
+                catch(NullPointerException e){
+                    wordSetTitle.setText("User Word Sets");
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
@@ -183,6 +191,7 @@ public class WordSetActivity extends NavDrawerActivity {
                     WordSetWithId wordSetWithId = new WordSetWithId(wordSet, id);
                     wordSets.add(wordSetWithId);
                 }
+                Log.d("WordSetActivity ", "setWordSet(), wordSets size = " + wordSets.size());
                 Collections.reverse(wordSets);
                 wsRecyclerView.setAdapter(new WordSetAdapter(wordSets, WordSetActivity.this, lastSetId));
                 scrollToLastId();
@@ -191,9 +200,7 @@ public class WordSetActivity extends NavDrawerActivity {
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
+            public void onCancelled(DatabaseError databaseError){ }
         };
         ref1.addValueEventListener(listener1);
     }
@@ -263,8 +270,8 @@ public class WordSetActivity extends NavDrawerActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if(mDrawerLayout.isDrawerOpen(Gravity.LEFT))
-                mDrawerLayout.closeDrawer(Gravity.LEFT);
+            if(mDrawerLayout.isDrawerOpen(Gravity.START))
+                mDrawerLayout.closeDrawer(Gravity.START);
             else {
                 new AlertDialog.Builder(WordSetActivity.this)
                         .setTitle("Close")

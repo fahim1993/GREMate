@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -99,12 +100,12 @@ public class ListWordsActivity extends NavDrawerActivity {
 
         hideWordRv();
         getListWords();
+        Log.d("ListWordActivity ", " onCreate");
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
         setListState();
     }
 
@@ -390,7 +391,6 @@ public class ListWordsActivity extends NavDrawerActivity {
                     }
                 }
 
-                return;
             }
         }
     }
@@ -414,6 +414,7 @@ public class ListWordsActivity extends NavDrawerActivity {
                     WordWithId wordWithId = new WordWithId(word, ds.getKey(), ++serial);
                     words.add(wordWithId);
                 }
+                Log.d("ListWordsActivity ", "getListWords(), words size = " + words.size());
                 sortWords(false);
             }
 
