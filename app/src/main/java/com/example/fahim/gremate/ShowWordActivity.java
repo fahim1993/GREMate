@@ -283,7 +283,8 @@ public class ShowWordActivity extends AppCompatActivity {
 
         WORD = words.get(index);
         wordId = WORD.getCloneOf();
-        levelSb.setProgress(WORD.getLevel());
+        wordLevel  = WORD.getLevel();
+        setLevel();
 
         String titleText = WORD.getValue().toLowerCase();
         char[] ttext = titleText.toCharArray();
@@ -463,22 +464,23 @@ public class ShowWordActivity extends AppCompatActivity {
     }
 
     private void setLevel() {
-        wordLevel = _wordAllData.getWord().getLevel();
-
         levelSb.setProgress(wordLevel);
-        switch (_wordAllData.getWord().getLevel()) {
-            case 0:
+        switch (wordLevel) {
+            case Word.LVL_EASY:
                 levelTv.setText("Easy");
-                levelTv.setTextColor(Color.parseColor("#007200"));
+                levelTv.setTextColor(Color.parseColor("#00B200"));
                 break;
-            case 1:
-                levelTv.setText("Medium");
-                levelTv.setTextColor(Color.parseColor("#000072"));
+            case Word.LVL_NORMAL:
+                levelTv.setText("Normal");
+                levelTv.setTextColor(Color.parseColor("#005999"));
                 break;
-            case 2:
+            case Word.LVL_HARD:
                 levelTv.setText("Hard");
-                levelTv.setTextColor(Color.parseColor("#720000"));
+                levelTv.setTextColor(Color.parseColor("#F07F00"));
                 break;
+            case Word.LVL_VHARD:
+                levelTv.setText("Very Hard");
+                levelTv.setTextColor(Color.parseColor("#990019"));
         }
         levelSb.setVisibility(View.VISIBLE);
         levelTv.setVisibility(View.VISIBLE);
