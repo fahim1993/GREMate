@@ -848,7 +848,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private class FetchImage extends FetchImageAsync {
 
-        public FetchImage(Context context, String wordId, ArrayList<WordImageFB> wordImageFBs) {
+        FetchImage(Context context, String wordId, ArrayList<WordImageFB> wordImageFBs) {
             super(context, wordId, wordImageFBs);
         }
 
@@ -1020,7 +1020,7 @@ public class ShowWordActivity extends AppCompatActivity {
 //        index++;
 //        if (index >= words.size()) index = 0;
 //        try {
-//            Thread.sleep(300);
+//            Thread.sleep(100);
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }

@@ -18,12 +18,6 @@ import java.util.ArrayList;
 
 public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
 
-    private final String url1 = "http://www.synonym.com/synonyms/";
-    private final String url2 = "https://www.vocabulary.com/dictionary/";
-    private final String url3 = "http://corpus.vocabulary.com/api/1.0/examples.json?query=";
-    private final String url4 = "http://www.mnemonicdictionary.com/?word=";
-    private final String LINK_VOC = "https://audio.vocab.com/1.0/us/";
-
 
     protected WordAllData wordAllData;
 
@@ -36,9 +30,13 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
         String wordId = strings[1];
 
         try {
+            String url1 = "http://www.synonym.com/synonyms/";
             Document doc = Jsoup.connect(url1 + word).timeout(10000).get();
+            String url2 = "https://www.vocabulary.com/dictionary/";
             Document doc1 = Jsoup.connect(url2 + word).timeout(10000).get();
+            String url3 = "http://corpus.vocabulary.com/api/1.0/examples.json?query=";
             Document doc2 = Jsoup.connect(url3 + word + "&maxResults=20").ignoreContentType(true).timeout(10000).get();
+            String url4 = "http://www.mnemonicdictionary.com/?word=";
             Document doc3 = Jsoup.connect(url4 + word).timeout(10000).get();
 
 
@@ -159,6 +157,7 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
 
                     String pl = doc1.select(".audio").first().attr("data-audio");
                     if(pl.length()>0) {
+                        String LINK_VOC = "https://audio.vocab.com/1.0/us/";
                         String pronunciationLink = LINK_VOC + pl + ".mp3";
                         wordAllData.getWordData().setPronunciation(pronunciationLink);
                     }

@@ -24,7 +24,7 @@ import java.util.ArrayList;
  */
 
 public abstract class FetchImageAsync extends AsyncTask<String, Void, String> {
-    private String url, wordId;
+    private String wordId;
     protected ArrayList<WordImage> images;
     protected SqliteDBHelper db;
     private ArrayList<WordImageFB> wordImageFBs;
@@ -69,7 +69,7 @@ public abstract class FetchImageAsync extends AsyncTask<String, Void, String> {
 
             if (wordImageFBs != null) {
                 for (int i = 0; i < wordImageFBs.size(); i++) {
-                    url = wordImageFBs.get(i).getUrl();
+                    String url = wordImageFBs.get(i).getUrl();
                     try {
                         WordImage image = db.getImage(wordId, url);
                         if (image.isValid()) {

@@ -1,9 +1,11 @@
 package com.example.fahim.gremate;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
@@ -337,7 +339,7 @@ public class PracticeActivity extends NavDrawerActivity {
         NavigationView mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 Intent intent;
                 switch (menuItem.getItemId()) {
                     case R.id.nav_learn:
@@ -382,11 +384,12 @@ public class PracticeActivity extends NavDrawerActivity {
         });
     }
 
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mDrawerLayout.isDrawerOpen(Gravity.LEFT))
-                mDrawerLayout.closeDrawer(Gravity.LEFT);
+            if (mDrawerLayout.isDrawerOpen(Gravity.START))
+                mDrawerLayout.closeDrawer(Gravity.START);
             else {
                 onBackPressed();
             }
@@ -405,12 +408,7 @@ public class PracticeActivity extends NavDrawerActivity {
     public class NameIdPair {
         String name, id;
 
-        public NameIdPair() {
-            name = "";
-            id = "";
-        }
-
-        public NameIdPair(String name, String id) {
+        NameIdPair(String name, String id) {
             this.name = name;
             this.id = id;
         }

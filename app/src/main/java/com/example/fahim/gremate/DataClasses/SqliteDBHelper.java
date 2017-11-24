@@ -15,26 +15,23 @@ import java.util.ArrayList;
 
 public class SqliteDBHelper extends SQLiteOpenHelper {
 
-    public static final String DB_NAME = "image.db";
-    public static final String DB_TABLE = "table_image";
+    private static final String DB_NAME = "image.db";
+    private static final String DB_TABLE = "table_image";
 
-    public static final String KEY_WORDID = "wordid";
-    public static final String KEY_URL = "url";
-    public static final String KEY_IMAGE = "image";
+    private static final String KEY_WORDID = "wordid";
+    private static final String KEY_URL = "url";
+    private static final String KEY_IMAGE = "image";
 
     protected SQLiteDatabase database;
 
-    public static final String CREATE_TABLE = "CREATE TABLE " + DB_TABLE + "(" +
+    private static final String CREATE_TABLE = "CREATE TABLE " + DB_TABLE + "(" +
             "id INTEGER PRIMARY KEY, "+
             KEY_WORDID + " TEXT, "+
             KEY_URL + " TEXT, "+
             KEY_IMAGE + " BLOB);";
 
-    private Context context;
-
-    public SqliteDBHelper(Context context){
+    SqliteDBHelper(Context context){
         super(context, DB_NAME, null, 1);
-        this.context = context;
     }
 
     @Override
@@ -47,7 +44,7 @@ public class SqliteDBHelper extends SQLiteOpenHelper {
 
     }
 
-    public void addImage( String wordId, String url, WordImage image) throws SQLiteException {
+    void addImage( String wordId, String url, WordImage image) throws SQLiteException {
         if(database==null)database = this.getWritableDatabase();
         if(!image.isValid())return;
         WordImage tmp = getImage(wordId, url);
@@ -60,7 +57,7 @@ public class SqliteDBHelper extends SQLiteOpenHelper {
         database.insert( DB_TABLE, null, cv );
     }
 
-    public WordImage getImage(String wordId, String url){
+    WordImage getImage(String wordId, String url){
         WordImage ret = new WordImage();
         if(database==null)database = this.getWritableDatabase();
 
