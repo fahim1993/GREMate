@@ -15,10 +15,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.fahim.gremate.DataClasses.DB;
+import com.example.fahim.gremate.DataClasses.DBRef;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
@@ -27,6 +29,8 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar loginSpinner;
     private TextView loginFail;
     private EditText email, password;
+
+    private DatabaseReference ref;
 
     private static boolean persist = false;
 
@@ -40,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         if(!persist) {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+            FirebaseDatabase.getInstance().setPersistenceCacheSizeBytes(26214400);
             persist = true;
         }
 
@@ -91,11 +96,14 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
+                            String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                            ref = FirebaseDatabase.getInstance().getReference().child("UserWords").child(userId);
+                            ref.keepSynced(true);
+
                             Intent intent = new Intent(LoginActivity.this, WordSetActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
                             LoginActivity.this.finish();
-
                         }
                         else {
                             loginFail.setVisibility(View.VISIBLE);
