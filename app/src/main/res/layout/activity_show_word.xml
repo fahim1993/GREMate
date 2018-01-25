@@ -7,16 +7,6 @@
     android:background="@color/cardviewItem"
     tools:context="com.example.fahim.gremate.ShowWordActivity">
 
-    <!--<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"-->
-        <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
-        <!--android:id="@+id/toolbar"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:background="?attr/colorPrimary"-->
-        <!--android:minHeight="?attr/actionBarSize"-->
-        <!--android:popupTheme="@style/ThemeOverlay.AppCompat.Light"-->
-        <!--android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />-->
-
     <TextView
         android:padding="8dp"
         android:background="#f1f1f1"
@@ -154,179 +144,48 @@
                 </RelativeLayout>
 
                 <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/showWordDefinitionText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="15dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:clickable="true"
-                        android:textColor="#000000"
-                        android:textIsSelectable="true"
-                        android:textSize="16sp"
-                        android:visibility="gone" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/showWordSenLL"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bottomline"
-                android:orientation="vertical">
-
-                <RelativeLayout
-                    android:id="@+id/showWordSentenceRL"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:clickable="true"
-                    android:onClick="toggleSentence"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_margin="10dp"
-                        android:id="@+id/showWordSentence"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="Sentences"
-                        android:textColor="#000000"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <ImageView
-                        android:id="@+id/showWordSentenceIB"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:background="@color/cardviewItem"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/up"
-
-                        />
-
-                </RelativeLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/showWordSentenceText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="15dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:clickable="true"
-                        android:textColor="#000000"
-                        android:textIsSelectable="true"
-                        android:textSize="16sp"
-                        android:visibility="gone" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/showWordImgLL"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bottomline"
-                android:orientation="vertical">
-
-                <RelativeLayout
-                    android:id="@+id/showWordImageRL"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:clickable="true"
-                    android:onClick="toggleImage"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_margin="10dp"
-                        android:id="@+id/showWordImage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="Images"
-                        android:textColor="#000000"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <ImageView
-                        android:id="@+id/showWordImageIB"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:background="@color/cardviewItem"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/up"
-
-                        />
-
-                </RelativeLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
                     <LinearLayout
+                        android:id="@+id/showWordDefDataLL"
                         android:orientation="vertical"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:id="@+id/showWordImgAddLL"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
-
                     </LinearLayout>
-
                 </LinearLayout>
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/showWordMneLL"
+                android:id="@+id/showWordExtraInfoLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bottomline"
                 android:orientation="vertical">
 
                 <RelativeLayout
-                    android:id="@+id/showWordMNRL"
+                    android:id="@+id/showWordExtraInfoRL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:clickable="true"
-                    android:onClick="toggleMN"
+                    android:onClick="toggleExtraInfo"
                     android:orientation="horizontal">
 
                     <TextView
                         android:layout_margin="10dp"
-                        android:id="@+id/showWordMN"
+                        android:id="@+id/showWordExtraInfo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:text="Mnemonic"
+                        android:text="Extra Information"
                         android:textColor="#000000"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <ImageView
-                        android:id="@+id/showWordMNIB"
+                        android:id="@+id/showWordExtraInfoIB"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:layout_alignParentEnd="true"
@@ -344,9 +203,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-
                     <TextView
-                        android:id="@+id/showWordMNText"
+                        android:id="@+id/showWordExtraInfoText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="15dp"
@@ -377,8 +235,6 @@
                     android:text="Difficulty:"
                     android:textColor="#000"
                     android:textSize="15sp" />
-
-
 
                 <SeekBar
                     android:id="@+id/diffSeekBar"

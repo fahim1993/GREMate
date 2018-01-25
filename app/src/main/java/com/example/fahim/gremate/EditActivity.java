@@ -6,7 +6,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -18,26 +17,23 @@ import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.DBRef;
-import com.example.fahim.gremate.DataClasses.WordSentence;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordAllData;
 import com.example.fahim.gremate.DataClasses.WordData;
 import com.example.fahim.gremate.DataClasses.WordDef;
-import com.example.fahim.gremate.DataClasses.WordImageFB;
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.fahim.gremate.DataClasses.WordPractice;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
 public class EditActivity extends AppCompatActivity {
 
     private String wordId;
-    private String wsId;
     private String pronunciationLink;
 
     private Word WORD;
@@ -47,31 +43,16 @@ public class EditActivity extends AppCompatActivity {
 
     private WordAllData wordAllData;
 
-    private ArrayList<SentenceView> sentenceViews;
-    private ArrayList<ImageView> imageViews;
-    private int sentenceViewID;
-    private int imageViewID;
     private ArrayList<DefinitionView> definitionViews;
+
     private int definitionViewID;
     private EditText description;
-    private EditText mnemonic;
-
-    DatabaseReference ref1;
-    DatabaseReference ref2;
-    DatabaseReference ref3;
-    DatabaseReference ref4;
-    ValueEventListener listener1;
-    ValueEventListener listener2;
-    ValueEventListener listener3;
-    ValueEventListener listener4;
+    private EditText extraInfo;
 
     LinearLayout defsLL;
     LinearLayout desLL;
-    LinearLayout senLL;
-    LinearLayout mnLL;
-    LinearLayout imgLL;
+    LinearLayout eiLL;
     LinearLayout ll1;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,25 +69,18 @@ public class EditActivity extends AppCompatActivity {
 
         wordAllData.setWord(WORD);
         wordId = extras.getString("wordId");
-        wsId = extras.getString("wsId");
 
         final float scale = this.getResources().getDisplayMetrics().density;
         delbtnSize = (int) (45 * scale);
 
-        sentenceViewID = 0;
-        imageViewID = 0;
-        sentenceViews = new ArrayList<>();
-        imageViews = new ArrayList<>();
         definitionViews = new ArrayList<>();
 
         definitionViewID = 100000;
         dummyHeight = 65;
 
         defsLL = (LinearLayout) findViewById(R.id.WordOperationLLDef);
-        senLL = (LinearLayout) findViewById(R.id.WordOperationLLSen);
         desLL = (LinearLayout) findViewById(R.id.WordOperationLLDes);
-        mnLL = (LinearLayout) findViewById(R.id.WordOperationLLMN);
-        imgLL = (LinearLayout) findViewById(R.id.WordOperationLLImg);
+        eiLL = (LinearLayout) findViewById(R.id.WordOperationLLExtraInfo);
         ll1 = (LinearLayout) findViewById(R.id.WordOperationLL);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -117,10 +91,6 @@ public class EditActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (listener1 != null) ref1.removeEventListener(listener1);
-        if (listener2 != null) ref2.removeEventListener(listener2);
-        if (listener3 != null) ref3.removeEventListener(listener3);
-        if (listener4 != null) ref4.removeEventListener(listener4);
     }
 
     @Override
@@ -139,8 +109,8 @@ public class EditActivity extends AppCompatActivity {
         TextView wrd = (TextView) findViewById(R.id.WordOperationWord);
         wrd.setText(wordAllData.getWord().getValue().toUpperCase());
 
-        ref1 = db.wordDataRef(wordId);
-        listener1 = new ValueEventListener() {
+        final DatabaseReference ref1 = db.wordDataRef(wordId);
+        ref1.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getChildrenCount() == 0) return;
@@ -151,11 +121,12 @@ public class EditActivity extends AppCompatActivity {
                         if (wordAllData.getWordData().getDes().length() > 0) {
                             desLL.addView(addDescLL(true, wordAllData.getWordData().getDes()));
                         }
-                        if (wordAllData.getWordData().getMn().length() > 0) {
-                            mnLL.addView(addMnLL(true, wordAllData.getWordData().getMn()));
+                        if (wordAllData.getWordData().getExtraInfo().length() > 0) {
+                            eiLL.addView(addEiLL(true, wordAllData.getWordData().getExtraInfo()));
                         }
                         pronunciationLink = "";
                         pronunciationLink = wd.getPronunciation();
+                        ref1.removeEventListener(this);
                     }
                 }
                 catch(Exception e){
@@ -164,11 +135,10 @@ public class EditActivity extends AppCompatActivity {
             }
             @Override
             public void onCancelled(DatabaseError databaseError){}
-        };
-        ref1.addValueEventListener(listener1);
+        });
 
-        ref2 = db.wordDefinitionRef(wordId);
-        listener2 = new ValueEventListener() {
+        final DatabaseReference ref2 = db.wordDefinitionRef(wordId);
+        ref2.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getChildrenCount() == 0) return;
@@ -184,56 +154,11 @@ public class EditActivity extends AppCompatActivity {
                         defsLL.addView(ll, defsLL.getChildCount() - 1);
                     }
                 }
+                ref2.removeEventListener(this);
             }
             @Override
             public void onCancelled(DatabaseError databaseError){}
-        };
-        ref2.addValueEventListener(listener2);
-
-        ref3 = db.wordSentenceRef(wordId);
-        listener3 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getChildrenCount() == 0) return;
-                ArrayList<WordSentence> wordSentences = new ArrayList<WordSentence>();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    WordSentence w = ds.getValue(WordSentence.class);
-                    wordSentences.add(w);
-                }
-                wordAllData.setWordSentences(wordSentences);
-                if (wordSentences.size() > 0) {
-                    for (int i = 0; i < wordSentences.size(); i++) {
-                        LinearLayout ll = addSentLL(true, wordSentences.get(i));
-                        senLL.addView(ll, senLL.getChildCount() - 1);
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError){}
-        };
-        ref3.addValueEventListener(listener3);
-
-        ref4 = db.wordImageRef(wordId);
-        listener4 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<WordImageFB> images = new ArrayList<>();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    WordImageFB wordImageFB = ds.getValue(WordImageFB.class);
-                    images.add(wordImageFB);
-                }
-                wordAllData.setImages(images);
-                if (images.size() > 0) {
-                    for (int i = 0; i < images.size(); i++) {
-                        LinearLayout ll = addImgLL(true, images.get(i));
-                        imgLL.addView(ll, imgLL.getChildCount() - 1);
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError){}
-        };
-        ref4.addValueEventListener(listener4);
+        });
     }
 
     public void addDesc(View v) {
@@ -281,12 +206,12 @@ public class EditActivity extends AppCompatActivity {
         return ll;
     }
 
-    public void addMn(View v) {
+    public void addEi(View v) {
         LinearLayout llp = (LinearLayout) v.getParent();
-        llp.addView(addMnLL(false, null), llp.getChildCount() - 1);
+        llp.addView(addEiLL(false, null), llp.getChildCount() - 1);
     }
 
-    private LinearLayout addMnLL(boolean flg, String mn) {
+    private LinearLayout addEiLL(boolean flg, String ei) {
 
         LinearLayout ll = new LinearLayout(EditActivity.this);
         ll.setOrientation(LinearLayout.VERTICAL);
@@ -294,10 +219,10 @@ public class EditActivity extends AppCompatActivity {
 
         TextView tvDesc = new TextView(EditActivity.this);
         tvDesc.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        tvDesc.setText("Mnemonic");
-        EditText edMn = new EditText(EditActivity.this);
-        edMn.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        if (flg) edMn.setText(mn);
+        tvDesc.setText("Extra Information");
+        EditText etEi = new EditText(EditActivity.this);
+        etEi.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        if (flg) etEi.setText(ei);
 
         ImageButton delBtn = new ImageButton(EditActivity.this);
         delBtn.setImageResource(R.drawable.deltbtn);
@@ -308,19 +233,19 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ((LinearLayout) v.getParent()).setVisibility(View.GONE);
-                mnemonic = null;
-                Button btnMN = (Button) findViewById(R.id.WordOperationBtnMN);
+                extraInfo = null;
+                Button btnMN = (Button) findViewById(R.id.WordOperationBtnEI);
                 btnMN.setVisibility(View.VISIBLE);
             }
         });
 
-        Button btnMn = (Button) findViewById(R.id.WordOperationBtnMN);
+        Button btnMn = (Button) findViewById(R.id.WordOperationBtnEI);
         btnMn.setVisibility(View.GONE);
 
-        mnemonic = edMn;
+        extraInfo = etEi;
 
         ll.addView(tvDesc);
-        ll.addView(edMn);
+        ll.addView(etEi);
         ll.addView(delBtn);
 
         return ll;
@@ -336,40 +261,21 @@ public class EditActivity extends AppCompatActivity {
 
         DefinitionView dv = new DefinitionView();
 
-        LinearLayout ll = new LinearLayout(EditActivity.this);
-        ll.setOrientation(LinearLayout.VERTICAL);
-        ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
+        LinearLayout ll = getLinearLayout();
         View v = new View(EditActivity.this);
         v.setLayoutParams(new ActionBar.LayoutParams(0, dummyHeight));
 
-        TextView tvTitle = new TextView(EditActivity.this);
-        tvTitle.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        tvTitle.setText("Title");
-        EditText edTitle = new EditText(EditActivity.this);
-        edTitle.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        if (flg) edTitle.setText(defi.getTitle());
+        TextView tvTitle = getTextView("Title"), tvDef = getTextView("Definition"), tvPrimSyn = getTextView("Primary Synonym"),
+                tvSyn = getTextView("Synonyms"), tvSent = getTextView("Sentences");
 
-        TextView tvDef = new TextView(EditActivity.this);
-        tvDef.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        tvDef.setText("Definition");
-        EditText edDef = new EditText(EditActivity.this);
-        edDef.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        if (flg) edDef.setText(defi.getDef());
-
-        TextView tvSyn = new TextView(EditActivity.this);
-        tvSyn.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        tvSyn.setText("Synonyms");
-        EditText edSyn = new EditText(EditActivity.this);
-        edSyn.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        if (flg) edSyn.setText(defi.getSyn());
-
-        TextView tvAnt = new TextView(EditActivity.this);
-        tvAnt.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        tvAnt.setText("Antonyms");
-        EditText edAnt = new EditText(EditActivity.this);
-        edAnt.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        if (flg) edAnt.setText(defi.getAnt());
+        if(flg){
+            dv.edTitle.setText(defi.getTitle());
+            dv.edDef.setText(defi.getDef());
+            dv.edPrimSyn.setText(defi.getBoldSyns().replaceAll(DB.DELIM, ", "));
+            dv.edSyn.setText(defi.getSyns().replaceAll(DB.DELIM, ", "));
+            String [] sents = defi.getSentencesArray();
+            for(int i=0; i<sents.length; i++)dv.edSents[i].setText(sents[i]);
+        }
 
         ImageButton delBtn = new ImageButton(EditActivity.this);
         delBtn.setImageResource(R.drawable.deltbtn);
@@ -395,11 +301,6 @@ public class EditActivity extends AppCompatActivity {
             }
         });
 
-        dv.edTitle = edTitle;
-        dv.edDef = edDef;
-        dv.edSyn = edSyn;
-        dv.edAnt = edAnt;
-
         Button b = (Button) findViewById(R.id.WordOperationBtnDef);
         b.setText("ADD ANOTHER DEFINITION");
 
@@ -410,152 +311,51 @@ public class EditActivity extends AppCompatActivity {
 
         ll.addView(v);
         ll.addView(tvTitle);
-        ll.addView(edTitle);
+        ll.addView(dv.edTitle);
         ll.addView(tvDef);
-        ll.addView(edDef);
+        ll.addView(dv.edDef);
+        ll.addView(tvPrimSyn);
+        ll.addView(dv.edPrimSyn);
         ll.addView(tvSyn);
-        ll.addView(edSyn);
-        ll.addView(tvAnt);
-        ll.addView(edAnt);
-        ll.addView(delBtn);
-
-        return ll;
-
-    }
-
-    public void addSent(View v) {
-        LinearLayout llp = (LinearLayout) v.getParent();
-        llp.addView(addSentLL(false, null), llp.getChildCount() - 1);
-    }
-
-    private LinearLayout addSentLL(boolean flg, WordSentence s) {
-
-        SentenceView st = new SentenceView();
-
-        LinearLayout ll = new LinearLayout(EditActivity.this);
-        ll.setOrientation(LinearLayout.VERTICAL);
-        ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
-        View v = new View(EditActivity.this);
-        v.setLayoutParams(new ActionBar.LayoutParams(0, dummyHeight));
-
-        TextView tvSent = new TextView(EditActivity.this);
-        tvSent.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        tvSent.setText("Sentence");
-        EditText edSent = new EditText(EditActivity.this);
-        edSent.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        if (flg) edSent.setText(s.getValue());
-
-        ImageButton delBtn = new ImageButton(EditActivity.this);
-        delBtn.setImageResource(R.drawable.deltbtn);
-        delBtn.setScaleType(android.widget.ImageView.ScaleType.CENTER_INSIDE);
-        delBtn.setLayoutParams(new LinearLayout.LayoutParams(delbtnSize, delbtnSize));
-
-        delBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int id = v.getId(), i;
-                LinearLayout llp = (LinearLayout) v.getParent();
-                llp.setVisibility(View.GONE);
-
-                for (i = 0; i < sentenceViews.size(); i++) {
-                    if (sentenceViews.get(i).slNo == id) break;
-                }
-                if (i != sentenceViews.size()) sentenceViews.remove(i);
-
-                if (sentenceViews.size() == 0) {
-                    Button b = (Button) findViewById(R.id.WordOperationBtnSen);
-                    b.setText("ADD SENTENCE");
-                }
-            }
-        });
-
-        st.edSent = edSent;
-
-        Button b = (Button) findViewById(R.id.WordOperationBtnSen);
-        b.setText("ADD ANOTHER SENTENCE");
-
-        delBtn.setId(sentenceViewID);
-        st.slNo = sentenceViewID++;
-        sentenceViews.add(st);
-
-        ll.addView(v);
+        ll.addView(dv.edSyn);
         ll.addView(tvSent);
-        ll.addView(edSent);
+        ll.addView(dv.edSents[0]);
+        ll.addView(dv.edSents[1]);
+        ll.addView(dv.edSents[2]);
+        ll.addView(dv.edSents[3]);
         ll.addView(delBtn);
 
         return ll;
     }
 
-    public void addImg(View v) {
-        LinearLayout llp = (LinearLayout) v.getParent();
-        llp.addView(addImgLL(false, null), llp.getChildCount() - 1);
-    }
-
-    private LinearLayout addImgLL(boolean flg, WordImageFB img) {
-
-        ImageView imv = new ImageView();
-
+    public LinearLayout getLinearLayout(){
         LinearLayout ll = new LinearLayout(EditActivity.this);
         ll.setOrientation(LinearLayout.VERTICAL);
         ll.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
-        View v = new View(EditActivity.this);
-        v.setLayoutParams(new ActionBar.LayoutParams(0, dummyHeight));
-
-        TextView tvImg = new TextView(EditActivity.this);
-        tvImg.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        tvImg.setText("Image URL");
-        EditText edImg = new EditText(EditActivity.this);
-        edImg.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        if (flg) edImg.setText(img.getUrl());
-
-        ImageButton delBtn = new ImageButton(EditActivity.this);
-        delBtn.setImageResource(R.drawable.deltbtn);
-        delBtn.setScaleType(android.widget.ImageView.ScaleType.CENTER_INSIDE);
-        delBtn.setLayoutParams(new LinearLayout.LayoutParams(delbtnSize, delbtnSize));
-
-        delBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int id = v.getId(), i;
-                LinearLayout llp = (LinearLayout) v.getParent();
-                llp.setVisibility(View.GONE);
-
-                for (i = 0; i < imageViews.size(); i++) {
-                    if (imageViews.get(i).slNo == id) break;
-                }
-                if (i != imageViews.size()) imageViews.remove(i);
-
-                if (imageViews.size() == 0) {
-                    Button b = (Button) findViewById(R.id.WordOperationBtnImg);
-                    b.setText("ADD IMAGE URL");
-                }
-            }
-        });
-
-        imv.edImg = edImg;
-
-        Button b = (Button) findViewById(R.id.WordOperationBtnImg);
-        b.setText("ADD ANOTHER IMAGE URL");
-
-        delBtn.setId(imageViewID);
-        imv.slNo = imageViewID++;
-        imageViews.add(imv);
-
-        ll.addView(v);
-        ll.addView(tvImg);
-        ll.addView(edImg);
-        ll.addView(delBtn);
-
         return ll;
+    }
+
+    public TextView getTextView(String text){
+        TextView t = new TextView(EditActivity.this);
+        t.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        t.setText(text);
+        return t;
+    }
+
+    public EditText getEditText(){
+        EditText e = new EditText(EditActivity.this);
+        e.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        return e;
     }
 
     public void save(View v) {
         boolean practicable = false;
         for (DefinitionView dv : definitionViews) {
             String df = dv.edDef.getText().toString().replaceAll("\\s", "");
-            if (df.length() > 0) practicable = true;
+            if (df.length() > 0) {
+                practicable = true;
+                break;
+            }
         }
         if (practicable) saveData();
         else {
@@ -588,36 +388,43 @@ public class EditActivity extends AppCompatActivity {
             }
 
             ArrayList<WordDef> defs = new ArrayList<>();
-            ArrayList<WordSentence> wordSentences = new ArrayList<>();
-
-            for (SentenceView sv : sentenceViews) {
-                if (sv.edSent.getText().length() > 0) {
-                    wordSentences.add(new WordSentence(sv.edSent.getText().toString()));
-                }
-            }
-            wordAllData.setWordSentences(wordSentences);
-
-            ArrayList<WordImageFB> images = new ArrayList<>();
-
-            for (ImageView iv : imageViews) {
-                if (iv.edImg.getText().length() > 0) {
-                    WordImageFB im = new WordImageFB();
-                    im.setUrl(iv.edImg.getText().toString());
-                    images.add(im);
-                }
-            }
-            wordAllData.setImages(images);
+            StringBuilder pSyns = new StringBuilder();
+            StringBuilder pdefs = new StringBuilder();
 
             for (DefinitionView dv : definitionViews) {
                 if (dv.edTitle.getText().length() > 0 ||
                         dv.edDef.getText().length() > 0 ||
-                        dv.edSyn.getText().length() > 0 ||
-                        dv.edAnt.getText().length() > 0) {
+                        dv.edPrimSyn.getText().length() > 0 ||
+                        dv.edSyn.getText().length() > 0) {
                     WordDef d = new WordDef();
                     d.setTitle(dv.edTitle.getText().toString());
-                    d.setDef(dv.edDef.getText().toString());
-                    d.setSyn(dv.edSyn.getText().toString());
-                    d.setAnt(dv.edAnt.getText().toString());
+
+                    String def = dv.edDef.getText().toString();
+                    if(def.length()>0){
+                        if(pdefs.length()>0)pdefs.append(DB.DELIM);
+                        pdefs.append(def);
+                    }
+                    d.setDef(def);
+
+
+                    String bSyns = dv.edPrimSyn.getText().toString().replaceAll(", ", DB.DELIM);
+                    if(bSyns.length()>0){
+                        if(pSyns.length()>0)pSyns.append(DB.DELIM);
+                        pSyns.append(bSyns);
+                    }
+                    d.setBoldSyns(bSyns);
+
+                    d.setSyns(dv.edSyn.getText().toString().replaceAll(", ", DB.DELIM));
+
+                    StringBuilder sb = new StringBuilder();
+                    for(int i=0; i<4; i++){
+                        String s = dv.edSents[i].getText().toString();
+                        if(s.length()>0){
+                            if(sb.length()>0)sb.append(DB.DELIM);
+                            sb.append(s);
+                        }
+                    }
+                    d.setSentences(sb.toString());
                     defs.add(d);
                 }
             }
@@ -631,10 +438,10 @@ public class EditActivity extends AppCompatActivity {
             else
                 wordData.setDes(description.getText().toString());
 
-            if (mnemonic == null)
-                wordData.setMn("");
+            if (extraInfo == null)
+                wordData.setExtraInfo("");
             else
-                wordData.setMn(mnemonic.getText().toString());
+                wordData.setExtraInfo(extraInfo.getText().toString());
 
             wordData.setPronunciation(pronunciationLink);
 
@@ -643,7 +450,8 @@ public class EditActivity extends AppCompatActivity {
 
             wordAllData.getWord().setPracticable(practicable);
 
-            DB.setWordData(wordAllData, wordId);
+            DB.setWordData(wordAllData,
+                    new WordPractice(WORD.getValue(), pSyns.toString(), pdefs.toString()), wordId);
 
             Toast.makeText(EditActivity.this, "Saved", Toast.LENGTH_SHORT).show();
 
@@ -655,22 +463,25 @@ public class EditActivity extends AppCompatActivity {
         }
     }
 
-    private class SentenceView {
-        public EditText edSent;
-        public int slNo;
-    }
-
-
-    private class ImageView {
-        public EditText edImg;
-        public int slNo;
-    }
-
     private class DefinitionView {
         public EditText edTitle;
         public EditText edDef;
+        public EditText edPrimSyn;
         public EditText edSyn;
-        public EditText edAnt;
+        public EditText[] edSents;
+
+        public DefinitionView(){
+            edTitle = getEditText();
+            edDef = getEditText();
+            edPrimSyn = getEditText();
+            edSyn = getEditText();
+            edSents = new EditText[4];
+            for(int i=0; i<4; i++){
+                edSents[i] = getEditText();
+                edSents[i].setHint("Sentence " + (i+1));
+            }
+        }
+
         public int slNo;
     }
 }

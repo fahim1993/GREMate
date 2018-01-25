@@ -26,7 +26,6 @@ UserWords:
                     sourceListName:
                     practicable:
                     validity: 0=Fetch Data, 1=Data is set, 2=Data Fetched with Error
-                    lastOpen:
                     level:
          
         WordDef:
@@ -34,25 +33,22 @@ UserWords:
                 id:
                     title:
                     def:
-                    syn:
-                    ant:
+                    boldSyns:
+                    syns:
+                    sentences:
          
         WordData:
             word:
 				id:
 					des:
-					mn:
+					extraInfo:
 					pronunciation:
 
-        Sentence:
-            word:
-                id:
-                    value:
-
-        Image:
-            word:
-                id:
-                    url:
+	    Practice:
+	        word:
+	            word:
+	            synonyms:
+	            definitions:
 
         LastListId:
         LastWordSetId:

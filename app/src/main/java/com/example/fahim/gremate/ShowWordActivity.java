@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -28,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -39,14 +39,10 @@ import android.widget.Toast;
 import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.FetchDataAsync;
-import com.example.fahim.gremate.DataClasses.FetchImageAsync;
-import com.example.fahim.gremate.DataClasses.WordSentence;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordAllData;
 import com.example.fahim.gremate.DataClasses.WordData;
 import com.example.fahim.gremate.DataClasses.WordDef;
-import com.example.fahim.gremate.DataClasses.WordImage;
-import com.example.fahim.gremate.DataClasses.WordImageFB;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -60,56 +56,42 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private String wordId;
     private String wsId;
-    private String mainListId;
-    private String currentListId;
 
     private ArrayList<Word> words;
     private Word WORD;
     private WordAllData _wordAllData;
+    private int wordLevel;
 
     private int index;
     private boolean loading;
-    private boolean fetching;
-    private boolean fetchingData;
-    private boolean fetchingImage;
-    private boolean[] loadFlags;
 
+    private boolean[] loadFlags;
     private int autoPronounce=0;
     private int defState;
     private int desState;
-    private int senState;
-    private int imgState;
-    private int mnState;
+    private int extraInfoState;
+
     private float textSize;
 
-    private TextView mnText;
-    private TextView sentenceText;
-    private TextView definitionText;
+    private TextView wordTitle;
     private TextView descriptionText;
-    private TextView levelTv;
+    private TextView extraInfoText;
 
+    private TextView levelTv;
     private SeekBar levelSb;
 
     private LinearLayout dummyFocus;
-
     private ScrollView showWordSV;
     private ProgressBar loadingPB;
+
     private TextView errorTextV;
 
-    private TextView wordTitle;
+    private boolean[] showMoreStatus;
 
-    private int wordLevel;
+    private ArrayList<TextView> nonTitlesTV;
+    private ArrayList<TextView> titlesTV;
 
     MediaPlayer player;
-
-    DatabaseReference ref1;
-    DatabaseReference ref2;
-    DatabaseReference ref3;
-    DatabaseReference ref4;
-    ValueEventListener listener1;
-    ValueEventListener listener2;
-    ValueEventListener listener3;
-    ValueEventListener listener4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,11 +105,24 @@ public class ShowWordActivity extends AppCompatActivity {
         words = extras.getParcelableArrayList("words");
         index = extras.getInt("index");
         wsId = extras.getString("wsId");
-        currentListId = extras.getString("listId");
-        mainListId = extras.getString("mainListId");
+//        String currentListId = extras.getString("listId");
+//        String mainListId = extras.getString("mainListId");
 
         getSharedPrefValues();
-        setTextViews();
+
+        wordTitle = (TextView) findViewById(R.id.wordTitle);
+        descriptionText = (TextView) findViewById(R.id.showWordDescriptionText);
+        extraInfoText = (TextView) findViewById(R.id.showWordExtraInfoText);
+
+        titlesTV = new ArrayList<>();
+        titlesTV.add(wordTitle);
+        titlesTV.add((TextView) findViewById(R.id.showWordDescription));
+        titlesTV.add((TextView) findViewById(R.id.showWordDefinition));
+        titlesTV.add((TextView) findViewById(R.id.showWordExtraInfo));
+
+        nonTitlesTV = new ArrayList<>();
+        nonTitlesTV.add(descriptionText);
+        nonTitlesTV.add(extraInfoText);
 
         dummyFocus = (LinearLayout)findViewById(R.id.showWordDummyFocus);
 
@@ -180,6 +175,8 @@ public class ShowWordActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         Log.d("ShowWordActivity ", " onCreate");
+
+        loadWord();
     }
 
     @Override
@@ -200,7 +197,6 @@ public class ShowWordActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        loadWord();
     }
 
     @Override
@@ -213,15 +209,12 @@ public class ShowWordActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt("defState", defState);
         editor.putInt("desState", desState);
-        editor.putInt("senState", senState);
-        editor.putInt("imgState", imgState);
-        editor.putInt("mnState", mnState);
+        editor.putInt("extraInfoState", extraInfoState);
         editor.putFloat("textSize", textSize);
         editor.putInt("index", index);
 
         editor.apply();
         player.reset();
-        removeListeners();
     }
 
     private void getSharedPrefValues(){
@@ -231,9 +224,7 @@ public class ShowWordActivity extends AppCompatActivity {
         if (prefs.getInt("defState", -1) != -1) {
             defState = prefs.getInt("defState", -1);
             desState = prefs.getInt("desState", -1);
-            senState = prefs.getInt("senState", -1);
-            imgState = prefs.getInt("imgState", -1);
-            mnState = prefs.getInt("mnState", -1);
+            extraInfoState = prefs.getInt("extraInfoState", -1);
             textSize = prefs.getFloat("textSize", 25);
         } else {
             SharedPreferences.Editor editor = prefs.edit();
@@ -241,12 +232,8 @@ public class ShowWordActivity extends AppCompatActivity {
             defState = 0;
             editor.putInt("desState", 0);
             desState = 0;
-            editor.putInt("senState", 0);
-            senState = 0;
-            editor.putInt("imgState", 0);
-            imgState = 0;
-            editor.putInt("mnState", 0);
-            mnState = 0;
+            editor.putInt("extraInfoState", 0);
+            extraInfoState = 0;
 
             textSize = 25;
             editor.putFloat("textSize", textSize);
@@ -261,21 +248,10 @@ public class ShowWordActivity extends AppCompatActivity {
         player.release();
     }
 
-    private void removeListeners() {
-        if (listener1 != null) ref1.removeEventListener(listener1);
-        if (listener2 != null) ref2.removeEventListener(listener2);
-        if (listener3 != null) ref3.removeEventListener(listener3);
-        if (listener4 != null) ref4.removeEventListener(listener4);
-    }
-
     private void loadWord() {
-        removeListeners();
 
         loading = true;
-        fetching = false;
-        fetchingData = false;
-        fetchingImage = false;
-        loadFlags = new boolean[]{true, true, true, true, true};
+        loadFlags = new boolean[]{true, true};
 
         showWordSV.setVisibility(View.GONE);
         errorTextV.setVisibility(View.GONE);
@@ -295,11 +271,7 @@ public class ShowWordActivity extends AppCompatActivity {
         switch (WORD.getValidity()) {
             case Word.UNKNOWN:
                 if (isNetworkConnected()) {
-                    fetching = true;
-                    fetchingData = true;
-                    fetchingImage = true;
                     new FetchData().execute(WORD.getValue(), wordId);
-                    (new FetchImage(getApplicationContext(), wordId, null)).execute("NEW", WORD.getValue().toLowerCase());
                 }
                 break;
             case Word.VALID:
@@ -311,6 +283,18 @@ public class ShowWordActivity extends AppCompatActivity {
                 errorTextV.setVisibility(View.VISIBLE);
                 onToNext();
                 break;
+        }
+    }
+
+    /********** setting / altering view functions *************/
+
+    private void setTextViewsSize() {
+        for(TextView v: titlesTV){
+            v.setTextSize(textSize+2);
+        }
+        for(TextView v: nonTitlesTV){
+            v.setTextSize(textSize);
+            v.setLineSpacing(0, 1.15f);
         }
     }
 
@@ -348,33 +332,53 @@ public class ShowWordActivity extends AppCompatActivity {
 
         findViewById(R.id.showWordDefiLL).setVisibility(View.VISIBLE);
 
-        String def = "";
-        for (int i = 0; i < _wordAllData.getWordDefs().size(); i++) {
-            WordDef d = _wordAllData.getWordDefs().get(i);
-            if (i != 0) def += "<br><br>";
-            def += "<b>" + d.getTitle() + "</b><br>";
-            def += "<i>" + d.getDef() + "</i><br>";
-            if (d.getSyn().length() > 0) {
-                def += "<b>Synonyms:</b><br>";
-                def += d.getSyn() + "<br>";
+        showMoreStatus = new boolean[_wordAllData.getWordDefs().size()];
+        LinearLayout defDataLL = (LinearLayout)findViewById(R.id.showWordDefDataLL);
+        defDataLL.removeAllViews();
+
+        int tag = 0;
+        for(WordDef def: _wordAllData.getWordDefs()){
+            View defView = getLayoutInflater().inflate(R.layout.def_view, null);
+            if(tag%2 == 0) {
+                defView.findViewById(R.id.showWordDefinitionIB)
+                        .setBackgroundColor(Color.parseColor("#f1f1f1"));
+                defView.setBackgroundColor(Color.parseColor("#f1f1f1"));
+            }
+            TextView firstText = (TextView)defView.findViewById(R.id.defFirstTV);
+            TextView secondText = (TextView)defView.findViewById(R.id.defSecondTV);
+            secondText.setVisibility(View.GONE);
+            secondText.setTag(tag++);
+
+            nonTitlesTV.add(firstText);
+            nonTitlesTV.add(secondText);
+
+            firstText.setText(fromHtml(def.getFirstHtml(tag)));
+            if(def.haveMoreData()){
+                secondText.setText(fromHtml(def.getSecondHtml()));
+                secondText.setTranslationY(-getHeight(secondText));
+
+                (defView.findViewById(R.id.defShowMoreRL)).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        toggleShowMore(view);
+                    }
+                });
+            }
+            else {
+                (defView.findViewById(R.id.defShowMoreRL)).setVisibility(View.GONE);
             }
 
-            if (d.getAnt().length() > 0) {
-                def += "<b>Antonyms:</b><br>";
-                def += d.getAnt();
-            }
+            defDataLL.addView(defView);
         }
-        definitionText.setText(fromHtml(def));
-
 
         ImageView defButton = (ImageView) findViewById(R.id.showWordDefinitionIB);
 
         if (defState == 1) {
-            definitionText.setVisibility(View.VISIBLE);
+            defDataLL.setVisibility(View.VISIBLE);
             defButton.setImageResource(R.drawable.up);
         } else {
-            definitionText.setVisibility(View.GONE);
-            definitionText.setTranslationY(-getHeight(definitionText));
+            defDataLL.setVisibility(View.GONE);
+            defDataLL.setTranslationY(-getHeight(defDataLL));
             defButton.setImageResource(R.drawable.down);
         }
         defButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -382,85 +386,31 @@ public class ShowWordActivity extends AppCompatActivity {
         scrollSV();
     }
 
-    private void setSentence() {
+    private void setExtraInfo() {
 
-        if (_wordAllData.getWordSentences().size() == 0) {
-            findViewById(R.id.showWordSenLL).setVisibility(View.GONE);
-            return;
-        }
-        findViewById(R.id.showWordSenLL).setVisibility(View.VISIBLE);
-
-        String sen = "";
-        for (int i = 0; i < _wordAllData.getWordSentences().size(); i++) {
-            WordSentence s = _wordAllData.getWordSentences().get(i);
-
-            if (i != 0) sen += "<br>";
-            sen += "<b>" + (i + 1) + ".</b> " + s.getValue() + "<br>";
-        }
-        sentenceText.setText(fromHtml(sen));
-
-
-        ImageView sentenceButton = (ImageView) findViewById(R.id.showWordSentenceIB);
-
-        if (senState == 1) {
-            sentenceText.setVisibility(View.VISIBLE);
-            sentenceButton.setImageResource(R.drawable.up);
-        } else {
-            sentenceText.setVisibility(View.GONE);
-            sentenceText.setTranslationY(-getHeight(sentenceText));
-            sentenceButton.setImageResource(R.drawable.down);
-        }
-        sentenceButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-
-        scrollSV();
-    }
-
-    private void setMN() {
-
-        if (_wordAllData.getWordData().getMn().length() < 1) {
-            findViewById(R.id.showWordMneLL).setVisibility(View.GONE);
+        if (_wordAllData.getWordData().getExtraInfo().length() < 1) {
+            findViewById(R.id.showWordExtraInfoLL).setVisibility(View.GONE);
             return;
         }
 
-        String mn = _wordAllData.getWordData().getMn();
-        mnText.setText(mn);
+        String extraInfo = _wordAllData.getWordData().getExtraInfo();
+        extraInfoText.setText(extraInfo);
 
-        findViewById(R.id.showWordMneLL).setVisibility(View.VISIBLE);
+        findViewById(R.id.showWordExtraInfoLL).setVisibility(View.VISIBLE);
 
-        ImageView mnButton = (ImageView) findViewById(R.id.showWordMNIB);
+        ImageView extraInfoButton = (ImageView) findViewById(R.id.showWordExtraInfoIB);
 
-        if (mnState == 1) {
-            mnText.setVisibility(View.VISIBLE);
-            mnButton.setImageResource(R.drawable.up);
+        if (extraInfoState == 1) {
+            extraInfoText.setVisibility(View.VISIBLE);
+            extraInfoButton.setImageResource(R.drawable.up);
         } else {
-            mnText.setVisibility(View.GONE);
-            mnText.setTranslationY(-getHeight(mnText));
-            mnButton.setImageResource(R.drawable.down);
+            extraInfoText.setVisibility(View.GONE);
+            extraInfoText.setTranslationY(-getHeight(extraInfoText));
+            extraInfoButton.setImageResource(R.drawable.down);
         }
-        mnButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        extraInfoButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
         scrollSV();
-    }
-
-    private void setTextViews() {
-        mnText = (TextView) findViewById(R.id.showWordMNText);
-        sentenceText = (TextView) findViewById(R.id.showWordSentenceText);
-        definitionText = (TextView) findViewById(R.id.showWordDefinitionText);
-        descriptionText = (TextView) findViewById(R.id.showWordDescriptionText);
-
-        wordTitle = (TextView) findViewById(R.id.wordTitle);
-
-        mnText.setTextSize(textSize);
-        sentenceText.setTextSize(textSize);
-        definitionText.setTextSize(textSize);
-        descriptionText.setTextSize(textSize);
-
-        wordTitle.setTextSize(textSize+2);
-        ((TextView) findViewById(R.id.showWordDescription)).setTextSize(textSize + 2);
-        ((TextView) findViewById(R.id.showWordDefinition)).setTextSize(textSize + 2);
-        ((TextView) findViewById(R.id.showWordSentence)).setTextSize(textSize + 2);
-        ((TextView) findViewById(R.id.showWordImage)).setTextSize(textSize + 2);
-        ((TextView) findViewById(R.id.showWordMN)).setTextSize(textSize + 2);
     }
 
     private void setLevel() {
@@ -488,19 +438,23 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private void setContents() {
         try {
+            nonTitlesTV.clear();
+            nonTitlesTV.add(descriptionText);
+            nonTitlesTV.add(extraInfoText);
+
             setDef();
             setDes();
-            setSentence();
-            setMN();
-
+            setExtraInfo();
             setLevel();
+            setTextViewsSize();
+
             scrollSV();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public int getHeight(TextView t) {
+    public int getHeight(View t) {
         DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
         int newWidth = metrics.widthPixels;
 
@@ -520,16 +474,16 @@ public class ShowWordActivity extends AppCompatActivity {
     }
 
     public void toggleDefinition(View v) {
-        TextView defTV = (TextView) findViewById(R.id.showWordDefinitionText);
+        LinearLayout defDataLL = (LinearLayout) findViewById(R.id.showWordDefDataLL);
         ImageView defButton = (ImageView) findViewById(R.id.showWordDefinitionIB);
 
         if (defState == 1) {
             defState = 0;
-            hideView(defTV);
+            hideView(defDataLL);
             defButton.setImageResource(R.drawable.down);
         } else {
             defState = 1;
-            showView(defTV);
+            showView(defDataLL);
             defButton.setImageResource(R.drawable.up);
 
         }
@@ -555,59 +509,42 @@ public class ShowWordActivity extends AppCompatActivity {
         desButton.getParent().requestChildFocus(desButton, desButton);
     }
 
-    public void toggleSentence(View v) {
-        TextView senTV = (TextView) findViewById(R.id.showWordSentenceText);
-        ImageView sentenceButton = (ImageView) findViewById(R.id.showWordSentenceIB);
+    public void toggleExtraInfo(View v) {
+        TextView extraInfoTV = (TextView) findViewById(R.id.showWordExtraInfoText);
+        ImageView extraInfoButton = (ImageView) findViewById(R.id.showWordExtraInfoIB);
 
-        if (senState == 1) {
-            senState = 0;
-            hideView(senTV);
-            sentenceButton.setImageResource(R.drawable.down);
+        if (extraInfoState == 1) {
+            extraInfoState = 0;
+            hideView(extraInfoTV);
+            extraInfoButton.setImageResource(R.drawable.down);
         } else {
-            senState = 1;
-            showView(senTV);
-            sentenceButton.setImageResource(R.drawable.up);
+            extraInfoState = 1;
+            showView(extraInfoTV);
+            extraInfoButton.setImageResource(R.drawable.up);
 
         }
-        sentenceButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        sentenceButton.getParent().requestChildFocus(sentenceButton, sentenceButton);
+        extraInfoButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        extraInfoButton.getParent().requestChildFocus(extraInfoButton, extraInfoButton);
     }
 
-    public void toggleImage(View v) {
+    public void toggleShowMore(View v){
+        LinearLayout pl = (LinearLayout) v.getParent();
+        TextView toToggle = (TextView) pl.findViewById(R.id.defSecondTV);
+        ImageView toggleButton = (ImageView) pl.findViewById(R.id.showWordDefinitionIB);
 
-        LinearLayout imageLL = (LinearLayout) findViewById(R.id.showWordImgAddLL);
-        ImageView imageButton = (ImageView) findViewById(R.id.showWordImageIB);
-
-        if (imgState == 1) {
-            imgState = 0;
-            hideView(imageLL);
-            imageButton.setImageResource(R.drawable.down);
-        } else {
-            imgState = 1;
-            showView(imageLL);
-            imageButton.setImageResource(R.drawable.up);
-
+        int tag = (int)toToggle.getTag();
+        if(showMoreStatus[tag]){
+            ((TextView)pl.findViewById(R.id.defShowMoreTV)).setText("Show more...");
+            showMoreStatus[tag] = false;
+            hideView(toToggle);
+            toggleButton.setImageResource(R.drawable.down);
         }
-        imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        imageButton.getParent().requestChildFocus(imageButton, imageButton);
-    }
-
-    public void toggleMN(View v) {
-        TextView mnTV = (TextView) findViewById(R.id.showWordMNText);
-        ImageView mnButton = (ImageView) findViewById(R.id.showWordMNIB);
-
-        if (mnState == 1) {
-            mnState = 0;
-            hideView(mnTV);
-            mnButton.setImageResource(R.drawable.down);
-        } else {
-            mnState = 1;
-            showView(mnTV);
-            mnButton.setImageResource(R.drawable.up);
-
+        else{
+            ((TextView)pl.findViewById(R.id.defShowMoreTV)).setText("Hide...");
+            showMoreStatus[tag] = true;
+            showView(toToggle);
+            toggleButton.setImageResource(R.drawable.up);
         }
-        mnButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        mnButton.getParent().requestChildFocus(mnButton, mnButton);
     }
 
     private void showView(final View v) {
@@ -627,18 +564,21 @@ public class ShowWordActivity extends AppCompatActivity {
         v.animate().translationY(-v.getHeight()).setDuration(300);
     }
 
+    private void scrollSV() {
+        dummyFocus.requestFocus();
+    }
+
+    /********** setting / altering view functions ends *************/
+
     public void retrieveData() {
 
-        removeListeners();
         DBRef db = new DBRef();
 
-        setTextViews();
         _wordAllData = new WordAllData();
-
         _wordAllData.setWord(words.get(index));
 
-        ref1 = db.wordDataRef(wordId);
-        listener1 = new ValueEventListener() {
+        final DatabaseReference ref1 = db.wordDataRef(wordId);
+        ref1.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 WordData wd = new WordData();
@@ -648,17 +588,18 @@ public class ShowWordActivity extends AppCompatActivity {
                     wd = ds.getValue(WordData.class);
                 }
                 _wordAllData.setWordData(wd);
-                setDes();
-                setMN();
                 countLoaded(0);
+                ref1.removeEventListener(this);
             }
-            @Override
-            public void onCancelled(DatabaseError databaseError) { }
-        };
-        ref1.addValueEventListener(listener1);
 
-        ref2 = db.wordDefinitionRef(wordId);
-        listener2 = new ValueEventListener() {
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        final DatabaseReference ref2 = db.wordDefinitionRef(wordId);
+        ref2.addValueEventListener( new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 ArrayList<WordDef> wordDefs = new ArrayList<>();
@@ -667,213 +608,46 @@ public class ShowWordActivity extends AppCompatActivity {
                     wordDefs.add(w);
                 }
                 _wordAllData.setWordDefs(wordDefs);
-                setDef();
                 countLoaded(1);
+                ref2.removeEventListener(this);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) { }
-        };
-        ref2.addValueEventListener(listener2);
-
-        ref3 = db.wordSentenceRef(wordId);
-        listener3 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<WordSentence> wordSentences = new ArrayList<>();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    WordSentence w = ds.getValue(WordSentence.class);
-                    wordSentences.add(w);
-                }
-                _wordAllData.setWordSentences(wordSentences);
-                setSentence();
-                countLoaded(2);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError){ }
-        };
-        ref3.addValueEventListener(listener3);
-
-        ref4 = db.wordImageRef(wordId);
-        listener4 = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<WordImageFB> images = new ArrayList<>();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    WordImageFB wordImageFB = ds.getValue(WordImageFB.class);
-                    images.add(wordImageFB);
-                }
-                (new FetchImage(getApplicationContext(), wordId, images)).execute("NN", "NN");
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-        ref4.addValueEventListener(listener4);
-    }
-
-    private void setImages(ArrayList<WordImage> images) {
-
-//        if (!loading) {
-//            if (wordLevel != _wordAllData.getWord().getLevel()) {
-//                DB.setWordLevel(wordId, wordLevel);
-//                words.get(index).setLevel(wordLevel);
-//            }
-//            index++;
-//            if (index >= words.size()) index = 0;
-//            loadWord();
-//        }
-
-        Log.d("Show Word", "loading image");
-
-        if (images.size() == 0) {
-            findViewById(R.id.showWordImgLL).setVisibility(View.GONE);
-            countLoaded(3);
-            return;
-        }
-
-        findViewById(R.id.showWordImgLL).setVisibility(View.VISIBLE);
-
-        LinearLayout imageLL = (LinearLayout) findViewById(R.id.showWordImgAddLL);
-        imageLL.removeAllViews();
-
-        for (WordImage image : images) {
-            ImageView imageView = new ImageView(this);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            params.setMargins(10, 5, 10, 5);
-            imageView.setLayoutParams(params);
-            imageView.setAdjustViewBounds(true);
-            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            Bitmap bitmap = image.getImage();
-
-            int imageWidth = bitmap.getWidth();
-            int imageHeight = bitmap.getHeight();
-
-            DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
-
-            int newWidth = metrics.widthPixels;
-            float scaleFactor = (float) newWidth / (float) imageWidth;
-            if (scaleFactor > 3) scaleFactor = 3;
-            int newHeight = (int) (imageHeight * scaleFactor);
-            newWidth = (int) (imageWidth * scaleFactor);
-
-            bitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
-
-            imageView.setImageBitmap(bitmap);
-            imageLL.addView(imageView);
-        }
-
-        ImageView imgButton = (ImageView) findViewById(R.id.showWordImageIB);
-
-        if (imgState == 1) {
-            imageLL.setVisibility(View.VISIBLE);
-            imgButton.setImageResource(R.drawable.up);
-
-        } else {
-            imageLL.setVisibility(View.GONE);
-            imageLL.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            imageLL.setTranslationY(-imageLL.getMeasuredHeight());
-            imgButton.setImageResource(R.drawable.down);
-        }
-        imgButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-
-        scrollSV();
-        countLoaded(3);
+        });
     }
 
     void countLoaded(int no) {
-        Log.d("Show Word", "loaded: " + no);
         if (loading) {
             loadFlags[no] = false;
-            for (int i = 0; i < 4; i++) if (loadFlags[i]) return;
+            for (int i = 0; i < 2; i++) if (loadFlags[i]) return;
             allLoaded();
         }
     }
 
     private void allLoaded() {
-        scrollSV();
-        loadingPB.setVisibility(View.GONE);
-        showWordSV.setVisibility(View.VISIBLE);
+        setContents();
         loading = false;
         if(autoPronounce==1){
             (new PlaybackPronunciation()).execute();
         }
+        loadingPB.setVisibility(View.GONE);
+        showWordSV.setVisibility(View.VISIBLE);
         onToNext();
     }
 
-    private void scrollSV() {
-//        sv.post(new Runnable() {
-//            public void run() {
-//                sv.scrollTo(0, 0);
-//                Log.d("SCROLL", "DONE");
-//            }
-//        });
-        dummyFocus.requestFocus();
-    }
-
-    private class FetchData extends FetchDataAsync {
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            if (wordAllData != null) {
-                _wordAllData = wordAllData;
-
-                WORD.setPracticable(true);
-
-                _wordAllData.setWord(WORD);
-
-                words.get(index).setValidity(Word.VALID);
-
-                DB.setWordData(_wordAllData, wordId);
-                setContents();
-
-                fetchingData = false;
-                if(!fetchingImage) {
-                    fetching = false;
-                    loading = false;
-                    scrollSV();
-                    loadingPB.setVisibility(View.GONE);
-                    showWordSV.setVisibility(View.VISIBLE);
-                    onToNext();
-                }
-            } else {
-                loadingPB.setVisibility(View.GONE);
-                showWordSV.setVisibility(View.GONE);
-                errorTextV.setVisibility(View.VISIBLE);
-                WORD.setValidity(Word.INVALID);
-                DB.setWordValidity(wordId, Word.INVALID);
-                loading = false;
-            }
-        }
-    }
-
-    private class FetchImage extends FetchImageAsync {
-
-        FetchImage(Context context, String wordId, ArrayList<WordImageFB> wordImageFBs) {
-            super(context, wordId, wordImageFBs);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            setImages(images);
-            fetchingImage = false;
-
-            if(!fetchingData && fetching) {
-                fetching = false;
-                loading = false;
-                scrollSV();
-                loadingPB.setVisibility(View.GONE);
-                showWordSV.setVisibility(View.VISIBLE);
-                onToNext();
-            }
-        }
-    }
-
-    private boolean isNetworkConnected() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo() != null;
+    private void onToNext() {
+//        if (wordLevel != _wordAllData.getWord().getLevel()) {
+//            DB.setWordLevel(wordId, wordLevel);
+//            words.get(index).setLevel(wordLevel);
+//        }
+//        index++;
+//        if (index >= words.size()) index = 0;
+//        try {
+//            Thread.sleep(100);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        loadWord();
     }
 
     @Override
@@ -926,7 +700,6 @@ public class ShowWordActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialogInterface, int i) {
 
                                 try {
-                                    removeListeners();
                                     DB.deleteWord(wordId, true);
 
                                     loading = true;
@@ -935,11 +708,8 @@ public class ShowWordActivity extends AppCompatActivity {
                                     loadingPB.setVisibility(View.VISIBLE);
 
                                     if (isNetworkConnected()) {
-                                        fetchingData = true;
-                                        fetchingImage = true;
-                                        fetching = true;
+                                        loading = true;
                                         new FetchData().execute(WORD.getValue(), wordId);
-                                        (new FetchImage(getApplicationContext(), wordId, null)).execute("NEW", WORD.getValue().toLowerCase());
                                     }
                                 }catch (Exception e){
                                     e.printStackTrace();
@@ -982,7 +752,7 @@ public class ShowWordActivity extends AppCompatActivity {
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
-                                setTextViews();
+                                setTextViewsSize();
                             }
                         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -1014,19 +784,70 @@ public class ShowWordActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void onToNext() {
-//        if (wordLevel != _wordAllData.getWord().getLevel()) {
-//            DB.setWordLevel(wordId, wordLevel);
-//            words.get(index).setLevel(wordLevel);
-//        }
-//        index++;
-//        if (index >= words.size()) index = 0;
-//        try {
-//            Thread.sleep(100);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        loadWord();
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null;
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int action = event.getAction();
+        int keyCode = event.getKeyCode();
+
+        switch (keyCode){
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if(action == KeyEvent.ACTION_DOWN){
+                    if (loading) break;
+                    if (wordLevel != _wordAllData.getWord().getLevel()) {
+                        DB.setWordLevel(wordId, wordLevel);
+                        words.get(index).setLevel(wordLevel);
+                    }
+                    index--;
+                    if (index < 0) index = words.size() - 1;
+                    loadWord();
+                }
+                break;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                if(action == KeyEvent.ACTION_DOWN){
+                    if (loading) break;
+                    if ( WORD != null && wordLevel != WORD.getLevel()) {
+                        DB.setWordLevel(wordId, wordLevel);
+                        words.get(index).setLevel(wordLevel);
+                    }
+                    index++;
+                    if (index >= words.size()) index = 0;
+                    loadWord();
+                }
+                break;
+            case KeyEvent.KEYCODE_BACK:
+                finish();
+        }
+        return true;
+    }
+
+    private class FetchData extends FetchDataAsync {
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (wordAllData != null) {
+                _wordAllData = wordAllData;
+                _wordAllData.setWord(WORD);
+                WORD.setPracticable(wordPractice.hasDefinitions() || wordPractice.hasSynonyms());
+                words.get(index).setValidity(Word.VALID);
+
+                DB.setWordData(_wordAllData, wordPractice, wordId);
+
+                allLoaded();
+
+            } else {
+                loadingPB.setVisibility(View.GONE);
+                showWordSV.setVisibility(View.GONE);
+                errorTextV.setVisibility(View.VISIBLE);
+                WORD.setValidity(Word.INVALID);
+                DB.setWordValidity(wordId, Word.INVALID);
+                loading = false;
+            }
+        }
     }
 
     private class PlaybackPronunciation extends AsyncTask<String, Void, String> {
@@ -1085,41 +906,5 @@ public class ShowWordActivity extends AppCompatActivity {
         }
     }
 
-
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        int action = event.getAction();
-        int keyCode = event.getKeyCode();
-
-        switch (keyCode){
-            case KeyEvent.KEYCODE_VOLUME_UP:
-                if(action == KeyEvent.ACTION_DOWN){
-                    if (loading) break;
-                    if (wordLevel != _wordAllData.getWord().getLevel()) {
-                        DB.setWordLevel(wordId, wordLevel);
-                        words.get(index).setLevel(wordLevel);
-                    }
-                    index--;
-                    if (index < 0) index = words.size() - 1;
-                    loadWord();
-                }
-                break;
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-                if(action == KeyEvent.ACTION_DOWN){
-                    if (loading) break;
-                    if ( WORD != null && wordLevel != WORD.getLevel()) {
-                        DB.setWordLevel(wordId, wordLevel);
-                        words.get(index).setLevel(wordLevel);
-                    }
-                    index++;
-                    if (index >= words.size()) index = 0;
-                    loadWord();
-                }
-                break;
-            case KeyEvent.KEYCODE_BACK:
-                finish();
-        }
-        return true;
-    }
 }
 

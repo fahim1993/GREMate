@@ -5,17 +5,17 @@ package com.example.fahim.gremate.DataClasses;
  */
 
 public class WordData {
-    private String des, mn, pronunciation;
+    private String des, extraInfo, pronunciation;
 
     public WordData() {
         this.des = "";
-        this.mn = "";
+        this.extraInfo = "";
         pronunciation = "";
     }
 
-    public WordData(String des, String mn, String pronunciation) {
+    public WordData(String des, String extraInfo, String pronunciation) {
         this.des = des;
-        this.mn = mn;
+        this.extraInfo = extraInfo;
         this.pronunciation = pronunciation;
     }
 
@@ -27,12 +27,12 @@ public class WordData {
         this.des = des;
     }
 
-    public String getMn() {
-        return mn;
+    public String getExtraInfo() {
+        return extraInfo;
     }
 
-    public void setMn(String mn) {
-        this.mn = mn;
+    public void setExtraInfo(String extraInfo) {
+        this.extraInfo = extraInfo;
     }
 
     public String getPronunciation() {

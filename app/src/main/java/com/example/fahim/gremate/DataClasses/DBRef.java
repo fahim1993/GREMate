@@ -63,8 +63,7 @@ public class DBRef {
     private final String WORD = "Word";
     private final String WORD_DATA = "WordData";
     private final String WORD_DEF = "WordDef";
-    private final String SENTENCE = "Sentence";
-    private final String IMAGE = "Image";
+    private final String PRACTICE = "Practice";
     private final String WORD_CLONES = "WordClones";
     private final String LAST_LIST = "LastListId";
     private final String LAST_SET = "LastWordSetId";
@@ -126,12 +125,8 @@ public class DBRef {
         userWord.child(WORD_DEF).child(wordId).push().setValue(data);
     }
 
-    void setSentenceData(String wordId, WordSentence sentence) {
-        userWord.child(SENTENCE).child(wordId).push().setValue(sentence);
-    }
-
-    void setImageData(String wordId, WordImageFB image) {
-        userWord.child(IMAGE).child(wordId).push().setValue(image);
+    void setWordPracticeData(String wordId, WordPractice data){
+        userWord.child(PRACTICE).child(wordId).setValue(data);
     }
 
     DatabaseReference wordCloneRef(String wordId) {
@@ -151,8 +146,6 @@ public class DBRef {
     }
 
     void deleteWordData(String wordId) {
-        userWord.child(IMAGE).child(wordId).setValue(null);
-        userWord.child(SENTENCE).child(wordId).setValue(null);
         userWord.child(WORD_DEF).child(wordId).setValue(null);
         userWord.child(WORD_DATA).child(wordId).setValue(null);
     }
@@ -210,14 +203,6 @@ public class DBRef {
         return userWord.child(WORD_DEF).child(wordId);
     }
 
-    public DatabaseReference wordSentenceRef(String wordId) {
-        return userWord.child(SENTENCE).child(wordId);
-    }
-
-    public DatabaseReference wordImageRef(String wordId) {
-        return userWord.child(IMAGE).child(wordId);
-    }
-
     public DatabaseReference wordSetListsRef(String wsId) {
         return userWord.child(WORD_LIST).child(wsId);
     }
@@ -230,13 +215,14 @@ public class DBRef {
         return FirebaseDatabase.getInstance().getReference().child(USER_DATA).child(uId);
     }
 
+    public DatabaseReference wordPracticeRef(String wordId){
+        return userWord.child(PRACTICE).child(wordId);
+    }
+
     public DatabaseReference wordSetRef() {
         return userWord.child(WORD_SET);
     }
 
-    void setWordPronunciation(String listId, String wordId, String link) {
-        userWord.child(WORD).child(listId).child(wordId).child("pronunciation").setValue(link);
-    }
     public DatabaseReference wordRef(){
         return userWord.child(WORD);
     }

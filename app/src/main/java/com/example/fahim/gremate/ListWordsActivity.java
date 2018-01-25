@@ -105,15 +105,21 @@ public class ListWordsActivity extends NavDrawerActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if(listener1!=null && ref1!=null) ref1.addValueEventListener(listener1);
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
+        removeListeners();
         setListState();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        removeListeners();
     }
 
     public void addButtonClick(View v) {

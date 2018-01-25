@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -22,13 +21,10 @@ import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.FeedTestData;
 import com.example.fahim.gremate.DataClasses.Word;
-import com.example.fahim.gremate.DataClasses.WordDef;
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.fahim.gremate.DataClasses.WordPractice;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -41,11 +37,8 @@ public class PracticingActivity extends AppCompatActivity {
 
     private ArrayList<Word> words;
     private int index;
-    private String def;
+    private String ans;
     private String[][] OD;
-
-    private DatabaseReference ref1;
-    private ValueEventListener listener1;
 
     private TextView[] ansTVs;
     private TextView questionTV;
@@ -53,6 +46,7 @@ public class PracticingActivity extends AppCompatActivity {
     private int ansIndex;
     private int noQuestions;
     private int noCorrect;
+    private int divider;
 
     private LinearLayout wordLevelLL;
     private SeekBar levelSb;
@@ -90,6 +84,8 @@ public class PracticingActivity extends AppCompatActivity {
         noQuestions = 0;
         noCorrect = 0;
 
+        divider = 2;
+
         OD = new FeedTestData().getPracticeWords();
 
         ansTVs = new TextView[5];
@@ -123,7 +119,7 @@ public class PracticingActivity extends AppCompatActivity {
                 practicingSV.setVisibility(GONE);
                 wordLevelLL.setVisibility(GONE);
                 practicingLoading.setVisibility(View.VISIBLE);
-                loadWordDef(words.get(index).getCloneOf());
+                loadWordPracticeData(words.get(index).getCloneOf());
 
             }
         });
@@ -171,7 +167,7 @@ public class PracticingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        loadWordDef(words.get(index).getCloneOf());
+        loadWordPracticeData(words.get(index).getCloneOf());
     }
 
     @Override
@@ -182,7 +178,7 @@ public class PracticingActivity extends AppCompatActivity {
         }
     }
 
-    private void loadWordDef(final String id) {
+    private void loadWordPracticeData(final String id) {
         DBRef db = new DBRef();
 
         word = words.get(index);
@@ -190,67 +186,62 @@ public class PracticingActivity extends AppCompatActivity {
         wordLevelLL.setVisibility(GONE);
         levelSb.setProgress(wordLevel);
 
-        ref1 = db.wordDefinitionRef(id);
-        listener1 = new ValueEventListener() {
+        final DatabaseReference ref = db.wordPracticeRef(id);
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                ArrayList<String> defs = new ArrayList<>();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    WordDef w = ds.getValue(WordDef.class);
-                    defs.add(w.getDef());
-                }
-                Random rn = new Random();
-                int modVal = defs.size();
-                int i = Math.abs(rn.nextInt()) % modVal;
-                def = defs.get(i);
-
-                setupQuestion();
-                ref1.removeEventListener(listener1);
+                WordPractice p = dataSnapshot.getValue(WordPractice.class);
+                setupQuestion(p);
+                ref.removeEventListener(this);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
-        };
-        ref1.addValueEventListener(listener1);
-
-//        FirebaseDatabase.getInstance().getReference().child(DB.USER_WORD).child(FirebaseAuth
-//                .getInstance().getCurrentUser().getUid()).child(DB.WORD).child(id).addListenerForSingleValueEvent(
-//                new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                        word = dataSnapshot.getValue(Word.class);
-//                        word.setCloneOf(id);
-//                        wordLevel = word.getLevel();
-//                        levelSb.setProgress(wordLevel);
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//
-//                    }
-//                }
-//        );
+        });
     }
 
-    private void setupQuestion() {
+    private void setupQuestion(WordPractice practiceData) {
 
         Random rn = new Random();
         HashMap<String, Integer> mp = new HashMap<>();
 
-        questionTV.setText("Meaning of the word " + words.get(index).getValue() + " is?");
+        int type = getType();
+
+        if(type == 0){
+            if(practiceData.hasSynonyms()){
+                ans = practiceData.getRandomSynonym();
+            }
+            else {
+                type = 1;
+                ans = practiceData.getRandomDefinition();
+            }
+        }
+        else{
+            if(practiceData.hasDefinitions()){
+                ans = practiceData.getRandomDefinition();
+            }
+            else {
+                type = 0;
+                ans = practiceData.getRandomSynonym();
+            }
+        }
+
+        if(type == 0) questionTV.setText("Synonym of the word " + practiceData.getWord() + " is?");
+        else questionTV.setText("Meaning of the word " + practiceData.getWord() + " is?");
+
         ArrayList<String> otDefs = new ArrayList<>();
         mp.put(words.get(index).getValue().toLowerCase(), 1);
         while (mp.size() != 5) {
             int ind = Math.abs(rn.nextInt()) % 1536;
             String w = OD[ind][0];
             if (mp.containsKey(w.toLowerCase())) continue;
-            otDefs.add(OD[ind][1]);
+            otDefs.add(OD[ind][type]);
             mp.put(w.toLowerCase(), 1);
         }
+
         ansIndex = Math.abs(rn.nextInt()) % 5;
-        ansTVs[ansIndex].setText(fromHtml("<b>" + (ansIndex + 1) + ".</b> " + def));
+        ansTVs[ansIndex].setText(fromHtml("<b>" + (ansIndex + 1) + ".</b> " + ans));
 
         int j = 0;
         for (int i = 0; i < 5; i++) {
@@ -264,6 +255,18 @@ public class PracticingActivity extends AppCompatActivity {
         thisJudged = false;
 
         noQuestions++;
+    }
+
+    private int getType(){
+        int mod = (int)System.currentTimeMillis()%4;
+        if(mod<divider){
+            divider--;
+            return 0;
+        }
+        else {
+            divider++;
+            return 1;
+        }
     }
 
     private void randomizeWords() {

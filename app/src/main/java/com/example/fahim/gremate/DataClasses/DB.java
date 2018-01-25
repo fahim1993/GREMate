@@ -19,6 +19,8 @@ import java.util.Random;
 
 public class DB {
 
+    public static final String DELIM = ";;,;;";
+
     private static SparseArray<ValueEventListener> listenerMap = new SparseArray<>();
 
     private static int listenerCounter = 0;
@@ -124,10 +126,11 @@ public class DB {
         listenerMap.put(listenerKey, listener);
     }
 
-    public static void setWordData(WordAllData wordAllData, String wordId) {
+    public static void setWordData(WordAllData wordAllData, WordPractice practice, String wordId) {
         DBRef db = new DBRef();
 
-        setWordPracticable(wordId, wordAllData.getWord().isPracticable());
+        boolean isPracticable = wordAllData.getWord().isPracticable();
+        setWordPracticable(wordId, isPracticable);
         setWordValidity(wordId, wordAllData.getWord().getValidity());
         setWordLevel(wordId, wordAllData.getWord().getLevel());
 
@@ -140,15 +143,9 @@ public class DB {
                 db.setWordDefData(wordId, def);
             }
         }
-        if (wordAllData.getWordSentences() != null) {
-            for (WordSentence s : wordAllData.getWordSentences()) {
-                db.setSentenceData(wordId, s);
-            }
-        }
-        if (wordAllData.getImages() != null) {
-            for (WordImageFB im : wordAllData.getImages()) {
-                db.setImageData(wordId, im);
-            }
+
+        if(isPracticable){
+            db.setWordPracticeData(wordId, practice);
         }
     }
 
@@ -173,32 +170,6 @@ public class DB {
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
-        };
-        mRef.addValueEventListener(listener);
-        listenerMap.put(listenerKey, listener);
-    }
-
-    public static void setWordPronunciation(final String wordId, final String pronunciation){
-        if(wordId == null || pronunciation == null || wordId.length()<1 || pronunciation.length()<1)return;
-
-        final DBRef db = new DBRef();
-
-        final int listenerKey = ++listenerCounter;
-        final DatabaseReference mRef = db.wordCloneRef(wordId);
-        ValueEventListener listener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    WordClones wcl = ds.getValue(WordClones.class);
-                    db.setWordPronunciation(wcl.getListId(), wcl.getCloneId(), pronunciation);
-                }
-                if(listenerMap.get(listenerKey)!=null) {
-                    mRef.removeEventListener(listenerMap.get(listenerKey));
-                    listenerMap.remove(listenerKey);
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError){}
         };
         mRef.addValueEventListener(listener);
         listenerMap.put(listenerKey, listener);
@@ -416,13 +387,11 @@ public class DB {
             db.setListData(wsId, mainListId, new List(mainListName));
 
             for (int ls = listInWordset; ls >= 1; ls--) {
-                if(wsi == 5 && ls == 10)continue;
+                if(wsi == 5 && ls > 8 )continue;
                 String listId = db.getListKey(wsId);
                 db.setListData(wsId, listId, new List("List "+ls));
                 for (int i = 0; i < wordsInList; i++) {
-                    if(wsi == 5 && ls == 9 && i == 21)break;
-                    String wordValue = initWords.get(index);
-                    initWords.remove(index);
+                    String wordValue = initWords.get(index-39+i);
                     String wordId = db.getWordId(mainListId);
                     String cloneId = db.getWordId(listId);
                     db.setWordData(mainListId, wordId, Word.newWord(mainListName, wordId, wordValue));
@@ -431,7 +400,6 @@ public class DB {
                     db.setWordClone(mainListId, wordId, wordId);
 
                     if(index == 0) return;
-                    index--;
                     try {
                         Log.d("INIT", ""+index + " " + wordValue);
                         Thread.sleep(50);
@@ -439,6 +407,7 @@ public class DB {
                         e.printStackTrace();
                     }
                 }
+                index -= 40;
             }
         }
     }

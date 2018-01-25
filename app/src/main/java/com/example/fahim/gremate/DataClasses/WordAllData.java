@@ -10,14 +10,11 @@ public class WordAllData {
     private Word word;
     private ArrayList<WordDef> wordDefs;
     private WordData wordData;
-    private ArrayList<WordSentence> wordSentences;
-    private ArrayList<WordImageFB> images;
 
     public WordAllData() {
         word = new Word();
         wordDefs = new ArrayList<>();
         wordData = new WordData();
-        wordSentences = new ArrayList<>();
     }
 
     public Word getWord() {
@@ -42,21 +39,5 @@ public class WordAllData {
 
     public void setWordData(WordData wordData) {
         this.wordData = wordData;
-    }
-
-    public ArrayList<WordSentence> getWordSentences() {
-        return wordSentences;
-    }
-
-    public void setWordSentences(ArrayList<WordSentence> wordSentences) {
-        this.wordSentences = wordSentences;
-    }
-
-    public ArrayList<WordImageFB> getImages() {
-        return images;
-    }
-
-    public void setImages(ArrayList<WordImageFB> images) {
-        this.images = images;
     }
 }

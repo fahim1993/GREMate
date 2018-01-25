@@ -65,51 +65,20 @@
                         android:onClick="addDefi"
                         />
                 </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/WordOperationLLSen"
-                    android:layout_marginTop="20dp"
-                    android:orientation="vertical">
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ADD SENTENCE"
-                        android:layout_gravity="center"
-                        android:id="@+id/WordOperationBtnSen"
-                        android:onClick="addSent"
-                        />
-                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/WordOperationLLMN"
+                    android:id="@+id/WordOperationLLExtraInfo"
                     android:layout_marginTop="20dp"
                     android:orientation="vertical">
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="ADD MNEMONIC"
+                        android:text="ADD Extra Information"
                         android:layout_gravity="center"
-                        android:id="@+id/WordOperationBtnMN"
-                        android:onClick="addMn"
-                        />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/WordOperationLLImg"
-                    android:layout_marginTop="20dp"
-                    android:orientation="vertical">
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ADD IMAGE URL"
-                        android:layout_gravity="center"
-                        android:id="@+id/WordOperationBtnImg"
-                        android:onClick="addImg"
+                        android:id="@+id/WordOperationBtnEI"
+                        android:onClick="addEi"
                         />
                 </LinearLayout>
 
