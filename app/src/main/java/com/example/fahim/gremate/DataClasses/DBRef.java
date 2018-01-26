@@ -81,6 +81,10 @@ public class DBRef {
         userWord = FirebaseDatabase.getInstance().getReference().child(USER_WORD).child(uId);
     }
 
+    public DatabaseReference head(){
+        return userWord;
+    }
+
     String getWordSetKey() {
         return userWord.child(WORD_SET).push().getKey();
     }

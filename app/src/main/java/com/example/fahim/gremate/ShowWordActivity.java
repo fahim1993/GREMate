@@ -27,7 +27,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -64,6 +63,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private int index;
     private boolean loading;
+    private boolean refreshFlag;
 
     private boolean[] loadFlags;
     private int autoPronounce=0;
@@ -124,6 +124,8 @@ public class ShowWordActivity extends AppCompatActivity {
         nonTitlesTV.add(descriptionText);
         nonTitlesTV.add(extraInfoText);
 
+        setTextViewsSize();
+
         dummyFocus = (LinearLayout)findViewById(R.id.showWordDummyFocus);
 
         showWordSV = (ScrollView) findViewById(R.id.showWordSV);
@@ -176,6 +178,8 @@ public class ShowWordActivity extends AppCompatActivity {
         }
         Log.d("ShowWordActivity ", " onCreate");
 
+        refreshFlag = false;
+
         loadWord();
     }
 
@@ -197,6 +201,11 @@ public class ShowWordActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        if(refreshFlag) {
+            refreshFlag = false;
+            loadWord();
+        }
     }
 
     @Override
@@ -578,42 +587,99 @@ public class ShowWordActivity extends AppCompatActivity {
         _wordAllData.setWord(words.get(index));
 
         final DatabaseReference ref1 = db.wordDataRef(wordId);
-        ref1.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                WordData wd = new WordData();
-                _wordAllData.setWordData(wd);
-                if (dataSnapshot.exists()) {
-                    DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
-                    wd = ds.getValue(WordData.class);
-                }
-                _wordAllData.setWordData(wd);
-                countLoaded(0);
-                ref1.removeEventListener(this);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
         final DatabaseReference ref2 = db.wordDefinitionRef(wordId);
-        ref2.addValueEventListener( new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                ArrayList<WordDef> wordDefs = new ArrayList<>();
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    WordDef w = ds.getValue(WordDef.class);
-                    wordDefs.add(w);
+
+        if(isNetworkConnected()) {
+            ref1.child("mock").setValue("mock", new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    ref1.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            WordData wd = new WordData();
+                            _wordAllData.setWordData(wd);
+                            if (dataSnapshot.exists()) {
+                                DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
+                                wd = ds.getValue(WordData.class);
+                            }
+                            _wordAllData.setWordData(wd);
+                            countLoaded(0);
+
+                            ref1.child("mock").removeValue();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
                 }
-                _wordAllData.setWordDefs(wordDefs);
-                countLoaded(1);
-                ref2.removeEventListener(this);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) { }
-        });
+            });
+
+            ref2.child("mock").setValue("mock", new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    ref2.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            ArrayList<WordDef> wordDefs = new ArrayList<>();
+                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                                if(ds.getKey().equals("mock")) continue;
+                                WordDef w = ds.getValue(WordDef.class);
+                                wordDefs.add(w);
+                            }
+                            _wordAllData.setWordDefs(wordDefs);
+                            countLoaded(1);
+
+                            ref2.child("mock").removeValue();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            });
+        }
+        else {
+
+            ref1.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    WordData wd = new WordData();
+                    _wordAllData.setWordData(wd);
+                    if (dataSnapshot.exists()) {
+                        DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
+                        wd = ds.getValue(WordData.class);
+                    }
+                    _wordAllData.setWordData(wd);
+                    countLoaded(0);
+                    ref1.removeEventListener(this);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError){}
+            });
+
+            ref2.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    ArrayList<WordDef> wordDefs = new ArrayList<>();
+                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                        WordDef w = ds.getValue(WordDef.class);
+                        wordDefs.add(w);
+                    }
+                    _wordAllData.setWordDefs(wordDefs);
+                    countLoaded(1);
+                    ref2.removeEventListener(this);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });
+        }
     }
 
     void countLoaded(int no) {
@@ -684,6 +750,7 @@ public class ShowWordActivity extends AppCompatActivity {
                 break;
 
             case R.id.edit:
+                refreshFlag = true;
                 Intent intent = new Intent(this, EditActivity.class);
                 intent.putExtra("word", WORD);
                 intent.putExtra("wsId", wsId);

@@ -58,7 +58,7 @@ public class ListWordsActivity extends NavDrawerActivity {
     private RecyclerView wordsInListRV;
     private LinearLayoutManager llm;
 
-    DatabaseReference ref1;
+    private DatabaseReference ref1;
     private ValueEventListener listener1;
 
     private WordAdapter rvAdapter;
@@ -100,8 +100,8 @@ public class ListWordsActivity extends NavDrawerActivity {
         loadWordRV = (ProgressBar) findViewById(R.id.loadWordRV);
 
         hideWordRv();
+        Log.d("ListWordsActivityLOG ", " onCreate");
         getListWords();
-        Log.d("ListWordActivity ", " onCreate");
     }
 
     @Override
@@ -115,11 +115,6 @@ public class ListWordsActivity extends NavDrawerActivity {
         super.onPause();
         removeListeners();
         setListState();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     public void addButtonClick(View v) {
@@ -403,14 +398,14 @@ public class ListWordsActivity extends NavDrawerActivity {
     }
 
     private void removeListeners() {
+        Log.d("ListWordsActivityLOG ", "REF REMOVED");
         if (listener1 != null) ref1.removeEventListener(listener1);
     }
 
     public void getListWords() {
-        if (listener1 != null) ref1.removeEventListener(listener1);
-
+        Log.d("ListWordsActivityLOG ", "getListWords() start");
         DBRef db = new DBRef();
-        ref1 = db.listWordsRef(currentListId);
+        ref1 =  db.listWordsRef(currentListId);
         listener1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -421,7 +416,7 @@ public class ListWordsActivity extends NavDrawerActivity {
                     WordWithId wordWithId = new WordWithId(word, ds.getKey(), ++serial);
                     words.add(wordWithId);
                 }
-                Log.d("ListWordsActivity ", "getListWords(), words size = " + words.size());
+                Log.d("ListWordsActivityLOG ", "getListWords(), words size = " + words.size());
                 sortWords(false);
             }
 
