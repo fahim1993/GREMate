@@ -91,6 +91,11 @@ public class ShowWordActivity extends AppCompatActivity {
     private ArrayList<TextView> nonTitlesTV;
     private ArrayList<TextView> titlesTV;
 
+    DatabaseReference ref1;
+    DatabaseReference ref2;
+    ValueEventListener listener1;
+    ValueEventListener listener2;
+
     MediaPlayer player;
 
     @Override
@@ -202,15 +207,17 @@ public class ShowWordActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if(refreshFlag) {
-            refreshFlag = false;
-            loadWord();
-        }
+        if(listener1!=null && ref1!=null) ref1.addValueEventListener(listener1);
+        if(listener2!=null && ref2!=null) ref2.addValueEventListener(listener2);
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if(listener1!=null && ref1!=null) ref1.removeEventListener(listener1);
+        if(listener2!=null && ref2!=null) ref2.removeEventListener(listener2);
+
         if (WORD!=null && _wordAllData!=null && WORD.getValidity() != 2 && wordLevel != _wordAllData.getWord().getLevel()) {
             DB.setWordLevel(wordId, wordLevel);
         }
@@ -329,8 +336,6 @@ public class ShowWordActivity extends AppCompatActivity {
             desButton.setImageResource(R.drawable.down);
         }
         desButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-
-        scrollSV();
     }
 
     private void setDef() {
@@ -355,6 +360,10 @@ public class ShowWordActivity extends AppCompatActivity {
             }
             TextView firstText = (TextView)defView.findViewById(R.id.defFirstTV);
             TextView secondText = (TextView)defView.findViewById(R.id.defSecondTV);
+
+            firstText.setTextSize(textSize);
+            secondText.setTextSize(textSize);
+
             secondText.setVisibility(View.GONE);
             secondText.setTag(tag++);
 
@@ -391,8 +400,6 @@ public class ShowWordActivity extends AppCompatActivity {
             defButton.setImageResource(R.drawable.down);
         }
         defButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-
-        scrollSV();
     }
 
     private void setExtraInfo() {
@@ -583,103 +590,52 @@ public class ShowWordActivity extends AppCompatActivity {
 
         DBRef db = new DBRef();
 
+        if(listener1!=null && ref1!=null) ref1.removeEventListener(listener1);
+        if(listener2!=null && ref2!=null) ref2.removeEventListener(listener2);
+
         _wordAllData = new WordAllData();
         _wordAllData.setWord(words.get(index));
 
-        final DatabaseReference ref1 = db.wordDataRef(wordId);
-        final DatabaseReference ref2 = db.wordDefinitionRef(wordId);
+        ref1 = db.wordDataRef(wordId);
+        ref2 = db.wordDefinitionRef(wordId);
 
-        if(isNetworkConnected()) {
-            ref1.child("mock").setValue("mock", new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    ref1.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            WordData wd = new WordData();
-                            _wordAllData.setWordData(wd);
-                            if (dataSnapshot.exists()) {
-                                DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
-                                wd = ds.getValue(WordData.class);
-                            }
-                            _wordAllData.setWordData(wd);
-                            countLoaded(0);
-
-                            ref1.child("mock").removeValue();
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+        listener1 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                WordData wd = new WordData();
+                _wordAllData.setWordData(wd);
+                if (dataSnapshot.exists()) {
+                    DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
+                    wd = ds.getValue(WordData.class);
                 }
-            });
+                _wordAllData.setWordData(wd);
+                if(loading) countLoaded(0);
+                else  setDes();
+            }
 
-            ref2.child("mock").setValue("mock", new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    ref2.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            ArrayList<WordDef> wordDefs = new ArrayList<>();
-                            for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                                if(ds.getKey().equals("mock")) continue;
-                                WordDef w = ds.getValue(WordDef.class);
-                                wordDefs.add(w);
-                            }
-                            _wordAllData.setWordDefs(wordDefs);
-                            countLoaded(1);
+            @Override
+            public void onCancelled(DatabaseError databaseError){}
+        };
+        ref1.addValueEventListener(listener1);
 
-                            ref2.child("mock").removeValue();
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+        listener2 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<WordDef> wordDefs = new ArrayList<>();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    WordDef w = ds.getValue(WordDef.class);
+                    wordDefs.add(w);
                 }
-            });
-        }
-        else {
+                _wordAllData.setWordDefs(wordDefs);
+                if(loading) countLoaded(1);
+                else setDef();
+            }
 
-            ref1.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    WordData wd = new WordData();
-                    _wordAllData.setWordData(wd);
-                    if (dataSnapshot.exists()) {
-                        DataSnapshot ds = dataSnapshot.getChildren().iterator().next();
-                        wd = ds.getValue(WordData.class);
-                    }
-                    _wordAllData.setWordData(wd);
-                    countLoaded(0);
-                    ref1.removeEventListener(this);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError){}
-            });
-
-            ref2.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    ArrayList<WordDef> wordDefs = new ArrayList<>();
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        WordDef w = ds.getValue(WordDef.class);
-                        wordDefs.add(w);
-                    }
-                    _wordAllData.setWordDefs(wordDefs);
-                    countLoaded(1);
-                    ref2.removeEventListener(this);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            });
-        }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+        ref2.addValueEventListener(listener2);
     }
 
     void countLoaded(int no) {
