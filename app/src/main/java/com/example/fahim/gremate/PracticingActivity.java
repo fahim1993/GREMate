@@ -77,6 +77,14 @@ public class PracticingActivity extends AppCompatActivity {
         Bundle b = getIntent().getExtras();
         words = b.getParcelableArrayList("words");
 
+        ArrayList<Word> temp = new ArrayList<>();
+        for(int i = 0; i<words.size(); i++){
+            for(int j=0; j<=words.get(i).getLevel(); j++){
+                temp.add(words.get(i));
+            }
+        }
+        words = temp;
+
         setTitle("SCORE: 0");
 
         randomizeWords();
