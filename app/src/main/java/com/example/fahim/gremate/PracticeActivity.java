@@ -133,6 +133,7 @@ public class PracticeActivity extends NavDrawerActivity {
                         }
                         Intent intent = new Intent(PracticeActivity.this, PracticingActivity.class);
                         intent.putParcelableArrayListExtra("words", words);
+                        intent.putExtra("wsId", wsId);
                         startActivity(intent);
                     }
                 });

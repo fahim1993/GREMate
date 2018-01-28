@@ -152,6 +152,12 @@ public class WordSetActivity extends NavDrawerActivity {
 
                 builder.show();
                 return true;
+
+            case R.id.sync:
+                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("UserWords").child(userId);
+                ref.keepSynced(true);
+
             default:
                 return super.onOptionsItemSelected(item);
         }

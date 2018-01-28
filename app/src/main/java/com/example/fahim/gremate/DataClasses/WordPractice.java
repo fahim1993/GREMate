@@ -9,18 +9,20 @@ import java.util.Random;
  */
 
 public class WordPractice {
-    private String word, synonyms, definitions;
+    private String word, synonyms, definitions, pronunciation;
 
     public WordPractice() {
         this.word = "";
         this.synonyms = "";
         this.definitions = "";
+        this.pronunciation = "";
     }
 
-    public WordPractice(String word, String synonyms, String definitions) {
+    public WordPractice(String word, String synonyms, String definitions, String pronunciation) {
         this.word = word;
         this.synonyms = synonyms;
         this.definitions = definitions;
+        this.pronunciation = pronunciation;
     }
 
     public String getWord() {
@@ -50,23 +52,16 @@ public class WordPractice {
     public boolean hasSynonyms() {
         return (synonyms != null && synonyms.length() > 0);
     }
+
     public boolean hasDefinitions(){
         return ( definitions != null && definitions.length()>0);
     }
 
-    @Exclude
-    public String getRandomSynonym(){
-        String [] syns = synonyms.split(DB.DELIM);
-        return syns[new Random().nextInt(syns.length)];
+    public String getPronunciation() {
+        return pronunciation;
     }
 
-    @Exclude
-    public String getRandomDefinition(){
-        String [] defs = definitions.split(DB.DELIM);
-        String ret = defs[new Random().nextInt(defs.length)];
-        int length = ret.length();
-        if(ret.charAt(length-1)=='.') return ret.substring(0, length-1);
-        return ret;
+    public void setPronunciation(String pronunciation) {
+        this.pronunciation = pronunciation;
     }
-
 }

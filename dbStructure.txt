@@ -49,6 +49,7 @@ UserWords:
 	            word:
 	            synonyms:
 	            definitions:
+	            pronunciation:
 
         LastListId:
         LastWordSetId:

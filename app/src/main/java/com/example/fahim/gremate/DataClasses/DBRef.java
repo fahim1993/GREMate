@@ -203,6 +203,10 @@ public class DBRef {
         return userWord.child(WORD_DATA).child(wordId);
     }
 
+    public DatabaseReference wordDataHeadRef() {
+        return userWord.child(WORD_DATA);
+    }
+
     public DatabaseReference wordDefinitionRef(String wordId) {
         return userWord.child(WORD_DEF).child(wordId);
     }
@@ -230,6 +234,7 @@ public class DBRef {
     public DatabaseReference wordRef(){
         return userWord.child(WORD);
     }
+
     public DatabaseReference wordDataRef(){
         return userWord.child(WORD_DATA);
     }

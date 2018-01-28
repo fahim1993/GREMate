@@ -451,7 +451,7 @@ public class EditActivity extends AppCompatActivity {
             wordAllData.getWord().setPracticable(practicable);
 
             DB.setWordData(wordAllData,
-                    new WordPractice(WORD.getValue(), pSyns.toString(), pdefs.toString()), wordId);
+                    new WordPractice(WORD.getValue(), pSyns.toString(), pdefs.toString(), pronunciationLink), wordId);
 
             Toast.makeText(EditActivity.this, "Saved", Toast.LENGTH_SHORT).show();
 

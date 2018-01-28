@@ -132,7 +132,6 @@
                 android:id="@+id/showWordDefiLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bottomline"
                 android:orientation="vertical">
 
                 <RelativeLayout
@@ -187,7 +186,12 @@
 
             </LinearLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="10dp" />
+
         </LinearLayout>
+
 
     </ScrollView>
 

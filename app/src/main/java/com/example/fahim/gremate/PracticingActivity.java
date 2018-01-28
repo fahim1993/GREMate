@@ -1,7 +1,13 @@
 package com.example.fahim.gremate;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +15,9 @@ import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Pair;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -16,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.DBRef;
@@ -27,7 +37,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -40,6 +53,8 @@ public class PracticingActivity extends AppCompatActivity {
     private String ans;
     private String[][] OD;
 
+    private String wsId;
+
     private TextView[] ansTVs;
     private TextView questionTV;
 
@@ -47,6 +62,8 @@ public class PracticingActivity extends AppCompatActivity {
     private int noQuestions;
     private int noCorrect;
     private int divider;
+
+    private WordPractice wordPractice;
 
     private LinearLayout wordLevelLL;
     private SeekBar levelSb;
@@ -58,10 +75,13 @@ public class PracticingActivity extends AppCompatActivity {
     private boolean thisJudged;
 
     private AppCompatButton nextButton;
+    private AppCompatButton viewButton;
 
     private ScrollView practicingSV;
 
     private ProgressBar practicingLoading;
+
+    MediaPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +94,11 @@ public class PracticingActivity extends AppCompatActivity {
         practicingLoading = (ProgressBar) findViewById(R.id.practicingLoading);
         practicingLoading.setVisibility(View.VISIBLE);
 
+        wordPractice = null;
+
         Bundle b = getIntent().getExtras();
         words = b.getParcelableArrayList("words");
+        wsId = b.getString("wsId");
 
         ArrayList<Word> temp = new ArrayList<>();
         for(int i = 0; i<words.size(); i++){
@@ -96,6 +119,8 @@ public class PracticingActivity extends AppCompatActivity {
 
         OD = new FeedTestData().getPracticeWords();
 
+        player = new MediaPlayer();
+
         ansTVs = new TextView[5];
 
         ansTVs[0] = (TextView) findViewById(R.id.ansTV1);
@@ -112,6 +137,8 @@ public class PracticingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                wordPractice = null;
+
                 if (wordLevel != word.getLevel()) {
                     DB.setWordLevel(word.getCloneOf(), wordLevel);
                 }
@@ -123,11 +150,27 @@ public class PracticingActivity extends AppCompatActivity {
                 for (int i = 0; i < 5; i++) ansTVs[i].setTextColor(Color.parseColor("#000000"));
 
                 nextButton.setVisibility(GONE);
+                viewButton.setVisibility(GONE);
 
                 practicingSV.setVisibility(GONE);
                 wordLevelLL.setVisibility(GONE);
                 practicingLoading.setVisibility(View.VISIBLE);
                 loadWordPracticeData(words.get(index).getCloneOf());
+
+            }
+        });
+
+        viewButton = (AppCompatButton) findViewById(R.id.viewBtn);
+        viewButton.setVisibility(GONE);
+        viewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(PracticingActivity.this, SearchActivity.class);
+
+                ArrayList<Word> temp = new ArrayList<>();
+                temp.add(words.get(index));
+                intent.putParcelableArrayListExtra("words", temp);
+                startActivity(intent);
 
             }
         });
@@ -179,11 +222,26 @@ public class PracticingActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.practicing_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         if (wordLevel != word.getLevel()) {
             DB.setWordLevel(word.getCloneOf(), wordLevel);
         }
+
+        player.reset();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        player.release();
     }
 
     private void loadWordPracticeData(final String id) {
@@ -198,8 +256,8 @@ public class PracticingActivity extends AppCompatActivity {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                WordPractice p = dataSnapshot.getValue(WordPractice.class);
-                setupQuestion(p);
+                wordPractice = dataSnapshot.getValue(WordPractice.class);
+                setupQuestion();
                 ref.removeEventListener(this);
             }
 
@@ -209,34 +267,30 @@ public class PracticingActivity extends AppCompatActivity {
         });
     }
 
-    private void setupQuestion(WordPractice practiceData) {
+    private void setupQuestion() {
 
         Random rn = new Random();
         HashMap<String, Integer> mp = new HashMap<>();
 
-        int type = getType();
+        String [] defs = wordPractice.getDefinitions().split(DB.DELIM);
+        String [] syns = wordPractice.getSynonyms().split(DB.DELIM);
 
-        if(type == 0){
-            if(practiceData.hasSynonyms()){
-                ans = practiceData.getRandomSynonym();
-            }
-            else {
-                type = 1;
-                ans = practiceData.getRandomDefinition();
-            }
+        ArrayList<Pair<String, Integer>> dns = new ArrayList<>();
+        for(String s: syns) {
+            if(s!=null && s.length()>0) dns.add(new Pair<>(s, 0));
         }
-        else{
-            if(practiceData.hasDefinitions()){
-                ans = practiceData.getRandomDefinition();
-            }
-            else {
-                type = 0;
-                ans = practiceData.getRandomSynonym();
-            }
+        for(String s: defs) {
+            if(s!=null && s.length()>0) dns.add(new Pair<>(s, 1));
         }
 
-        if(type == 0) questionTV.setText("Synonym of the word " + practiceData.getWord() + " is?");
-        else questionTV.setText("Meaning of the word " + practiceData.getWord() + " is?");
+        Collections.shuffle(dns);
+
+        Pair<String, Integer> ansPair = dns.get(rn.nextInt(dns.size()));
+        ans = ansPair.first;
+        int type = ansPair.second;
+
+        if(type == 0) questionTV.setText("Synonym of the word " + wordPractice.getWord() + " is?");
+        else questionTV.setText("Meaning of the word " + wordPractice.getWord() + " is?");
 
         ArrayList<String> otDefs = new ArrayList<>();
         mp.put(words.get(index).getValue().toLowerCase(), 1);
@@ -265,27 +319,8 @@ public class PracticingActivity extends AppCompatActivity {
         noQuestions++;
     }
 
-    private int getType(){
-        int mod = (int)System.currentTimeMillis()%4;
-        if(mod<divider){
-            divider--;
-            return 0;
-        }
-        else {
-            divider++;
-            return 1;
-        }
-    }
-
     private void randomizeWords() {
-        ArrayList<Word> tmpWord = new ArrayList<>();
-        Random rn = new Random();
-        while (words.size() != 0) {
-            int ind = Math.abs(rn.nextInt()) % words.size();
-            tmpWord.add(words.get(ind));
-            words.remove(ind);
-        }
-        words = tmpWord;
+        Collections.shuffle(words);
     }
 
     public void validateResult(View v) {
@@ -295,14 +330,15 @@ public class PracticingActivity extends AppCompatActivity {
             if (!thisJudged) {
                 noCorrect++;
             }
-//            Toast.makeText(PracticingActivity.this, "Correct!", Toast.LENGTH_SHORT).show();
         } else {
             ansTVs[ind].setTextColor(Color.parseColor("#720000"));
         }
         thisJudged = true;
         nextButton.setVisibility(View.VISIBLE);
+        viewButton.setVisibility(View.VISIBLE);
         wordLevelLL.setVisibility(View.VISIBLE);
-        setTitle("SCORE: " + noCorrect + "/" + noQuestions);
+        setTitle("SCORE: " + noCorrect + "/" + noQuestions +  " (" + words.size() + ")");
+
     }
 
     @Override
@@ -323,6 +359,10 @@ public class PracticingActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialogInterface, int i) {
                             }
                         }).show();
+                break;
+
+            case R.id.pronounce:
+                (new PlaybackPronunciation()).execute();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -354,4 +394,64 @@ public class PracticingActivity extends AppCompatActivity {
                     }
                 }).show();
     }
+
+    private class PlaybackPronunciation extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            if (isNetworkConnected()) {
+                try {
+                    String link = wordPractice.getPronunciation();
+                    if(link.length()<1){
+                        PracticingActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Pronunciation not found!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        return "";
+                    }
+
+                    URL url = new URL(link);
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    con.setRequestMethod("HEAD");
+                    con.connect();
+                    if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                        player.reset();
+                        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                        player.setDataSource(link);
+                        player.prepare();
+                        player.start();
+                    } else {
+                        PracticingActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    return "";
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    PracticingActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    return "";
+                }
+            } else {
+                PracticingActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "Internet connection required!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return "";
+            }
+        }
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null;
+    }
+
 }

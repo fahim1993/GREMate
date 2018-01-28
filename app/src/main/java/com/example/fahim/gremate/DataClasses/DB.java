@@ -349,24 +349,6 @@ public class DB {
         db.setLastWordSet(wsId);
     }
 
-
-//    public static void initNewUser(String uid, String uname, Context context) {
-//
-//        DatabaseReference _db = FirebaseDatabase.getInstance().getReference();
-//        ArrayList<String> initWords = new FeedTestData().getWords(context);
-//        int i;
-//        for (i = 8; i >= 1; i--) {
-//            String wsId = _db.child(USER_WORD).child(uid).child(WORDSET).push().getKey();
-//            String allListId = _db.child(USER_WORD).child(uid).child(WORDLIST).push().getKey();
-//            _db.child(USER_WORD).child(uid).child(WORDSET).child(wsId).setValue(new WordSet("GRE: Set " + i, uname, allListId, 80, 0));
-//            _db.child(USER_WORD).child(uid).child(WORDLIST).child(allListId).setValue(new List(wsId, "All words", 80));
-//
-//            for (int j = (i - 1) * 80; j < (i) * 80; j++) {
-//                _db.child(USER_WORD).child(uid).child(WORD).push().setValue(new Word("", allListId, initWords.get(j), "All words", false, 0, 0, 1, 0));
-//            }
-//        }
-//    }
-
     public static void initNewUser(String uId, Context context){
 
         DBRef db = new DBRef(uId);
@@ -411,4 +393,39 @@ public class DB {
             }
         }
     }
+
+
+    public static void pronunciationInPractice(){
+        final DBRef db = new DBRef();
+        final DatabaseReference ref = db.wordDataHeadRef();
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds: dataSnapshot.getChildren()){
+                    try {
+                        String key = ds.getKey();
+                        String pronunciation = ds.getChildren().iterator()
+                                .next().child("pronunciation").getValue().toString();
+
+                        if(pronunciation!=null && pronunciation.length()>0){
+                            db.wordPracticeRef(key).child("pronunciation").setValue(pronunciation);
+                        }
+
+                        Log.d("pronunciationInPractice", pronunciation);
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+
+                ref.removeEventListener(this);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 }

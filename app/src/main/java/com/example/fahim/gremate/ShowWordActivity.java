@@ -181,7 +181,6 @@ public class ShowWordActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-        Log.d("ShowWordActivity ", " onCreate");
 
         refreshFlag = false;
 
@@ -310,7 +309,7 @@ public class ShowWordActivity extends AppCompatActivity {
         }
         for(TextView v: nonTitlesTV){
             v.setTextSize(textSize);
-            v.setLineSpacing(0, 1.15f);
+            v.setLineSpacing(0, 1.12f);
         }
     }
 
@@ -363,6 +362,9 @@ public class ShowWordActivity extends AppCompatActivity {
 
             firstText.setTextSize(textSize);
             secondText.setTextSize(textSize);
+
+            firstText.setLineSpacing(0, 1.12f);
+            secondText.setLineSpacing(0, 1.12f);
 
             secondText.setVisibility(View.GONE);
             secondText.setTag(tag++);

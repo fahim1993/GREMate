@@ -111,7 +111,7 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
                 else wordAllData.setWordData(new WordData(shortds + "\n\n" + longds, "", pronunciationLink));
 
                 wordAllData.setWordDefs(wordDefs);
-                wordPractice = new WordPractice(word, allBoldSyns.toString(), allDefs.toString());
+                wordPractice = new WordPractice(word, allBoldSyns.toString(), allDefs.toString(), pronunciationLink);
             }
         } catch (Throwable t) {
             error = true;
