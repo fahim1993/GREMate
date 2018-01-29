@@ -256,38 +256,37 @@ public class SearchActivity extends AppCompatActivity {
         findViewById(R.id.showWordDefiLL).setVisibility(View.VISIBLE);
 
         showMoreStatus = new boolean[_wordAllData.getWordDefs().size()];
+        for(int i=0; i<showMoreStatus.length; i++) showMoreStatus[i] = true;
+
         LinearLayout defDataLL = (LinearLayout)findViewById(R.id.showWordDefDataLL);
         defDataLL.removeAllViews();
 
         int tag = 0;
         for(WordDef def: _wordAllData.getWordDefs()){
             View defView = getLayoutInflater().inflate(R.layout.def_view, null);
-
             if(tag%2 == 0) {
                 defView.findViewById(R.id.showWordDefinitionIB)
                         .setBackgroundColor(Color.parseColor("#f1f1f1"));
                 defView.setBackgroundColor(Color.parseColor("#f1f1f1"));
             }
-
             TextView firstText = (TextView)defView.findViewById(R.id.defFirstTV);
             TextView secondText = (TextView)defView.findViewById(R.id.defSecondTV);
-            secondText.setVisibility(View.GONE);
+
+            firstText.setTextSize(textSize);
+            secondText.setTextSize(textSize);
+
+            firstText.setLineSpacing(0, 1.135f);
+            secondText.setLineSpacing(0, 1.135f);
+
+            secondText.setVisibility(View.VISIBLE);
             secondText.setTag(tag++);
 
             nonTitlesTV.add(firstText);
             nonTitlesTV.add(secondText);
 
-
-            firstText.setTextSize(textSize);
-            secondText.setTextSize(textSize);
-
-            firstText.setLineSpacing(0, 1.12f);
-            secondText.setLineSpacing(0, 1.12f);
-
             firstText.setText(fromHtml(def.getFirstHtml(tag)));
             if(def.haveMoreData()){
                 secondText.setText(fromHtml(def.getSecondHtml()));
-                secondText.setTranslationY(-getHeight(secondText));
 
                 (defView.findViewById(R.id.defShowMoreRL)).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -298,6 +297,7 @@ public class SearchActivity extends AppCompatActivity {
             }
             else {
                 (defView.findViewById(R.id.defShowMoreRL)).setVisibility(View.GONE);
+                secondText.setVisibility(View.GONE);
             }
 
             defDataLL.addView(defView);
@@ -305,10 +305,15 @@ public class SearchActivity extends AppCompatActivity {
 
         ImageView defButton = (ImageView) findViewById(R.id.showWordDefinitionIB);
 
-        defDataLL.setVisibility(View.VISIBLE);
-        defButton.setImageResource(R.drawable.up);
+        if (defState == 1) {
+            defDataLL.setVisibility(View.VISIBLE);
+            defButton.setImageResource(R.drawable.up);
+        } else {
+            defDataLL.setVisibility(View.GONE);
+            defDataLL.setTranslationY(-getHeight(defDataLL));
+            defButton.setImageResource(R.drawable.down);
+        }
         defButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-
     }
 
     private void setContents() {

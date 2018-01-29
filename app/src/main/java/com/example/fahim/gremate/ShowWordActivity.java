@@ -142,9 +142,6 @@ public class ShowWordActivity extends AppCompatActivity {
 
         player = new MediaPlayer();
 
-//        levelSb.setVisibility(View.GONE);
-//        levelTv.setVisibility(View.GONE);
-
         levelSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -346,6 +343,8 @@ public class ShowWordActivity extends AppCompatActivity {
         findViewById(R.id.showWordDefiLL).setVisibility(View.VISIBLE);
 
         showMoreStatus = new boolean[_wordAllData.getWordDefs().size()];
+        for(int i=0; i<showMoreStatus.length; i++) showMoreStatus[i] = true;
+
         LinearLayout defDataLL = (LinearLayout)findViewById(R.id.showWordDefDataLL);
         defDataLL.removeAllViews();
 
@@ -363,10 +362,10 @@ public class ShowWordActivity extends AppCompatActivity {
             firstText.setTextSize(textSize);
             secondText.setTextSize(textSize);
 
-            firstText.setLineSpacing(0, 1.12f);
-            secondText.setLineSpacing(0, 1.12f);
+            firstText.setLineSpacing(0, 1.135f);
+            secondText.setLineSpacing(0, 1.135f);
 
-            secondText.setVisibility(View.GONE);
+            secondText.setVisibility(View.VISIBLE);
             secondText.setTag(tag++);
 
             nonTitlesTV.add(firstText);
@@ -375,7 +374,6 @@ public class ShowWordActivity extends AppCompatActivity {
             firstText.setText(fromHtml(def.getFirstHtml(tag)));
             if(def.haveMoreData()){
                 secondText.setText(fromHtml(def.getSecondHtml()));
-                secondText.setTranslationY(-getHeight(secondText));
 
                 (defView.findViewById(R.id.defShowMoreRL)).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -386,6 +384,7 @@ public class ShowWordActivity extends AppCompatActivity {
             }
             else {
                 (defView.findViewById(R.id.defShowMoreRL)).setVisibility(View.GONE);
+                secondText.setVisibility(View.GONE);
             }
 
             defDataLL.addView(defView);

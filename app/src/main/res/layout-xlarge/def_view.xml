@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:text="Show more..."
+            android:text="Hide..."
             android:textColor="#000000"
             android:textSize="22sp"
             android:textStyle="bold" />
@@ -60,7 +60,7 @@
             android:layout_centerVertical="true"
             android:background="@color/cardviewItem"
             android:scaleType="centerInside"
-            android:src="@drawable/down"
+            android:src="@drawable/up"
             />
 
     </RelativeLayout>
