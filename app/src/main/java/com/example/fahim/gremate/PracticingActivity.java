@@ -86,6 +86,8 @@ public class PracticingActivity extends AppCompatActivity {
 
     private ArrayList<String> wrongAns;
 
+    private HashMap<String, ArrayList<Integer>> levelMap;
+
     MediaPlayer player;
 
     Random random;
@@ -152,11 +154,17 @@ public class PracticingActivity extends AppCompatActivity {
 
                 if (wordLevel != word.getLevel()) {
                     DB.setWordLevel(word.getCloneOf(), wordLevel);
+                    if(levelMap == null || !levelMap.containsKey(word.getCloneOf())){
+                        createLevelMap();
+                    }
+                    ArrayList<Integer> al = levelMap.get(word.getCloneOf());
+                    for(int i: al) words.get(i).setLevel(wordLevel);
                 }
                 index++;
                 if (index == words.size()) {
                     index = 0;
                     randomizeWords();
+                    createLevelMap();
                 }
                 for (int i = 0; i < 5; i++) ansTVs[i].setTextColor(Color.parseColor("#000000"));
 
@@ -245,6 +253,7 @@ public class PracticingActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        createLevelMap();
         loadWordPracticeData(words.get(index).getCloneOf());
     }
 
@@ -383,6 +392,24 @@ public class PracticingActivity extends AppCompatActivity {
 
     }
 
+    public void createLevelMap(){
+        levelMap = new HashMap<>();
+        if(words != null){
+            int i = 0;
+            for(Word w: words){
+                if(levelMap.containsKey(w.getCloneOf())){
+                    ArrayList<Integer> al = levelMap.get(w.getCloneOf());
+                    al.add(i++);
+                }
+                else {
+                    ArrayList<Integer> al = new ArrayList<>();
+                    al.add(i++);
+                    levelMap.put(w.getCloneOf(), al);
+                }
+            }
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -423,7 +450,7 @@ public class PracticingActivity extends AppCompatActivity {
     public void onBackPressed() {
         StringBuilder msg = new StringBuilder();
         if(wrongAns != null && wrongAns.size()>0) {
-            msg.append("<b>Review</b>");
+            msg.append("<b>REVIEW</b>");
             for(String s: wrongAns){
                 msg.append("<br>");
                 msg.append(s);
