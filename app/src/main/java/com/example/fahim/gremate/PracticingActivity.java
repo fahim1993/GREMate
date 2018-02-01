@@ -42,6 +42,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import static android.view.View.GONE;
@@ -61,7 +62,9 @@ public class PracticingActivity extends AppCompatActivity {
     private int ansIndex;
     private int noQuestions;
     private int noCorrect;
-    private int divider;
+
+    private int prvCorrect;
+    private String prvTitle;
 
     private WordPractice wordPractice;
 
@@ -81,7 +84,11 @@ public class PracticingActivity extends AppCompatActivity {
 
     private ProgressBar practicingLoading;
 
+    private ArrayList<String> wrongAns;
+
     MediaPlayer player;
+
+    Random random;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,16 +115,20 @@ public class PracticingActivity extends AppCompatActivity {
         }
         words = temp;
 
+        random = new Random();
+
         setTitle("SCORE: 0");
 
         randomizeWords();
         index = 0;
         noQuestions = 0;
         noCorrect = 0;
-
-        divider = 2;
+        prvCorrect = 0;
+        prvTitle = "SCORE: 0";
 
         OD = new FeedTestData().getPracticeWords();
+
+        wrongAns = new ArrayList<>();
 
         player = new MediaPlayer();
 
@@ -218,7 +229,35 @@ public class PracticingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        if(savedInstanceState != null){
+            try {
+                ArrayList<Word> ws = savedInstanceState.getParcelableArrayList("words");
+                if(ws != null) {
+                    words = ws;
+                    index = savedInstanceState.getInt("index");
+                    setTitle(savedInstanceState.getString("prvTitle"));
+                    noQuestions = savedInstanceState.getInt("noQuestions");
+                    noCorrect = savedInstanceState.getInt("prvCorrect");
+                    wrongAns = savedInstanceState.getStringArrayList("wrongAns");
+                }
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
         loadWordPracticeData(words.get(index).getCloneOf());
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelableArrayList("words", words);
+        outState.putInt("index", index);
+        outState.putInt("noQuestions", noQuestions - 1);
+        outState.putInt("prvCorrect", prvCorrect);
+        outState.putString("prvTitle", prvTitle);
+        outState.putStringArrayList("wrongAns", wrongAns);
     }
 
     @Override
@@ -269,7 +308,6 @@ public class PracticingActivity extends AppCompatActivity {
 
     private void setupQuestion() {
 
-        Random rn = new Random();
         HashMap<String, Integer> mp = new HashMap<>();
 
         String [] defs = wordPractice.getDefinitions().split(DB.DELIM);
@@ -283,26 +321,24 @@ public class PracticingActivity extends AppCompatActivity {
             if(s!=null && s.length()>0) dns.add(new Pair<>(s, 1));
         }
 
-        Collections.shuffle(dns);
-
-        Pair<String, Integer> ansPair = dns.get(rn.nextInt(dns.size()));
+        Pair<String, Integer> ansPair = dns.get(random.nextInt(dns.size()));
         ans = ansPair.first;
         int type = ansPair.second;
 
-        if(type == 0) questionTV.setText("Synonym of the word " + wordPractice.getWord() + " is?");
-        else questionTV.setText("Meaning of the word " + wordPractice.getWord() + " is?");
+        if(type == 0) questionTV.setText("Synonym of the word " + wordPractice.getWord().toUpperCase() + " is?");
+        else questionTV.setText("Meaning of the word " + wordPractice.getWord().toUpperCase() + " is?");
 
         ArrayList<String> otDefs = new ArrayList<>();
         mp.put(words.get(index).getValue().toLowerCase(), 1);
         while (mp.size() != 5) {
-            int ind = Math.abs(rn.nextInt()) % 1536;
+            int ind = Math.abs(random.nextInt()) % 1536;
             String w = OD[ind][0];
             if (mp.containsKey(w.toLowerCase())) continue;
             otDefs.add(OD[ind][type]);
             mp.put(w.toLowerCase(), 1);
         }
 
-        ansIndex = Math.abs(rn.nextInt()) % 5;
+        ansIndex = Math.abs(random.nextInt()) % 5;
         ansTVs[ansIndex].setText(fromHtml("<b>" + (ansIndex + 1) + ".</b> " + ans));
 
         int j = 0;
@@ -316,11 +352,14 @@ public class PracticingActivity extends AppCompatActivity {
 
         thisJudged = false;
 
+        prvTitle = getTitle().toString();
+        prvCorrect = noCorrect;
         noQuestions++;
     }
 
     private void randomizeWords() {
-        Collections.shuffle(words);
+        for(int i=0; i<4; i++)
+            Collections.shuffle(words);
     }
 
     public void validateResult(View v) {
@@ -332,6 +371,9 @@ public class PracticingActivity extends AppCompatActivity {
             }
         } else {
             ansTVs[ind].setTextColor(Color.parseColor("#720000"));
+            if(!thisJudged){
+                wrongAns.add("<b>"+wordPractice.getWord().toUpperCase()+": </b>" + ans);
+            }
         }
         thisJudged = true;
         nextButton.setVisibility(View.VISIBLE);
@@ -379,9 +421,24 @@ public class PracticingActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        new AlertDialog.Builder(PracticingActivity.this)
+        StringBuilder msg = new StringBuilder();
+        if(wrongAns != null && wrongAns.size()>0) {
+            msg.append("<b>Review</b>");
+            for(String s: wrongAns){
+                msg.append("<br>");
+                msg.append(s);
+            }
+        }
+        if(msg.length()>0)msg.append("<br><br>");
+        msg.append( "You correctly answered " );
+        msg.append(noCorrect);
+        msg.append(" out of ");
+        msg.append(noQuestions);
+        msg.append(". Do you want to stop?");
+
+        AlertDialog dialog = new AlertDialog.Builder(PracticingActivity.this)
                 .setTitle("End practice?")
-                .setMessage("You correctly answered " + noCorrect + " out of " + noQuestions + ". Do you want to stop?")
+                .setMessage(fromHtml(msg.toString()))
                 .setPositiveButton("STOP", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -393,6 +450,9 @@ public class PracticingActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                     }
                 }).show();
+
+        ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+
     }
 
     private class PlaybackPronunciation extends AsyncTask<String, Void, String> {
