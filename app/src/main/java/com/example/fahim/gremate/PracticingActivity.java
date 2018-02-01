@@ -37,6 +37,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -88,7 +89,7 @@ public class PracticingActivity extends AppCompatActivity {
 
     private HashMap<String, ArrayList<Integer>> levelMap;
 
-    MediaPlayer player;
+    private PlaybackPronunciation playbackPronunciation;
 
     Random random;
 
@@ -131,8 +132,6 @@ public class PracticingActivity extends AppCompatActivity {
         OD = new FeedTestData().getPracticeWords();
 
         wrongAns = new ArrayList<>();
-
-        player = new MediaPlayer();
 
         ansTVs = new TextView[5];
 
@@ -282,14 +281,15 @@ public class PracticingActivity extends AppCompatActivity {
         if (wordLevel != word.getLevel()) {
             DB.setWordLevel(word.getCloneOf(), wordLevel);
         }
-
-        player.reset();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        player.release();
+        if(playbackPronunciation!=null){
+            playbackPronunciation.cancel(true);
+            playbackPronunciation = null;
+        }
     }
 
     private void loadWordPracticeData(final String id) {
@@ -431,7 +431,9 @@ public class PracticingActivity extends AppCompatActivity {
                 break;
 
             case R.id.pronounce:
-                (new PlaybackPronunciation()).execute();
+                if(playbackPronunciation != null) playbackPronunciation.cancel(true);
+                playbackPronunciation = new PlaybackPronunciation(this);
+                playbackPronunciation.execute(wordPractice.getPronunciation());
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -482,57 +484,74 @@ public class PracticingActivity extends AppCompatActivity {
 
     }
 
-    private class PlaybackPronunciation extends AsyncTask<String, Void, String> {
+    private static class PlaybackPronunciation extends AsyncTask<String, Void, String> {
+
+        protected WeakReference<PracticingActivity> activityWeakReference;
+
+        public PlaybackPronunciation(PracticingActivity activity){
+            activityWeakReference = new WeakReference<>(activity);
+        }
+
         @Override
         protected String doInBackground(String... strings) {
-            if (isNetworkConnected()) {
-                try {
-                    String link = wordPractice.getPronunciation();
-                    if(link.length()<1){
-                        PracticingActivity.this.runOnUiThread(new Runnable() {
+            if(activityWeakReference != null) {
+                if (activityWeakReference.get().isNetworkConnected()) {
+                    try {
+                        String link = strings[0];
+                        if (link.length() < 1) {
+                            activityWeakReference.get().runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(activityWeakReference.get(), "Pronunciation not found!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            return "";
+                        }
+
+                        URL url = new URL(link);
+                        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                        con.setRequestMethod("HEAD");
+                        con.connect();
+                        if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                            MediaPlayer player = new MediaPlayer();
+                            player.reset();
+                            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                            player.setDataSource(link);
+                            player.prepare();
+                            player.start();
+                            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mediaPlayer) {
+                                    mediaPlayer.release();
+                                }
+                            });
+                        } else {
+                            activityWeakReference.get().runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(activityWeakReference.get(), "Error...", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        return "";
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        activityWeakReference.get().runOnUiThread(new Runnable() {
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "Pronunciation not found!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activityWeakReference.get(), "Error...", Toast.LENGTH_SHORT).show();
                             }
                         });
                         return "";
                     }
-
-                    URL url = new URL(link);
-                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                    con.setRequestMethod("HEAD");
-                    con.connect();
-                    if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                        player.reset();
-                        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                        player.setDataSource(link);
-                        player.prepare();
-                        player.start();
-                    } else {
-                        PracticingActivity.this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-
-                    return "";
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    PracticingActivity.this.runOnUiThread(new Runnable() {
+                } else {
+                    activityWeakReference.get().runOnUiThread(new Runnable() {
                         public void run() {
-                            Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activityWeakReference.get(), "Internet connection required!", Toast.LENGTH_SHORT).show();
                         }
                     });
                     return "";
                 }
-            } else {
-                PracticingActivity.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), "Internet connection required!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                return "";
             }
+            return "";
         }
     }
 

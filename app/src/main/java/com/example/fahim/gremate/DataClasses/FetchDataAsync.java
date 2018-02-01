@@ -4,6 +4,7 @@ package com.example.fahim.gremate.DataClasses;
  * Created by fahim on 12/16/16.
  */
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -14,11 +15,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
 
+    protected WeakReference<Activity> activityWeakReference;
 
     protected WordAllData wordAllData;
 
@@ -28,11 +31,14 @@ public abstract class FetchDataAsync extends AsyncTask<String, Void, String> {
 
     private boolean error = true;
 
+    public FetchDataAsync(Activity activity) {
+        activityWeakReference = new WeakReference<>(activity);
+    }
+
     @Override
     protected String doInBackground(String... strings) {
 
         String word = strings[0].toLowerCase();
-        String wordId = strings[1];
 
         try {
 

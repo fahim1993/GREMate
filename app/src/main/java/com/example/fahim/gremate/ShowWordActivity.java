@@ -2,6 +2,7 @@ package com.example.fahim.gremate;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -42,11 +43,13 @@ import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordAllData;
 import com.example.fahim.gremate.DataClasses.WordData;
 import com.example.fahim.gremate.DataClasses.WordDef;
+import com.example.fahim.gremate.DataClasses.WordPractice;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -91,12 +94,13 @@ public class ShowWordActivity extends AppCompatActivity {
     private ArrayList<TextView> nonTitlesTV;
     private ArrayList<TextView> titlesTV;
 
+    private FetchData fetchData;
+    private PlaybackPronunciation playbackPronunciation;
+
     DatabaseReference ref1;
     DatabaseReference ref2;
     ValueEventListener listener1;
     ValueEventListener listener2;
-
-    MediaPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,8 +143,6 @@ public class ShowWordActivity extends AppCompatActivity {
 
         levelSb = (SeekBar) findViewById(R.id.diffSeekBar);
         levelTv = (TextView) findViewById(R.id.diff);
-
-        player = new MediaPlayer();
 
         levelSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -226,7 +228,6 @@ public class ShowWordActivity extends AppCompatActivity {
         editor.putInt("index", index);
 
         editor.apply();
-        player.reset();
     }
 
     private void getSharedPrefValues(){
@@ -257,7 +258,15 @@ public class ShowWordActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        player.release();
+        if(fetchData != null){
+            fetchData.cancel(true);
+            fetchData = null;
+        }
+        if(playbackPronunciation != null){
+            playbackPronunciation.cancel(true);
+            playbackPronunciation = null;
+        }
+
     }
 
     private void loadWord() {
@@ -283,7 +292,10 @@ public class ShowWordActivity extends AppCompatActivity {
         switch (WORD.getValidity()) {
             case Word.UNKNOWN:
                 if (isNetworkConnected()) {
-                    new FetchData().execute(WORD.getValue(), wordId);
+                    if(fetchData != null) fetchData.cancel(true);
+
+                    fetchData =  new FetchData(this);
+                    fetchData.execute(WORD.getValue(), wordId);
                 }
                 break;
             case Word.VALID:
@@ -651,7 +663,9 @@ public class ShowWordActivity extends AppCompatActivity {
         setContents();
         loading = false;
         if(autoPronounce==1){
-            (new PlaybackPronunciation()).execute();
+            if(playbackPronunciation!= null) playbackPronunciation.cancel(true);
+            playbackPronunciation = new PlaybackPronunciation(this);
+            playbackPronunciation.execute(_wordAllData.getWordData().getPronunciation());
         }
         loadingPB.setVisibility(View.GONE);
         showWordSV.setVisibility(View.VISIBLE);
@@ -703,7 +717,9 @@ public class ShowWordActivity extends AppCompatActivity {
 
             case R.id.pronounce:
                 if (loading) break;
-                (new PlaybackPronunciation()).execute();
+                if(playbackPronunciation!= null) playbackPronunciation.cancel(true);
+                playbackPronunciation = new PlaybackPronunciation(this);
+                playbackPronunciation.execute(_wordAllData.getWordData().getPronunciation());
                 break;
 
             case R.id.edit:
@@ -733,7 +749,9 @@ public class ShowWordActivity extends AppCompatActivity {
 
                                     if (isNetworkConnected()) {
                                         loading = true;
-                                        new FetchData().execute(WORD.getValue(), wordId);
+                                        if(fetchData != null)fetchData.cancel(true);
+                                        fetchData = new FetchData(ShowWordActivity.this);
+                                        fetchData.execute(WORD.getValue(), wordId);
                                     }
                                 }catch (Exception e){
                                     e.printStackTrace();
@@ -849,86 +867,110 @@ public class ShowWordActivity extends AppCompatActivity {
         return true;
     }
 
-    private class FetchData extends FetchDataAsync {
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            if (wordAllData != null) {
-                _wordAllData = wordAllData;
-                _wordAllData.setWord(WORD);
-                WORD.setPracticable(wordPractice.hasDefinitions() || wordPractice.hasSynonyms());
-                words.get(index).setValidity(Word.VALID);
+    public void onResult(WordAllData wordAllData, WordPractice wordPractice){
+        if (wordAllData != null) {
+            _wordAllData = wordAllData;
+            _wordAllData.setWord(WORD);
+            WORD.setPracticable(wordPractice.hasDefinitions() || wordPractice.hasSynonyms());
+            words.get(index).setValidity(Word.VALID);
 
-                DB.setWordData(_wordAllData, wordPractice, wordId);
+            DB.setWordData(_wordAllData, wordPractice, wordId);
 
-                allLoaded();
+            allLoaded();
 
-            } else {
-                loadingPB.setVisibility(View.GONE);
-                showWordSV.setVisibility(View.GONE);
-                errorTextV.setVisibility(View.VISIBLE);
-                WORD.setValidity(Word.INVALID);
-                DB.setWordValidity(wordId, Word.INVALID);
-                loading = false;
-            }
+        } else {
+            loadingPB.setVisibility(View.GONE);
+            showWordSV.setVisibility(View.GONE);
+            errorTextV.setVisibility(View.VISIBLE);
+            WORD.setValidity(Word.INVALID);
+            DB.setWordValidity(wordId, Word.INVALID);
+            loading = false;
         }
     }
 
-    private class PlaybackPronunciation extends AsyncTask<String, Void, String> {
+    private static class FetchData extends FetchDataAsync {
+
+        public FetchData(Activity activity) {
+            super(activity);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if(activityWeakReference != null)
+                ((ShowWordActivity)activityWeakReference.get()).onResult(wordAllData, wordPractice);
+        }
+    }
+
+    private static class PlaybackPronunciation extends AsyncTask<String, Void, String> {
+
+        protected WeakReference<ShowWordActivity> activityWeakReference;
+
+        public PlaybackPronunciation(ShowWordActivity activity){
+            activityWeakReference = new WeakReference<>(activity);
+        }
+
         @Override
         protected String doInBackground(String... strings) {
-            if (isNetworkConnected()) {
-                try {
-//                    String link = "https://ssl.gstatic.com/dictionary/static/sounds/de/0/" + WORD.getValue().toLowerCase() + ".mp3";
+            if(activityWeakReference != null) {
+                if (activityWeakReference.get().isNetworkConnected()) {
+                    try {
+                        String link = strings[0];
+                        if (link.length() < 1) {
+                            activityWeakReference.get().runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(activityWeakReference.get(), "Pronunciation not found!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            return "";
+                        }
 
-                    String link = _wordAllData.getWordData().getPronunciation();
-                    if(link.length()<1){
-                        ShowWordActivity.this.runOnUiThread(new Runnable() {
+                        URL url = new URL(link);
+                        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                        con.setRequestMethod("HEAD");
+                        con.connect();
+                        if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                            MediaPlayer player = new MediaPlayer();
+                            player.reset();
+                            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                            player.setDataSource(link);
+                            player.prepare();
+                            player.start();
+                            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mediaPlayer) {
+                                    mediaPlayer.release();
+                                }
+                            });
+                        } else {
+                            activityWeakReference.get().runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(activityWeakReference.get(), "Error...", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        return "";
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        activityWeakReference.get().runOnUiThread(new Runnable() {
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "Pronunciation not found!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activityWeakReference.get(), "Error...", Toast.LENGTH_SHORT).show();
                             }
                         });
                         return "";
                     }
-
-                    URL url = new URL(link);
-                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                    con.setRequestMethod("HEAD");
-                    con.connect();
-                    if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                        player.reset();
-                        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                        player.setDataSource(link);
-                        player.prepare();
-                        player.start();
-                    } else {
-                        ShowWordActivity.this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-
-                    return "";
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    ShowWordActivity.this.runOnUiThread(new Runnable() {
+                } else {
+                    activityWeakReference.get().runOnUiThread(new Runnable() {
                         public void run() {
-                            Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activityWeakReference.get(), "Internet connection required!", Toast.LENGTH_SHORT).show();
                         }
                     });
                     return "";
                 }
-            } else {
-                ShowWordActivity.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), "Internet connection required!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                return "";
             }
+            return "";
         }
     }
-
 }
 

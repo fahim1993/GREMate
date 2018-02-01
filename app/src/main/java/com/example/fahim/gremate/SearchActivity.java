@@ -2,6 +2,7 @@ package com.example.fahim.gremate;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -43,6 +44,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -86,7 +88,8 @@ public class SearchActivity extends AppCompatActivity {
 
     private ArrayList<Word> words;
 
-    private MediaPlayer player;
+    private FetchData fetchData;
+    private PlaybackPronunciation playbackPronunciation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,15 +140,16 @@ public class SearchActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String qr = input.getText().toString().replaceAll("\\s","");
                 if(qr.length()<1)return;
-                new FetchData().execute(qr, "");
+
+                if(fetchData!=null)fetchData.cancel(true);
+                fetchData = new FetchData(SearchActivity.this);
+                fetchData.execute(qr, "");
                 showWordSV.setVisibility(View.GONE);
                 errorTextV.setVisibility(View.GONE);
                 loadingPB.setVisibility(View.VISIBLE);
 
             }
         });
-
-        player = new MediaPlayer();
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         textSize = prefs.getFloat("textSize", 20);
@@ -193,13 +197,19 @@ public class SearchActivity extends AppCompatActivity {
         super.onPause();
         if(listener1!=null && ref1!=null) ref1.removeEventListener(listener1);
         if(listener2!=null && ref2!=null) ref2.removeEventListener(listener2);
-        player.reset();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        player.release();
+        if(fetchData!=null){
+            fetchData.cancel(true);
+            fetchData = null;
+        }
+        if(playbackPronunciation!=null){
+            playbackPronunciation.cancel(true);
+            playbackPronunciation = null;
+        }
     }
 
     @Override
@@ -485,20 +495,31 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
-    private class FetchData extends FetchDataAsync{
+    public void onResult(WordAllData wordAllData){
+        if (wordAllData != null) {
+            _wordAllData = wordAllData;
+            setContents();
+            loadingPB.setVisibility(View.GONE);
+            showWordSV.setVisibility(View.VISIBLE);
+        } else {
+            loadingPB.setVisibility(View.GONE);
+            showWordSV.setVisibility(View.GONE);
+            errorTextV.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private static class FetchData extends FetchDataAsync{
+
+        public FetchData(Activity activity) {
+            super(activity);
+        }
+
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if(wordAllData != null){
-                _wordAllData = wordAllData;
-                setContents();
-                loadingPB.setVisibility(View.GONE);
-                showWordSV.setVisibility(View.VISIBLE);
-            }
-            else {
-                loadingPB.setVisibility(View.GONE);
-                showWordSV.setVisibility(View.GONE);
-                errorTextV.setVisibility(View.VISIBLE);
+            Activity activity = activityWeakReference.get();
+            if(activity!= null) {
+                ((SearchActivity)activity).onResult(wordAllData);
             }
         }
     }
@@ -517,7 +538,9 @@ public class SearchActivity extends AppCompatActivity {
 
             case R.id.pronounce:
                 if (loading) break;
-                (new PlaybackPronunciation()).execute();
+                if(playbackPronunciation != null) playbackPronunciation.cancel(true);
+                playbackPronunciation = new PlaybackPronunciation(SearchActivity.this);
+                playbackPronunciation.execute(_wordAllData.getWordData().getPronunciation());
                 break;
 
             case R.id.edit:
@@ -531,59 +554,75 @@ public class SearchActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class PlaybackPronunciation extends AsyncTask<String, Void, String> {
+    private static class PlaybackPronunciation extends AsyncTask<String, Void, String> {
+
+        protected WeakReference<SearchActivity> activityWeakReference;
+
+        public PlaybackPronunciation(SearchActivity activity){
+            activityWeakReference = new WeakReference<>(activity);
+        }
+
         @Override
         protected String doInBackground(String... strings) {
-            if (isNetworkConnected()) {
-                try {
-                    String link = _wordAllData.getWordData().getPronunciation();
-                    if(link.length()<1){
-                        SearchActivity.this.runOnUiThread(new Runnable() {
+            if(activityWeakReference != null) {
+                if (activityWeakReference.get().isNetworkConnected()) {
+                    try {
+                        String link = strings[0];
+                        if (link.length() < 1) {
+                            activityWeakReference.get().runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(activityWeakReference.get(), "Pronunciation not found!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            return "";
+                        }
+
+                        URL url = new URL(link);
+                        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                        con.setRequestMethod("HEAD");
+                        con.connect();
+                        if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                            MediaPlayer player = new MediaPlayer();
+                            player.reset();
+                            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                            player.setDataSource(link);
+                            player.prepare();
+                            player.start();
+                            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mediaPlayer) {
+                                    mediaPlayer.release();
+                                }
+                            });
+                        } else {
+                            activityWeakReference.get().runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(activityWeakReference.get(), "Error...", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        return "";
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        activityWeakReference.get().runOnUiThread(new Runnable() {
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "Pronunciation not found!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activityWeakReference.get(), "Error...", Toast.LENGTH_SHORT).show();
                             }
                         });
                         return "";
                     }
-
-                    URL url = new URL(link);
-                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                    con.setRequestMethod("HEAD");
-                    con.connect();
-                    if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                        player.reset();
-                        player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                        player.setDataSource(link);
-                        player.prepare();
-                        player.start();
-                    } else {
-                        SearchActivity.this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-
-                    return "";
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    SearchActivity.this.runOnUiThread(new Runnable() {
+                } else {
+                    activityWeakReference.get().runOnUiThread(new Runnable() {
                         public void run() {
-                            Toast.makeText(getApplicationContext(), "Error...", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activityWeakReference.get(), "Internet connection required!", Toast.LENGTH_SHORT).show();
                         }
                     });
                     return "";
                 }
-            } else {
-                SearchActivity.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), "Internet connection required!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                return "";
             }
+            return "";
         }
     }
-
 
 }
