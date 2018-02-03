@@ -2,12 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:padding="15dp"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/darkBack1"
+    >
 
     <TextView
         android:id="@+id/exampleText"
         android:gravity="center"
-        android:textColor="#000"
+        android:textColor="@color/darkFore1"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="30dp"
         android:layout_width="match_parent"
@@ -29,6 +31,8 @@
             android:layout_weight="5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:thumbTint="@color/CornflowerBlue"
+            android:progressTint="@color/CornflowerBlue"
             android:max="9"
             />
         <LinearLayout

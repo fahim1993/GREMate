@@ -106,7 +106,7 @@ public class WordDef {
         }
 
         if(sentences.length()>0){
-            sb.append("<br>");
+            sb.append("<br><b>*</b> ");
             String [] sents = getSentencesArray();
             sb.append(sents[0]);
         }

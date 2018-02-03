@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -118,7 +119,7 @@ public class ListWordsActivity extends NavDrawerActivity {
     }
 
     public void addButtonClick(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this, R.style.AlertDialogTheme);
         builder.setTitle("Add Word");
 
         final EditText input = new EditText(ListWordsActivity.this);
@@ -148,12 +149,28 @@ public class ListWordsActivity extends NavDrawerActivity {
             }
         });
 
-        builder.show();
+        final AlertDialog dialog = builder.create();
+
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                if ((dialog.findViewById(android.R.id.message)) != null) {
+                    ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                }
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
+
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+            }
+        });
+
+        dialog.show();
     }
 
     public void searchButtonClick(View v) {
         if (words == null) return;
-        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this, R.style.AlertDialogTheme);
         builder.setTitle("Search Word");
 
         final EditText input = new EditText(ListWordsActivity.this);
@@ -192,11 +209,27 @@ public class ListWordsActivity extends NavDrawerActivity {
             }
         });
 
-        builder.show();
+        final AlertDialog dialog = builder.create();
+
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                if ((dialog.findViewById(android.R.id.message)) != null) {
+                    ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                }
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
+
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+            }
+        });
+
+        dialog.show();
     }
 
     public void sortButtonClick(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this, R.style.AlertDialogTheme);
         LayoutInflater inflater = (ListWordsActivity.this).getLayoutInflater();
 
         builder.setTitle("Sort Words");
@@ -257,8 +290,22 @@ public class ListWordsActivity extends NavDrawerActivity {
 
             }
         });
-        builder.create();
-        builder.show();
+        final AlertDialog dialog = builder.create();
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                if ((dialog.findViewById(android.R.id.message)) != null) {
+                    ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                }
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
+
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+            }
+        });
+
+        dialog.show();
     }
 
     public void practiceButtonClick(View v) {
@@ -299,12 +346,11 @@ public class ListWordsActivity extends NavDrawerActivity {
                 "Hard: " + hard + "\n" +
                 "Very Hard: " + veryHard + "\n";
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this, R.style.AlertDialogTheme);
         builder.setTitle("Details");
 
         final TextView dataTV = new TextView(ListWordsActivity.this);
         dataTV.setTextSize(20);
-        dataTV.setTextColor(Color.parseColor("#000000"));
         dataTV.setText(text);
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         dataTV.setLayoutParams(llp);
@@ -316,16 +362,32 @@ public class ListWordsActivity extends NavDrawerActivity {
             public void onClick(DialogInterface dialog, int which) {
             }
         });
-        builder.show();
+
+        final AlertDialog dialog = builder.create();
+
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                if ((dialog.findViewById(android.R.id.message)) != null) {
+                    ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                }
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
+
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+            }
+        });
+
+        dialog.show();
     }
 
     public void saveButtonClick(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(ListWordsActivity.this, R.style.AlertDialogTheme);
         builder.setTitle("Save List");
 
         final TextView dataTV = new TextView(ListWordsActivity.this);
         dataTV.setTextSize(20);
-        dataTV.setTextColor(Color.parseColor("#000000"));
         dataTV.setText("This will save the current list in GREMate folder of your device.");
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         dataTV.setLayoutParams(llp);
@@ -359,7 +421,24 @@ public class ListWordsActivity extends NavDrawerActivity {
 
             }
         });
-        builder.show();
+
+        final AlertDialog dialog = builder.create();
+
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                if ((dialog.findViewById(android.R.id.message)) != null) {
+                    ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                }
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
+
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+            }
+        });
+
+        dialog.show();
     }
 
     public void saveToStorage() throws Exception {
@@ -527,7 +606,7 @@ public class ListWordsActivity extends NavDrawerActivity {
                         finish();
                         break;
                     case R.id.nav_signout:
-                        new AlertDialog.Builder(ListWordsActivity.this)
+                        final AlertDialog dialog = new AlertDialog.Builder(ListWordsActivity.this, R.style.AlertDialogTheme)
                                 .setTitle("Confirm Sign Out")
                                 .setMessage("Are you sure you want to sign out?")
                                 .setPositiveButton("Sign Out", new DialogInterface.OnClickListener() {
@@ -544,7 +623,24 @@ public class ListWordsActivity extends NavDrawerActivity {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                     }
-                                }).show();
+                                }).create();
+
+                        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                            @Override
+                            public void onShow(DialogInterface arg0) {
+                                if ((dialog.findViewById(android.R.id.message)) != null) {
+                                    ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                                }
+                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
+                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
+
+                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                            }
+                        });
+
+                        dialog.show();
+
                         break;
                     case R.id.nav_search:
                         intent = new Intent(ListWordsActivity.this, SearchActivity.class);

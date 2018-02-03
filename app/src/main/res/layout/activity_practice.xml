@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_practice"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,143 +9,165 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.fahim.gremate.PracticeActivity">
+    tools:context="com.example.fahim.gremate.PracticeActivity"
+    android:background="@color/darkBack1"
+    >
 
-    <LinearLayout
-        android:id="@+id/ll1"
-        android:gravity="center"
-        android:layout_margin="10dp"
-        android:orientation="horizontal"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Word set:"
-            android:textSize="20sp"
-            android:textColor="#000"
-            />
-        <Spinner
-            android:layout_marginLeft="10dp"
-            android:id="@+id/wsSpinner"
-            android:layout_width="180dp"
+
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        </Spinner>
-        <ProgressBar
-            android:id="@+id/wsLoading"
-            style="?android:attr/progressBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll2"
-        android:layout_below="@+id/ll1"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="List:"
-            android:textSize="20sp"
-            android:textColor="#000"
-            />
-        <Spinner
-            android:layout_marginLeft="10dp"
-            android:id="@+id/listSpinner"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content">
-
-        </Spinner>
-
-        <ProgressBar
-            android:id="@+id/listLoading"
-            style="?android:attr/progressBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-
-    <android.support.v7.widget.AppCompatButton
-        android:layout_marginTop="10dp"
-        android:layout_centerInParent="true"
-        android:layout_below="@id/ll2"
-        app:backgroundTint="@color/colorAccent"
-        android:textColor="#FFF"
-        android:id="@+id/loadPracBtn"
-        android:text="Load"
-        android:textSize="15sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-    <ProgressBar
-        android:layout_below="@+id/ll2"
-        android:layout_marginTop="25dp"
-        android:layout_marginLeft="5dp"
-        android:layout_toEndOf="@+id/loadPracBtn"
-        android:id="@+id/pracLoading"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <LinearLayout
-        android:layout_below="@+id/loadPracBtn"
-        android:id="@+id/ll3"
-        android:orientation="vertical"
-        android:layout_margin="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_marginTop="10dp"
-            android:text="Practicable words in this list: "
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="#000"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView" />
-
-        <ScrollView
-            android:layout_marginTop="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="150dp">
-            <TextView
-                android:id="@+id/practicableWordsTV"
-                android:background="@color/cardviewItem"
-                android:textSize="16sp"
-                android:textColor="#000"
+            <LinearLayout
+                android:id="@+id/ll1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </ScrollView>
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-        <TextView
-            android:layout_gravity="center"
-            android:layout_marginTop="25dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/colorAccent"
-            android:textSize="16sp"
-            android:textColor="#FFF"
-            android:text="Only words with definition(s) are practicable"
-            android:id="@+id/textView2" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Word set:"
+                    android:textColor="@color/darkFore1"
+                    android:textSize="20sp" />
 
-        <android.support.v7.widget.AppCompatButton
-            android:layout_marginTop="15dp"
-            android:layout_gravity="center"
-            android:layout_below="@id/ll3"
-            app:backgroundTint="@color/colorAccent"
-            android:textColor="#FFF"
-            android:id="@+id/startPracBtn"
-            android:text="Start Practice"
-            android:textSize="15sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+                <Spinner
+                    android:id="@+id/wsSpinner"
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp">
 
+                </Spinner>
 
+                <ProgressBar
+                    android:id="@+id/wsLoading"
+                    android:theme="@style/ProgressBarStyle"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ll1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="List:"
+                    android:textColor="@color/darkFore1"
+                    android:textSize="20sp" />
+
+                <Spinner
+                    android:id="@+id/listSpinner"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp">
+
+                </Spinner>
+
+                <ProgressBar
+                    android:id="@+id/listLoading"
+                    android:theme="@style/ProgressBarStyle"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/loadPracBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ll2"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="10dp"
+                android:text="Load"
+                android:textColor="@color/darkFore1"
+                android:textSize="15sp"
+                app:backgroundTint="@color/colorAccent" />
+
+            <ProgressBar
+                android:id="@+id/pracLoading"
+                android:theme="@style/ProgressBarStyle"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ll2"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="25dp"
+                android:layout_toEndOf="@+id/loadPracBtn" />
+
+            <LinearLayout
+                android:id="@+id/ll3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/loadPracBtn"
+                android:layout_margin="5dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Practicable words in this list: "
+                    android:textColor="@color/darkFore1"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_marginTop="8dp">
+
+                    <TextView
+                        android:id="@+id/practicableWordsTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/darkBack2"
+                        android:textColor="@color/darkFore1"
+                        android:textSize="16sp" />
+                </ScrollView>
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="25dp"
+                    android:background="@color/colorAccent"
+                    android:padding="5dp"
+                    android:text="Only words with definition(s) are practicable"
+                    android:textColor="@color/darkFore1"
+                    android:textSize="16sp" />
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/startPracBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/ll3"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="15dp"
+                    android:text="Start Practice"
+                    android:textColor="@color/darkFore1"
+                    android:textSize="15sp"
+                    app:backgroundTint="@color/colorAccent" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </ScrollView>
 
 </RelativeLayout>

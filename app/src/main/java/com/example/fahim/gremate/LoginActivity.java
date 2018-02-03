@@ -90,6 +90,8 @@ public class LoginActivity extends AppCompatActivity {
                 String uemail = email.getText().toString();
                 String pword = password.getText().toString();
 
+                if(uemail.length()<1 || pword.length()<1) return;
+
                 loginSpinner.setVisibility(View.VISIBLE);
                 loginFail.setVisibility(View.GONE);
 
@@ -121,8 +123,8 @@ public class LoginActivity extends AppCompatActivity {
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(LoginActivity.this, SignupActivity.class);
-                startActivity(i);
+//                Intent i = new Intent(LoginActivity.this, SignupActivity.class);
+//                startActivity(i);
             }
         });
 

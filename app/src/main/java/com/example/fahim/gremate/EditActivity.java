@@ -1,7 +1,11 @@
 package com.example.fahim.gremate;
 
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -111,6 +115,7 @@ public class EditActivity extends AppCompatActivity {
 
         final DatabaseReference ref1 = db.wordDataRef(wordId);
         ref1.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getChildrenCount() == 0) return;
@@ -139,6 +144,7 @@ public class EditActivity extends AppCompatActivity {
 
         final DatabaseReference ref2 = db.wordDefinitionRef(wordId);
         ref2.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getChildrenCount() == 0) return;
@@ -161,11 +167,13 @@ public class EditActivity extends AppCompatActivity {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void addDesc(View v) {
         LinearLayout llp = (LinearLayout) v.getParent();
         llp.addView(addDescLL(false, null), llp.getChildCount() - 1);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private LinearLayout addDescLL(boolean flg, String des) {
 
         LinearLayout ll = new LinearLayout(EditActivity.this);
@@ -181,6 +189,7 @@ public class EditActivity extends AppCompatActivity {
 
         ImageButton delBtn = new ImageButton(EditActivity.this);
         delBtn.setImageResource(R.drawable.deltbtn);
+        delBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         delBtn.setScaleType(android.widget.ImageView.ScaleType.CENTER_INSIDE);
         delBtn.setLayoutParams(new LinearLayout.LayoutParams(delbtnSize, delbtnSize));
 
@@ -206,11 +215,13 @@ public class EditActivity extends AppCompatActivity {
         return ll;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void addEi(View v) {
         LinearLayout llp = (LinearLayout) v.getParent();
         llp.addView(addEiLL(false, null), llp.getChildCount() - 1);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private LinearLayout addEiLL(boolean flg, String ei) {
 
         LinearLayout ll = new LinearLayout(EditActivity.this);
@@ -226,6 +237,7 @@ public class EditActivity extends AppCompatActivity {
 
         ImageButton delBtn = new ImageButton(EditActivity.this);
         delBtn.setImageResource(R.drawable.deltbtn);
+        delBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         delBtn.setScaleType(android.widget.ImageView.ScaleType.CENTER_INSIDE);
         delBtn.setLayoutParams(new LinearLayout.LayoutParams(delbtnSize, delbtnSize));
 
@@ -252,11 +264,13 @@ public class EditActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void addDefi(View v) {
         LinearLayout llp = (LinearLayout) v.getParent();
         llp.addView(addDefiLL(false, null), llp.getChildCount() - 1);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private LinearLayout addDefiLL(boolean flg, WordDef defi) {
 
         DefinitionView dv = new DefinitionView();
@@ -305,6 +319,7 @@ public class EditActivity extends AppCompatActivity {
         b.setText("ADD ANOTHER DEFINITION");
 
         delBtn.setId(definitionViewID);
+        delBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         dv.slNo = definitionViewID++;
 
         definitionViews.add(dv);
@@ -359,7 +374,8 @@ public class EditActivity extends AppCompatActivity {
         }
         if (practicable) saveData();
         else {
-            new AlertDialog.Builder(EditActivity.this)
+
+            final AlertDialog dialog = new AlertDialog.Builder(EditActivity.this,  R.style.AlertDialogTheme)
                     .setTitle("Word is not practicable!")
                     .setMessage("Please add a definition of this word to make it practicable.")
                     .setPositiveButton("Add", new DialogInterface.OnClickListener() {
@@ -373,7 +389,23 @@ public class EditActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialogInterface, int i) {
                             saveData();
                         }
-                    }).show();
+                    }).create();
+
+            dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface arg0) {
+                    if ((dialog.findViewById(android.R.id.message)) != null) {
+                        ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                    }
+                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(EditActivity.this.getResources().getColor(R.color.darkFore4));
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(EditActivity.this.getResources().getColor(R.color.darkFore4));
+
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                }
+            });
+
+            dialog.show();
         }
     }
 

@@ -3,13 +3,13 @@
 
     <item>
         <shape android:shape="rectangle" >
-            <solid android:color="#757575" />
+            <solid android:color="@color/darkFore2" />
         </shape>
     </item>
 
     <item android:bottom="2dp">
         <shape>
-            <solid android:color="@color/cardviewItem" />
+            <solid android:color="@color/darkBack1" />
         </shape>
     </item>
 

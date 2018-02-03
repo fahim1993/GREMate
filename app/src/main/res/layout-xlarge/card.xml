@@ -30,22 +30,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="24sp"
-                android:textColor="#000"
                 android:maxLines="1"
                 android:id="@+id/name"/>
 
         </RelativeLayout>
 
-        <android.support.v7.widget.AppCompatImageButton
+        <ImageButton
             android:id="@+id/delete"
             android:padding="8dp"
             android:src="@drawable/deltbtn"
             android:scaleType="fitCenter"
-            app:backgroundTint="@color/cardviewItem"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
             android:layout_width="45dp"
-            android:layout_height="55dp" />
+            android:layout_height="55dp"
+            android:backgroundTint="@color/darkBack3"
+            />
 
     </RelativeLayout>
 

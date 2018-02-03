@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/darkBack1"
+    >
 
     <LinearLayout
         android:layout_height="match_parent"
@@ -30,7 +32,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/WordOperationWord"
                     android:textSize="30sp"
-                    android:textColor="#000000"
+                    android:textColor="@color/darkFore1"
                     android:text="WORD"
                     />
                 <LinearLayout
@@ -46,6 +48,8 @@
                         android:layout_gravity="center"
                         android:id="@+id/WordOperationBtnDes"
                         android:onClick="addDesc"
+                        android:backgroundTint="@color/colorAccent"
+                        android:textColor="@color/darkFore1"
                         />
                 </LinearLayout>
 
@@ -54,7 +58,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:id="@+id/WordOperationLLDef"
-                    android:background="#EEEEEE"
                     android:orientation="vertical">
                     <Button
                         android:layout_width="wrap_content"
@@ -63,6 +66,8 @@
                         android:layout_gravity="center"
                         android:id="@+id/WordOperationBtnDef"
                         android:onClick="addDefi"
+                        android:backgroundTint="@color/colorAccent"
+                        android:textColor="@color/darkFore1"
                         />
                 </LinearLayout>
 
@@ -79,6 +84,8 @@
                         android:layout_gravity="center"
                         android:id="@+id/WordOperationBtnEI"
                         android:onClick="addEi"
+                        android:backgroundTint="@color/colorAccent"
+                        android:textColor="@color/darkFore1"
                         />
                 </LinearLayout>
 
@@ -90,6 +97,8 @@
                     android:text="SAVE"
                     android:id="@+id/WordOperationBtnSave"
                     android:onClick="save"
+                    android:backgroundTint="@color/colorAccent"
+                    android:textColor="@color/darkFore1"
                     />
                 <Button
                     android:layout_width="wrap_content"

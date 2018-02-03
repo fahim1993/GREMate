@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -207,6 +208,7 @@ public class PracticeActivity extends NavDrawerActivity {
                 ArrayAdapter<String> wsArrayAdapter = new ArrayAdapter<>(
                         PracticeActivity.this, R.layout.spinner_item, getNames(wordSets));
                 wsArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
+
                 wsSpinner.setAdapter(wsArrayAdapter);
                 if (wsIndex != -1) wsSpinner.setSelection(wordSets.size() - 1 - wsIndex, false);
                 else if(wordSets.size()>0)wsId = wordSets.get(0).getId();
@@ -350,7 +352,7 @@ public class PracticeActivity extends NavDrawerActivity {
                         finish();
                         break;
                     case R.id.nav_signout:
-                        new AlertDialog.Builder(PracticeActivity.this)
+                        final AlertDialog dialog = new AlertDialog.Builder(PracticeActivity.this, R.style.AlertDialogTheme)
                                 .setTitle("Confirm Sign Out")
                                 .setMessage("Are you sure you want to sign out?")
                                 .setPositiveButton("Sign Out", new DialogInterface.OnClickListener() {
@@ -367,7 +369,22 @@ public class PracticeActivity extends NavDrawerActivity {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                     }
-                                }).show();
+                                }).create();
+
+                        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                            @Override
+                            public void onShow(DialogInterface arg0) {
+                                ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                                dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(PracticeActivity.this.getResources().getColor(R.color.darkFore4));
+                                dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setTextColor(PracticeActivity.this.getResources().getColor(R.color.darkFore4));
+
+                                dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                                dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                            }
+                        });
+
+                        dialog.show();
+
                         break;
                     case R.id.nav_search:
                         intent = new Intent(PracticeActivity.this, SearchActivity.class);

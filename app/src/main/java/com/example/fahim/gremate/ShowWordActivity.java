@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
@@ -31,6 +32,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -80,8 +83,7 @@ public class ShowWordActivity extends AppCompatActivity {
     private TextView descriptionText;
     private TextView extraInfoText;
 
-    private TextView levelTv;
-    private SeekBar levelSb;
+    private RadioGroup diffRadioGroup;
 
     private LinearLayout dummyFocus;
     private ScrollView showWordSV;
@@ -114,8 +116,6 @@ public class ShowWordActivity extends AppCompatActivity {
         words = extras.getParcelableArrayList("words");
         index = extras.getInt("index");
         wsId = extras.getString("wsId");
-//        String currentListId = extras.getString("listId");
-//        String mainListId = extras.getString("mainListId");
 
         getSharedPrefValues();
 
@@ -140,41 +140,6 @@ public class ShowWordActivity extends AppCompatActivity {
         showWordSV = (ScrollView) findViewById(R.id.showWordSV);
         loadingPB = (ProgressBar) findViewById(R.id.loadWordPB);
         errorTextV = (TextView) findViewById(R.id.errorTV);
-
-        levelSb = (SeekBar) findViewById(R.id.diffSeekBar);
-        levelTv = (TextView) findViewById(R.id.diff);
-
-        levelSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                wordLevel = i;
-                switch (i) {
-                    case Word.LVL_EASY:
-                        levelTv.setText("Easy");
-                        levelTv.setTextColor(Color.parseColor("#00B200"));
-                        break;
-                    case Word.LVL_NORMAL:
-                        levelTv.setText("Normal");
-                        levelTv.setTextColor(Color.parseColor("#005999"));
-                        break;
-                    case Word.LVL_HARD:
-                        levelTv.setText("Hard");
-                        levelTv.setTextColor(Color.parseColor("#F07F00"));
-                        break;
-                    case Word.LVL_VHARD:
-                        levelTv.setText("Very Hard");
-                        levelTv.setTextColor(Color.parseColor("#990019"));
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -283,11 +248,8 @@ public class ShowWordActivity extends AppCompatActivity {
         wordLevel  = WORD.getLevel();
         setLevel();
 
-        String titleText = WORD.getValue().toLowerCase();
-        char[] ttext = titleText.toCharArray();
-        ttext[0] = Character.toUpperCase(ttext[0]);
-//        setTitle(new String(ttext));
-        wordTitle.setText(""+(index+1)+". "+ (new String(ttext)));
+        String titleText = WORD.getValue().toUpperCase();
+        wordTitle.setText(""+(index+1)+". " +titleText);
 
         switch (WORD.getValidity()) {
             case Word.UNKNOWN:
@@ -365,8 +327,8 @@ public class ShowWordActivity extends AppCompatActivity {
             View defView = getLayoutInflater().inflate(R.layout.def_view, null);
             if(tag%2 == 0) {
                 defView.findViewById(R.id.showWordDefinitionIB)
-                        .setBackgroundColor(Color.parseColor("#f1f1f1"));
-                defView.setBackgroundColor(Color.parseColor("#f1f1f1"));
+                        .setBackgroundColor(getResources().getColor(R.color.darkBack2));
+                defView.setBackgroundColor(getResources().getColor(R.color.darkBack2));
             }
             TextView firstText = (TextView)defView.findViewById(R.id.defFirstTV);
             TextView secondText = (TextView)defView.findViewById(R.id.defSecondTV);
@@ -443,26 +405,36 @@ public class ShowWordActivity extends AppCompatActivity {
     }
 
     private void setLevel() {
-        levelSb.setProgress(wordLevel);
-        switch (wordLevel) {
-            case Word.LVL_EASY:
-                levelTv.setText("Easy");
-                levelTv.setTextColor(Color.parseColor("#00B200"));
-                break;
-            case Word.LVL_NORMAL:
-                levelTv.setText("Normal");
-                levelTv.setTextColor(Color.parseColor("#005999"));
-                break;
-            case Word.LVL_HARD:
-                levelTv.setText("Hard");
-                levelTv.setTextColor(Color.parseColor("#F07F00"));
-                break;
-            case Word.LVL_VHARD:
-                levelTv.setText("Very Hard");
-                levelTv.setTextColor(Color.parseColor("#990019"));
+
+        if(diffRadioGroup!=null){
+            ((RadioButton)diffRadioGroup.getChildAt(wordLevel)).setChecked(true);
+            return;
         }
-        levelSb.setVisibility(View.VISIBLE);
-        levelTv.setVisibility(View.VISIBLE);
+
+        diffRadioGroup = (RadioGroup) findViewById(R.id.diffRadioGroup);
+        diffRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.radio1:
+                        wordLevel = 0;
+                        wordTitle.setTextColor(getResources().getColor(R.color.easy));
+                        break;
+                    case R.id.radio2:
+                        wordLevel = 1;
+                        wordTitle.setTextColor(getResources().getColor(R.color.normal));
+                        break;
+                    case R.id.radio3:
+                        wordLevel = 2;
+                        wordTitle.setTextColor(getResources().getColor(R.color.hard));
+                        break;
+                    case R.id.radio4:
+                        wordLevel = 3;
+                        wordTitle.setTextColor(getResources().getColor(R.color.vhard));
+                }
+            }
+        });
+        ((RadioButton)diffRadioGroup.getChildAt(wordLevel)).setChecked(true);
     }
 
     private void setContents() {
@@ -732,7 +704,7 @@ public class ShowWordActivity extends AppCompatActivity {
                 break;
 
             case R.id.reload:
-                new AlertDialog.Builder(this)
+                final AlertDialog dialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                         .setTitle("Confirm Reload")
                         .setMessage("Are you sure you want to reload this word? ")
                         .setPositiveButton("Reload", new DialogInterface.OnClickListener() {
@@ -762,10 +734,27 @@ public class ShowWordActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                             }
-                        }).show();
+                        }).create();
+
+                dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface arg0) {
+                        if ((dialog.findViewById(android.R.id.message)) != null) {
+                            ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                        }
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ShowWordActivity.this.getResources().getColor(R.color.darkFore4));
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ShowWordActivity.this.getResources().getColor(R.color.darkFore4));
+
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                    }
+                });
+
+                dialog.show();
+
                 break;
             case R.id.text_size:
-                AlertDialog.Builder builder = new AlertDialog.Builder(ShowWordActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(ShowWordActivity.this, R.style.AlertDialogTheme);
                 LayoutInflater inflater = (ShowWordActivity.this).getLayoutInflater();
 
                 builder.setTitle("Set Text Size");
@@ -802,8 +791,25 @@ public class ShowWordActivity extends AppCompatActivity {
 
                     }
                 });
-                builder.create();
-                builder.show();
+                final AlertDialog dialog1 = builder.create();
+
+                dialog1.setOnShowListener( new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface arg0) {
+                        if ((dialog1.findViewById(android.R.id.message)) != null) {
+                            ((TextView)dialog1.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                        }
+                        dialog1.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ShowWordActivity.this.getResources().getColor(R.color.darkFore4));
+                        dialog1.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ShowWordActivity.this.getResources().getColor(R.color.darkFore4));
+
+                        dialog1.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                        dialog1.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                    }
+                });
+
+                dialog1.show();
+
+
                 break;
 
             case R.id.auto_pronounce:

@@ -4,15 +4,15 @@
     android:id="@+id/activity_show_word"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cardviewItem"
+    android:background="@color/darkBack1"
     tools:context="com.example.fahim.gremate.ShowWordActivity">
 
     <TextView
         android:padding="8dp"
-        android:background="#f1f1f1"
+        android:background="@color/darkBack2"
         android:layout_below="@id/toolbar"
         android:id="@+id/wordTitle"
-        android:textColor="#000"
+        android:textColor="@color/darkFore1"
         android:textSize="22sp"
         android:textStyle="bold"
         android:gravity="center"
@@ -62,7 +62,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="Description"
-                        android:textColor="#000000"
+                        android:textColor="@color/darkFore1"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
@@ -72,7 +72,7 @@
                         android:layout_height="25dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:background="@color/cardviewItem"
+                        android:background="@color/darkBack1"
                         android:scaleType="centerInside"
                         android:src="@drawable/up"
 
@@ -92,7 +92,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
                         android:clickable="true"
-                        android:textColor="#000000"
+                        android:textColor="@color/darkFore1"
                         android:textIsSelectable="true"
                         android:textSize="16sp"
                         android:visibility="gone" />
@@ -125,7 +125,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="Definitions"
-                        android:textColor="#000000"
+                        android:textColor="@color/darkFore1"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
@@ -135,7 +135,7 @@
                         android:layout_height="25dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:background="@color/cardviewItem"
+                        android:background="@color/darkBack1"
                         android:scaleType="centerInside"
                         android:src="@drawable/up"
 
@@ -180,7 +180,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="Extra Information"
-                        android:textColor="#000000"
+                        android:textColor="@color/darkFore1"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
@@ -190,7 +190,7 @@
                         android:layout_height="25dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:background="@color/cardviewItem"
+                        android:background="@color/darkBack1"
                         android:scaleType="centerInside"
                         android:src="@drawable/up"
 
@@ -211,7 +211,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
                         android:clickable="true"
-                        android:textColor="#000000"
+                        android:textColor="@color/darkFore1"
                         android:textIsSelectable="true"
                         android:textSize="16sp"
                         android:visibility="gone" />
@@ -220,42 +220,63 @@
 
             </LinearLayout>
 
-            <LinearLayout
+            <RadioGroup
+                android:id="@+id/diffRadioGroup"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="15dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="textEnd"
-                    android:layout_margin="10dp"
-                    android:text="Difficulty:"
-                    android:textColor="#000"
-                    android:textSize="15sp" />
-
-                <SeekBar
-                    android:id="@+id/diffSeekBar"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:id="@+id/radio1"
+                    android:textColor="@color/easy"
+                    android:buttonTint="@color/easy"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:paddingTop="20dp"
-                    android:paddingBottom="20dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:max="3" />
-
-
-                <TextView
-                    android:id="@+id/diff"
-                    android:layout_width="80dp"
+                    android:text="Easy"
+                    android:textSize="12sp"
+                    android:tag="0"
+                    />
+                <RadioButton
+                    android:id="@+id/radio2"
+                    android:textColor="@color/normal"
+                    android:buttonTint="@color/normal"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:textAlignment="textStart"
-                    android:layout_margin="10dp"
-                    android:textSize="15sp" />
+                    android:text="Normal"
+                    android:textSize="12sp"
+                    android:tag="1"
+                    />
 
-            </LinearLayout>
+                <RadioButton
+                    android:id="@+id/radio3"
+                    android:textColor="@color/hard"
+                    android:buttonTint="@color/hard"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Hard"
+                    android:textSize="12sp"
+                    android:tag="2"
+                    />
+
+                <RadioButton
+                    android:id="@+id/radio4"
+                    android:textColor="@color/vhard"
+                    android:buttonTint="@color/vhard"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Very Hard"
+                    android:textSize="12sp"
+                    android:tag="3"
+                    />
+
+            </RadioGroup>
 
         </LinearLayout>
     </ScrollView>
@@ -265,7 +286,9 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_centerInParent="true"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:theme="@style/ProgressBarStyle"
+        />
 
     <TextView
         android:id="@+id/errorTV"
@@ -273,7 +296,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="Sorry, no data found!"
-        android:textColor="@color/FireBrick"
+        android:textColor="@color/hard"
         android:textSize="18dp"
         android:visibility="gone" />
 

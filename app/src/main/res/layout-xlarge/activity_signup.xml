@@ -9,11 +9,10 @@
         android:id="@+id/activity_lab6"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        tools:context="com.example.fahim.gremate.SignupActivity">
+        android:padding="5dp"
+        tools:context="com.example.fahim.gremate.SignupActivity"
+        android:background="@color/darkBack1"
+        >
 
         <EditText
             android:layout_marginTop="20dp"
@@ -26,7 +25,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="textStart"
             android:hint="Name"
-            android:textSize="15sp"
+            android:textSize="18sp"
             />
 
         <EditText
@@ -40,7 +39,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="textStart"
             android:hint="Email"
-            android:textSize="15sp"
+            android:textSize="18sp"
             />
 
         <EditText
@@ -52,7 +51,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="textStart"
             android:hint="Password"
-            android:textSize="15sp"
+            android:textSize="18sp"
             android:imeOptions="actionDone"
             android:maxLines="1" />
 
@@ -60,22 +59,25 @@
             android:layout_below="@+id/suPassword"
             android:layout_centerInParent="true"
             app:backgroundTint="@color/colorAccent"
-            android:textColor="#FFF"
+            android:textColor="@color/darkFore1"
             android:id="@+id/suSignup"
             android:text="Sign up"
-            android:textSize="15sp"
+            android:textSize="20sp"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             />
+
         <ProgressBar
             android:id="@+id/suSpinner"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="15dp"
             android:layout_below="@id/suPassword"
             android:layout_toEndOf="@id/suSignup"
+            android:theme="@style/ProgressBarStyle"
             style="?android:attr/progressBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            />
 
         <TextView
             android:layout_centerInParent="true"
@@ -84,13 +86,9 @@
             android:layout_below="@id/suSignup"
             android:id="@+id/suFailText"
             android:layout_marginTop="5dp"
-            android:textSize="15sp"
-            android:textColor="@color/FireBrick"
+            android:textSize="20sp"
+            android:textColor="@color/vhard"
             android:text="Sign up failed! Please try again."
             />
-
-
-
-
     </RelativeLayout>
 </ScrollView>

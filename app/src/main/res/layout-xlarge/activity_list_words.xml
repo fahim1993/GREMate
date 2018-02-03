@@ -7,17 +7,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.fahim.gremate.ListWordsActivity">
+    tools:context="com.example.fahim.gremate.ListWordsActivity"
+    android:background="@color/darkBack1"
+    >
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/listWordsCV"
-        app:cardBackgroundColor="@color/cardviewBackground"
         android:layout_margin="5dp"
         app:cardCornerRadius="3dp"
         app:cardElevation="3dp"
         app:contentPadding="4dp"
+        app:cardBackgroundColor="@color/darkBack2"
         >
 
         <RelativeLayout
@@ -37,7 +39,7 @@
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/addWordBtn"
                     app:backgroundTint="@color/colorPrimary"
-                    android:tint="#FFF"
+                    android:tint="@color/darkFore1"
                     android:src="@drawable/ic_ws_add_word"
                     android:scaleType="fitCenter"
                     android:layout_width="60dp"
@@ -49,7 +51,7 @@
                     android:src="@drawable/ic_ws_search"
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/colorPrimary"
-                    android:tint="#FFF"
+                    android:tint="@color/darkFore1"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:onClick="searchButtonClick"/>
@@ -59,7 +61,7 @@
                     android:src="@drawable/ic_ws_reorder"
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/colorPrimary"
-                    android:tint="#FFF"
+                    android:tint="@color/darkFore1"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:onClick="sortButtonClick"/>
@@ -71,7 +73,7 @@
                     android:src="@drawable/ic_ws_exercise"
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/colorPrimary"
-                    android:tint="#FFF"
+                    android:tint="@color/darkFore1"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:onClick="practiceButtonClick"/>
@@ -81,7 +83,7 @@
                     android:src="@drawable/details"
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/colorPrimary"
-                    android:tint="#FFF"
+                    android:tint="@color/darkFore1"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:onClick="detailsButtonClick"/>
@@ -91,7 +93,7 @@
                     android:src="@drawable/save"
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/colorPrimary"
-                    android:tint="#FFF"
+                    android:tint="@color/darkFore1"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:onClick="saveButtonClick"/>
@@ -99,6 +101,7 @@
             </LinearLayout>
 
             <ProgressBar
+                android:theme="@style/ProgressBarStyle"
                 android:layout_centerInParent="true"
                 android:visibility="gone"
                 android:id="@+id/loadWordRV"

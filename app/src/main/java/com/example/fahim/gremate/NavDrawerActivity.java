@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.LayoutRes;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -108,6 +109,7 @@ public class NavDrawerActivity extends AppCompatActivity {
             }
         };
 
+        mDrawerToggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.darkFore1));
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
     }

@@ -13,6 +13,6 @@
         android:layout_marginBottom="25dp"
         android:textSize="20sp"
         android:text="FAHIM"
-        android:textColor="#ffffff"/>
+        android:textColor="@color/darkFore3"/>
 
 </RelativeLayout>

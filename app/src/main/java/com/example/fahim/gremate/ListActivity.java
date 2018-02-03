@@ -2,6 +2,7 @@ package com.example.fahim.gremate;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -130,7 +131,8 @@ public class ListActivity extends NavDrawerActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.addList:
-                AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this, R.style.AlertDialogTheme);
                 builder.setTitle("Add list");
 
                 final EditText input = new EditText(ListActivity.this);
@@ -160,7 +162,24 @@ public class ListActivity extends NavDrawerActivity {
                     }
                 });
 
-                builder.show();
+                final AlertDialog dialog = builder.create();
+
+                dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface arg0) {
+                        if ((dialog.findViewById(android.R.id.message)) != null) {
+                            ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                        }
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListActivity.this.getResources().getColor(R.color.darkFore4));
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListActivity.this.getResources().getColor(R.color.darkFore4));
+
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                    }
+                });
+
+                dialog.show();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -211,7 +230,7 @@ public class ListActivity extends NavDrawerActivity {
                         finish();
                         break;
                     case R.id.nav_signout:
-                        new AlertDialog.Builder(ListActivity.this)
+                        final AlertDialog dialog = new AlertDialog.Builder(ListActivity.this, R.style.AlertDialogTheme)
                                 .setTitle("Confirm Sign Out")
                                 .setMessage( "Are you sure you want to sign out?")
                                 .setPositiveButton("Sign Out", new DialogInterface.OnClickListener() {
@@ -228,7 +247,24 @@ public class ListActivity extends NavDrawerActivity {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                     }
-                                }).show();
+                                }).create();
+
+                        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                            @Override
+                            public void onShow(DialogInterface arg0) {
+                                if ((dialog.findViewById(android.R.id.message)) != null) {
+                                    ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                                }
+                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListActivity.this.getResources().getColor(R.color.darkFore4));
+                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListActivity.this.getResources().getColor(R.color.darkFore4));
+
+                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                            }
+                        });
+
+                        dialog.show();
+
                         break;
                     case R.id.nav_search:
                         intent = new Intent(ListActivity.this, SearchActivity.class);

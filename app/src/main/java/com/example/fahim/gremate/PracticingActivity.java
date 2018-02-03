@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
@@ -22,6 +23,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -69,9 +72,7 @@ public class PracticingActivity extends AppCompatActivity {
 
     private WordPractice wordPractice;
 
-    private LinearLayout wordLevelLL;
-    private SeekBar levelSb;
-    private TextView levelTv;
+    private RadioGroup diffRadioGroup;
     private int wordLevel;
 
     private Word word;
@@ -120,6 +121,8 @@ public class PracticingActivity extends AppCompatActivity {
 
         random = new Random();
 
+        diffRadioGroup = (RadioGroup) findViewById(R.id.diffRadioGroup);
+
         setTitle("SCORE: 0");
 
         randomizeWords();
@@ -165,13 +168,13 @@ public class PracticingActivity extends AppCompatActivity {
                     randomizeWords();
                     createLevelMap();
                 }
-                for (int i = 0; i < 5; i++) ansTVs[i].setTextColor(Color.parseColor("#000000"));
+                for (int i = 0; i < 5; i++) ansTVs[i].setTextColor(getResources().getColor(R.color.darkFore1));
 
                 nextButton.setVisibility(GONE);
                 viewButton.setVisibility(GONE);
 
                 practicingSV.setVisibility(GONE);
-                wordLevelLL.setVisibility(GONE);
+                diffRadioGroup.setVisibility(GONE);
                 practicingLoading.setVisibility(View.VISIBLE);
                 loadWordPracticeData(words.get(index).getCloneOf());
 
@@ -193,43 +196,22 @@ public class PracticingActivity extends AppCompatActivity {
             }
         });
 
-        levelSb = (SeekBar) findViewById(R.id.diffSeekBar);
-        levelTv = (TextView) findViewById(R.id.diff);
-        levelTv.setText("Easy");
-        levelTv.setTextColor(Color.parseColor("#00B200"));
-
-        wordLevelLL = (LinearLayout) findViewById(R.id.wordLevel);
-        wordLevelLL.setVisibility(GONE);
-
-        levelSb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        diffRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                wordLevel = i;
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
-                    case Word.LVL_EASY:
-                        levelTv.setText("Easy");
-                        levelTv.setTextColor(Color.parseColor("#00B200"));
+                    case R.id.radio1:
+                        wordLevel = 0;
                         break;
-                    case Word.LVL_NORMAL:
-                        levelTv.setText("Normal");
-                        levelTv.setTextColor(Color.parseColor("#005999"));
+                    case R.id.radio2:
+                        wordLevel = 1;
                         break;
-                    case Word.LVL_HARD:
-                        levelTv.setText("Hard");
-                        levelTv.setTextColor(Color.parseColor("#F07F00"));
+                    case R.id.radio3:
+                        wordLevel = 2;
                         break;
-                    case Word.LVL_VHARD:
-                        levelTv.setText("Very Hard");
-                        levelTv.setTextColor(Color.parseColor("#990019"));
+                    case R.id.radio4:
+                        wordLevel = 3;
                 }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
 
@@ -297,8 +279,8 @@ public class PracticingActivity extends AppCompatActivity {
 
         word = words.get(index);
         wordLevel = word.getLevel();
-        wordLevelLL.setVisibility(GONE);
-        levelSb.setProgress(wordLevel);
+        diffRadioGroup.setVisibility(GONE);
+        ((RadioButton)diffRadioGroup.getChildAt(wordLevel)).setChecked(true);
 
         final DatabaseReference ref = db.wordPracticeRef(id);
         ref.addValueEventListener(new ValueEventListener() {
@@ -374,12 +356,12 @@ public class PracticingActivity extends AppCompatActivity {
     public void validateResult(View v) {
         int ind = Integer.valueOf(v.getTag().toString());
         if (ind == ansIndex) {
-            ansTVs[ind].setTextColor(Color.parseColor("#007200"));
+            ansTVs[ind].setTextColor(getResources().getColor(R.color.easy));
             if (!thisJudged) {
                 noCorrect++;
             }
         } else {
-            ansTVs[ind].setTextColor(Color.parseColor("#720000"));
+            ansTVs[ind].setTextColor(getResources().getColor(R.color.hard));
             if(!thisJudged){
                 wrongAns.add("<b>"+wordPractice.getWord().toUpperCase()+": </b>" + ans);
             }
@@ -387,7 +369,7 @@ public class PracticingActivity extends AppCompatActivity {
         thisJudged = true;
         nextButton.setVisibility(View.VISIBLE);
         viewButton.setVisibility(View.VISIBLE);
-        wordLevelLL.setVisibility(View.VISIBLE);
+        diffRadioGroup.setVisibility(View.VISIBLE);
         setTitle("SCORE: " + noCorrect + "/" + noQuestions +  " (" + words.size() + ")");
 
     }
@@ -414,7 +396,7 @@ public class PracticingActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                new AlertDialog.Builder(PracticingActivity.this)
+                final AlertDialog dialog = new AlertDialog.Builder(PracticingActivity.this, R.style.AlertDialogTheme)
                         .setTitle("End practice?")
                         .setMessage("You correctly answered " + noCorrect + " out of " + noQuestions + ". Do you want to stop?")
                         .setPositiveButton("STOP", new DialogInterface.OnClickListener() {
@@ -427,7 +409,24 @@ public class PracticingActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                             }
-                        }).show();
+                        }).create();
+
+                dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface arg0) {
+                        if ((dialog.findViewById(android.R.id.message)) != null) {
+                            ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                        }
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(PracticingActivity.this.getResources().getColor(R.color.darkFore4));
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(PracticingActivity.this.getResources().getColor(R.color.darkFore4));
+
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                    }
+                });
+
+                dialog.show();
+
                 break;
 
             case R.id.pronounce:
@@ -465,7 +464,7 @@ public class PracticingActivity extends AppCompatActivity {
         msg.append(noQuestions);
         msg.append(". Do you want to stop?");
 
-        AlertDialog dialog = new AlertDialog.Builder(PracticingActivity.this)
+        final AlertDialog dialog = new AlertDialog.Builder(PracticingActivity.this, R.style.AlertDialogTheme)
                 .setTitle("End practice?")
                 .setMessage(fromHtml(msg.toString()))
                 .setPositiveButton("STOP", new DialogInterface.OnClickListener() {
@@ -478,10 +477,23 @@ public class PracticingActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                     }
-                }).show();
+                }).create();
 
-        ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                if ((dialog.findViewById(android.R.id.message)) != null) {
+                    ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                }
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(PracticingActivity.this.getResources().getColor(R.color.darkFore4));
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(PracticingActivity.this.getResources().getColor(R.color.darkFore4));
 
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+            }
+        });
+
+        dialog.show();
     }
 
     private static class PlaybackPronunciation extends AsyncTask<String, Void, String> {

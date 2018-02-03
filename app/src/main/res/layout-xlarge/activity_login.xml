@@ -15,14 +15,16 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
-        tools:context="com.example.fahim.gremate.LoginActivity">
+        tools:context="com.example.fahim.gremate.LoginActivity"
+        android:background="@color/darkBack1"
+        >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/title"
-            android:textColor="#000"
-            android:textSize="18sp"
+            android:textColor="@color/darkFore1"
+            android:textSize="25sp"
             android:text="Welcome to GREMate! You need to login to start using the app!"
             />
 
@@ -39,7 +41,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="textStart"
             android:hint="Email"
-            android:textSize="15sp"
+            android:textSize="18sp"
             />
 
         <EditText
@@ -51,7 +53,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="textStart"
             android:hint="Password"
-            android:textSize="15dp"
+            android:textSize="18sp"
             android:imeOptions="actionDone"
             android:maxLines="1" />
 
@@ -59,22 +61,25 @@
             android:layout_below="@+id/password"
             android:layout_centerInParent="true"
             app:backgroundTint="@color/colorAccent"
-            android:textColor="#FFF"
+            android:textColor="@color/darkFore1"
             android:id="@+id/login"
             android:text="Login"
-            android:textSize="15sp"
+            android:textSize="20sp"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             />
         <ProgressBar
             android:id="@+id/loginSpinner"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="5dp"
             android:layout_below="@id/password"
             android:layout_toEndOf="@id/login"
+            android:theme="@style/ProgressBarStyle"
             style="?android:attr/progressBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            />
 
         <TextView
             android:layout_centerInParent="true"
@@ -83,8 +88,8 @@
             android:layout_below="@id/login"
             android:id="@+id/loginFail"
             android:layout_marginTop="5dp"
-            android:textSize="15sp"
-            android:textColor="@color/FireBrick"
+            android:textSize="20sp"
+            android:textColor="@color/vhard"
             android:text="Login failed!"
             />
 
@@ -94,9 +99,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/loginFail"
             android:id="@+id/noacc"
-            android:layout_marginTop="30dp"
-            android:textSize="15sp"
-            android:textColor="#000"
+            android:layout_marginTop="35dp"
+            android:textSize="20sp"
+            android:textColor="@color/darkFore1"
             android:text="Don't have an account?"
             />
 
@@ -104,10 +109,10 @@
             android:layout_below="@+id/noacc"
             android:layout_centerInParent="true"
             app:backgroundTint="@color/colorAccent"
-            android:textColor="#FFF"
+            android:textColor="@color/darkFore1"
             android:id="@+id/signup"
             android:text="singup"
-            android:textSize="15sp"
+            android:textSize="20sp"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             />

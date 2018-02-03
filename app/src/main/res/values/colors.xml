@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="darkBack1">#2B2B2B</color>
+    <color name="darkBack2">#323232</color>
+    <color name="darkBack3">#4F4F4F</color>
+
+    <color name="darkBack4">#383A3C</color>
+    <color name="darkBack5">#414446</color>
+    <color name="darkBack6">#505355</color>
+
+    <color name="darkFore1">#95A3B2</color>
+    <color name="darkFore2">#9FADBC</color>
+    <color name="darkFore3">#A9B7C6</color>
+    <color name="darkFore4">#B3C1D0</color>
+
+    <color name="easy">#4F7842</color>
+    <color name="normal">#3E86A0</color>
+    <color name="hard">#AE592D</color>
+    <color name="vhard">#964343</color>
+
+    <color name="hintColor">#5A6877</color>
+
+
     <color name="cardviewBackground">#f4f4f4</color>
     <color name="cardviewItem">#f8f8f8</color>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#303F9F</color>
+    <color name="colorPrimary">#0F0F40</color>
+    <color name="colorPrimaryDark">#0F0F40</color>
+    <color name="colorAccent">#0F0F40</color>
     <color name="White">#FFFFFF</color>
     <color name="Ivory">#FFFFF0</color>
     <color name="LightYellow">#FFFFE0</color>

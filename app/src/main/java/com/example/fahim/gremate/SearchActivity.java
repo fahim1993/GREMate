@@ -20,11 +20,14 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -132,9 +135,22 @@ public class SearchActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        input = (EditText) findViewById(R.id.searchWordET);
-
         webSearchButton = (AppCompatImageButton) findViewById(R.id.webSearchBtn);
+
+        input = (EditText) findViewById(R.id.searchWordET);
+        input.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    hideKeyboard(SearchActivity.this);
+                    webSearchButton.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
+
         webSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -276,8 +292,8 @@ public class SearchActivity extends AppCompatActivity {
             View defView = getLayoutInflater().inflate(R.layout.def_view, null);
             if(tag%2 == 0) {
                 defView.findViewById(R.id.showWordDefinitionIB)
-                        .setBackgroundColor(Color.parseColor("#f1f1f1"));
-                defView.setBackgroundColor(Color.parseColor("#f1f1f1"));
+                        .setBackgroundColor(getResources().getColor(R.color.darkBack2));
+                defView.setBackgroundColor(getResources().getColor(R.color.darkBack2));
             }
             TextView firstText = (TextView)defView.findViewById(R.id.defFirstTV);
             TextView secondText = (TextView)defView.findViewById(R.id.defSecondTV);
@@ -623,6 +639,15 @@ public class SearchActivity extends AppCompatActivity {
             }
             return "";
         }
+    }
+
+    void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
 }

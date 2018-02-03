@@ -4,12 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatImageButton;
@@ -60,12 +57,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         ListWithId item = lists.get(position);
         holder.listName.setText(item.getName());
         if(lists.get(position).getId().equals(lastListId)){
-            holder.cv.setCardBackgroundColor(Color.parseColor("#e5e5e5"));
-            holder.delBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#e5e5e5")));
+            holder.cv.setCardBackgroundColor(context.getResources().getColor(R.color.darkBack4));
+            holder.delBtn.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.darkBack4)));
         }
         else {
-            holder.cv.setCardBackgroundColor(Color.parseColor("#f8f8f8"));
-            holder.delBtn.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#f8f8f8")));
+            holder.cv.setCardBackgroundColor(context.getResources().getColor(R.color.darkBack5));
+            holder.delBtn.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.darkBack5)));
         }
         holder.delBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +76,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                 else
                     showMessage = "Are you sure you want to delete this word list?";
 
-                new AlertDialog.Builder(context)
+                final AlertDialog dialog = new AlertDialog.Builder(context, R.style.AlertDialogTheme)
                         .setTitle("Confirm Delete")
                         .setMessage(showMessage)
                         .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
@@ -98,7 +95,23 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                             }
-                        }).show();
+                        }).create();
+
+                dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface arg0) {
+                        if ((dialog.findViewById(android.R.id.message)) != null) {
+                            ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                        }
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
+
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                    }
+                });
+
+                dialog.show();
             }
         });
         holder.cv.setOnClickListener(new View.OnClickListener() {

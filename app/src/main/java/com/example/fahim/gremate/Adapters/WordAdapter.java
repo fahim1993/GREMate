@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.Bundle;
+import android.content.res.ColorStateList;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.CardView;
@@ -56,6 +58,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
         return wv;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onBindViewHolder(WordViewHolder holder, final int position) {
         holder.wordValue.setText(wordList.get(position).getValue().toUpperCase());
@@ -65,6 +68,9 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
         else text += wordList.get(position).getSourceListName() + " (c)";
 
         holder.sourceListName.setText(text);
+
+        holder.cv.setCardBackgroundColor(context.getResources().getColor(R.color.darkBack4));
+        holder.moreBtn.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.darkBack4)));
 
         holder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,7 +98,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
         holder.moreBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogTheme);
                 final WordWithId _word = wordList.get(position);
                 builder.setTitle(_word.getValue().toUpperCase());
 
@@ -111,7 +117,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                         "Please create a new list first!", Toast.LENGTH_LONG).show();
                                 return;
                             }
-                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.AlertDialogTheme);
                             builder.setTitle("Select a list");
                             CharSequence[] listNames = new CharSequence[otherLists.size()];
                             for (int j = 0; j < otherLists.size(); j++) {
@@ -128,7 +134,20 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                     DB.addWordToAnotherList(wsId, otherLists.get(i).getId(), nWord);
                                 }
                             });
-                            AlertDialog alert = builder.create();
+                            final AlertDialog alert = builder.create();
+                            alert.setOnShowListener( new DialogInterface.OnShowListener() {
+                                @Override
+                                public void onShow(DialogInterface arg0) {
+                                    if ((alert.findViewById(android.R.id.message)) != null) {
+                                        ((TextView)alert.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                                    }
+                                    alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
+                                    alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
+
+                                    alert.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                                    alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                                }
+                            });
                             alert.show();
                         } else if (i == 1) {
                             Intent intent = new Intent(context, EditActivity.class);
@@ -142,7 +161,7 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                             return;
                         } else {
                             if (!_word.isClone() || currentListId.equals(mainListId)) {
-                                new AlertDialog.Builder(context)
+                                final AlertDialog alert = new AlertDialog.Builder(context, R.style.AlertDialogTheme)
                                         .setTitle("Confirm Delete")
                                         .setMessage("Are you sure you want to delete this word?")
                                         .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
@@ -165,11 +184,26 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                             }
-                                        }).show();
+                                        }).create();
+                                alert.setOnShowListener( new DialogInterface.OnShowListener() {
+                                    @Override
+                                    public void onShow(DialogInterface arg0) {
+                                        if ((alert.findViewById(android.R.id.message)) != null) {
+                                            ((TextView)alert.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                                        }
+                                        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
+                                        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
+
+                                        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                                        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                                    }
+                                });
+
+                                alert.show();
 
                             } else {
                                 if (i == 2) {
-                                    new AlertDialog.Builder(context)
+                                    final AlertDialog alert = new AlertDialog.Builder(context, R.style.AlertDialogTheme)
                                             .setTitle("Confirm Remove")
                                             .setMessage("Are you sure you want to remove this word from this list?")
                                             .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
@@ -184,11 +218,26 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                 }
-                                            }).show();
+                                            }).create();
 
+                                    alert.setOnShowListener( new DialogInterface.OnShowListener() {
+                                        @Override
+                                        public void onShow(DialogInterface arg0) {
+                                            if ((alert.findViewById(android.R.id.message)) != null) {
+                                                ((TextView)alert.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                                            }
+                                            alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
+                                            alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
+
+                                            alert.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                                            alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                                        }
+                                    });
+
+                                    alert.show();
 
                                 } else {
-                                    new AlertDialog.Builder(context)
+                                     final AlertDialog alert = new AlertDialog.Builder(context, R.style.AlertDialogTheme)
                                             .setTitle("Confirm Delete")
                                             .setMessage("Are you sure you want to delete this word?")
                                             .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
@@ -210,13 +259,43 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                                 @Override
                                                 public void onClick(DialogInterface dialogInterface, int i) {
                                                 }
-                                            }).show();
+                                            }).create();
+
+                                    alert.setOnShowListener( new DialogInterface.OnShowListener() {
+                                        @Override
+                                        public void onShow(DialogInterface arg0) {
+                                            if ((alert.findViewById(android.R.id.message)) != null) {
+                                                ((TextView)alert.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                                            }
+                                            alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
+                                            alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
+
+                                            alert.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                                            alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                                        }
+                                    });
+
+                                    alert.show();
                                 }
                             }
                         }
                     }
                 });
-                AlertDialog alert = builder.create();
+                final AlertDialog alert = builder.create();
+                alert.setOnShowListener( new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface arg0) {
+                        if ((alert.findViewById(android.R.id.message)) != null) {
+                            ((TextView)alert.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                        }
+                        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
+                        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
+
+                        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                    }
+                });
+
                 alert.show();
             }
         });

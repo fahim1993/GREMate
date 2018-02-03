@@ -29,7 +29,7 @@
         <!-- android:theme="@style/mydialog" -->
         <activity
             android:name=".SearchActivity"
-            android:theme="@style/mydialog" />
+            android:theme="@style/MyDialog" />
         <activity android:name=".PracticeActivity" />
         <activity android:name=".PracticingActivity" />
         <activity android:name=".EditActivity" />

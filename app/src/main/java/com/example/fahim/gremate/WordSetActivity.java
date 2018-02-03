@@ -2,12 +2,16 @@ package com.example.fahim.gremate;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
@@ -64,7 +68,7 @@ public class WordSetActivity extends NavDrawerActivity {
         wordSetTitle = (TextView) findViewById(R.id.wordSetTitle);
 
         setWsTitle();
-        setTitle("GREMate");
+        setTitle(Html.fromHtml("<font color='#95A3B2'>GREMate</font>"));
 
         wsRecyclerView = (RecyclerView)findViewById(R.id.rvWordSet);
         wsRecyclerView.setHasFixedSize(true);
@@ -78,8 +82,8 @@ public class WordSetActivity extends NavDrawerActivity {
         wsRecyclerView.setVisibility(View.GONE);
         loadWordSet.setVisibility(View.VISIBLE);
 
+
         setWordSet();
-        Log.d("WordSetActivity ", " onCreate");
     }
 
     @Override
@@ -123,7 +127,7 @@ public class WordSetActivity extends NavDrawerActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.addSet:
-                AlertDialog.Builder builder = new AlertDialog.Builder(WordSetActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(WordSetActivity.this, R.style.AlertDialogTheme);
                 builder.setTitle("WORD SET NAME");
 
                 final EditText input = new EditText(WordSetActivity.this);
@@ -150,7 +154,25 @@ public class WordSetActivity extends NavDrawerActivity {
                     }
                 });
 
-                builder.show();
+                final AlertDialog dialog = builder.create();
+
+                dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface arg0) {
+                        if ((dialog.findViewById(android.R.id.message)) != null) {
+                            ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                        }
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(WordSetActivity.this.getResources().getColor(R.color.darkFore4));
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(WordSetActivity.this.getResources().getColor(R.color.darkFore4));
+
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                    }
+                });
+
+                dialog.show();
+
+
                 return true;
 
             case R.id.sync:
@@ -240,7 +262,7 @@ public class WordSetActivity extends NavDrawerActivity {
                         finish();
                         break;
                     case R.id.nav_signout:
-                        new AlertDialog.Builder(WordSetActivity.this)
+                        final AlertDialog dialog = new AlertDialog.Builder(WordSetActivity.this, R.style.AlertDialogTheme)
                                 .setTitle("Confirm Sign Out")
                                 .setMessage( "Are you sure you want to sign out?")
                                 .setPositiveButton("Sign Out", new DialogInterface.OnClickListener() {
@@ -257,7 +279,24 @@ public class WordSetActivity extends NavDrawerActivity {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                     }
-                                }).show();
+                                }).create();
+
+                        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                            @Override
+                            public void onShow(DialogInterface arg0) {
+                                if ((dialog.findViewById(android.R.id.message)) != null) {
+                                    ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                                }
+                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(WordSetActivity.this.getResources().getColor(R.color.darkFore4));
+                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(WordSetActivity.this.getResources().getColor(R.color.darkFore4));
+
+                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                            }
+                        });
+
+                        dialog.show();
+
                         break;
                     case R.id.nav_search:
                         intent = new Intent(WordSetActivity.this, SearchActivity.class);
@@ -281,7 +320,7 @@ public class WordSetActivity extends NavDrawerActivity {
             if(mDrawerLayout.isDrawerOpen(Gravity.START))
                 mDrawerLayout.closeDrawer(Gravity.START);
             else {
-                new AlertDialog.Builder(WordSetActivity.this)
+                final AlertDialog dialog = new AlertDialog.Builder(WordSetActivity.this, R.style.AlertDialogTheme)
                         .setTitle("Close")
                         .setMessage("Are you sure you want to close GREMate?")
                         .setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
@@ -294,7 +333,23 @@ public class WordSetActivity extends NavDrawerActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                             }
-                        }).show();
+                        }).create();
+
+                dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(DialogInterface arg0) {
+                        if ((dialog.findViewById(android.R.id.message)) != null) {
+                            ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
+                        }
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(WordSetActivity.this.getResources().getColor(R.color.darkFore4));
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(WordSetActivity.this.getResources().getColor(R.color.darkFore4));
+
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
+                    }
+                });
+
+                dialog.show();
             }
         }
         return true;

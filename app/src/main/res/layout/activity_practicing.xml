@@ -10,12 +10,13 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.fahim.gremate.PracticingActivity">
+    tools:context="com.example.fahim.gremate.PracticingActivity"
+    android:background="@color/darkBack1"
+    >
 
 
     <ScrollView
         android:id="@+id/practicingSV"
-        android:layout_margin="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -26,7 +27,7 @@
 
             <TextView
                 android:id="@+id/questionTv"
-                android:textColor="#000"
+                android:textColor="@color/darkFore1"
                 android:textSize="20sp"
                 android:layout_marginBottom="10dp"
                 android:textStyle="bold"
@@ -38,18 +39,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                card_view:cardBackgroundColor="@color/cardviewItem"
+                card_view:cardBackgroundColor="@color/darkBack2"
                 card_view:cardCornerRadius="3dp"
                 card_view:cardElevation="2dp"
                 card_view:contentPadding="6dp"
-                android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
                 android:onClick="validateResult"
                 android:tag="0"
                 >
                 <TextView
                     android:id="@+id/ansTV1"
-                    android:textColor="#000"
+                    android:textColor="@color/darkFore1"
                     android:textSize="18sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -61,19 +61,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                card_view:cardBackgroundColor="@color/cardviewItem"
+                card_view:cardBackgroundColor="@color/darkBack2"
                 card_view:cardCornerRadius="3dp"
                 card_view:cardElevation="2dp"
                 card_view:contentPadding="6dp"
-                android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
                 android:onClick="validateResult"
                 android:tag="1"
                 >
                 <TextView
                     android:id="@+id/ansTV2"
-
-                    android:textColor="#000"
+                    android:textColor="@color/darkFore1"
                     android:textSize="18sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -85,18 +83,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                card_view:cardBackgroundColor="@color/cardviewItem"
+                card_view:cardBackgroundColor="@color/darkBack2"
                 card_view:cardCornerRadius="3dp"
                 card_view:cardElevation="2dp"
                 card_view:contentPadding="6dp"
-                android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
                 android:onClick="validateResult"
                 android:tag="2"
                 >
                 <TextView
                     android:id="@+id/ansTV3"
-                    android:textColor="#000"
+                    android:textColor="@color/darkFore1"
                     android:textSize="18sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -108,18 +105,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                card_view:cardBackgroundColor="@color/cardviewItem"
+                card_view:cardBackgroundColor="@color/darkBack2"
                 card_view:cardCornerRadius="3dp"
                 card_view:cardElevation="2dp"
                 card_view:contentPadding="6dp"
-                android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
                 android:onClick="validateResult"
                 android:tag="3"
                 >
                 <TextView
                     android:id="@+id/ansTV4"
-                    android:textColor="#000"
+                    android:textColor="@color/darkFore1"
                     android:textSize="18sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -131,11 +127,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin = "5dp"
-                card_view:cardBackgroundColor="@color/cardviewItem"
+                card_view:cardBackgroundColor="@color/darkBack2"
                 card_view:cardCornerRadius="3dp"
                 card_view:cardElevation="2dp"
                 card_view:contentPadding="6dp"
-                android:foreground="?android:attr/selectableItemBackground"
                 android:clickable="true"
                 android:onClick="validateResult"
                 android:tag="4"
@@ -143,7 +138,7 @@
 
                 <TextView
                     android:id="@+id/ansTV5"
-                    android:textColor="#000"
+                    android:textColor="@color/darkFore1"
                     android:textSize="18sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -152,7 +147,7 @@
 
             <LinearLayout
                 android:id="@+id/buttonPanel"
-                android:layout_marginTop="15dp"
+                android:layout_margin="15dp"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -161,7 +156,7 @@
                     android:layout_centerInParent="true"
                     android:id="@+id/viewBtn"
                     app:backgroundTint="@color/colorAccent"
-                    android:textColor="#FFF"
+                    android:textColor="@color/darkFore1"
                     android:textSize="15sp"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -172,7 +167,7 @@
                     android:layout_centerInParent="true"
                     android:id="@+id/nextBtn"
                     app:backgroundTint="@color/colorAccent"
-                    android:textColor="#FFF"
+                    android:textColor="@color/darkFore1"
                     android:textSize="15sp"
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -183,53 +178,72 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/wordLevel"
+            <RadioGroup
+                android:id="@+id/diffRadioGroup"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="3dp"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="textEnd"
-                    android:layout_margin="10dp"
-                    android:text="Difficulty:"
-                    android:textColor="#000"
-                    android:textSize="15sp" />
-
-
-
-                <SeekBar
-                    android:id="@+id/diffSeekBar"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:id="@+id/radio1"
+                    android:textColor="@color/easy"
+                    android:buttonTint="@color/easy"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:paddingTop="20dp"
-                    android:paddingBottom="20dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:max="3" />
-
-
-                <TextView
-                    android:id="@+id/diff"
-                    android:layout_width="80dp"
+                    android:text="Easy"
+                    android:textSize="12sp"
+                    android:tag="0"
+                    />
+                <RadioButton
+                    android:id="@+id/radio2"
+                    android:textColor="@color/normal"
+                    android:buttonTint="@color/normal"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
-                    android:textAlignment="textStart"
-                    android:layout_margin="10dp"
-                    android:textSize="15sp" />
+                    android:text="Normal"
+                    android:textSize="12sp"
+                    android:tag="1"
+                    />
 
-            </LinearLayout>
+                <RadioButton
+                    android:id="@+id/radio3"
+                    android:textColor="@color/hard"
+                    android:buttonTint="@color/hard"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Hard"
+                    android:textSize="12sp"
+                    android:tag="2"
+                    />
 
+                <RadioButton
+                    android:id="@+id/radio4"
+                    android:textColor="@color/vhard"
+                    android:buttonTint="@color/vhard"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Very Hard"
+                    android:textSize="12sp"
+                    android:tag="3"
+                    />
+
+            </RadioGroup>
 
         </LinearLayout>
+
     </ScrollView>
 
     <ProgressBar
         android:id="@+id/practicingLoading"
         android:visibility="gone"
+        android:theme="@style/ProgressBarStyle"
         android:layout_centerInParent="true"
         android:layout_width="50dp"
         android:layout_height="50dp" />
