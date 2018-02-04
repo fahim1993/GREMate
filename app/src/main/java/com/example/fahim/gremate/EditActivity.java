@@ -193,6 +193,7 @@ public class EditActivity extends AppCompatActivity {
         ImageButton delBtn = new ImageButton(EditActivity.this);
         delBtn.setImageResource(R.drawable.deltbtn);
         delBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+        delBtn.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.darkFore4)));
         delBtn.setScaleType(android.widget.ImageView.ScaleType.CENTER_INSIDE);
         delBtn.setLayoutParams(new LinearLayout.LayoutParams(delbtnSize, delbtnSize));
 
@@ -241,6 +242,7 @@ public class EditActivity extends AppCompatActivity {
         ImageButton delBtn = new ImageButton(EditActivity.this);
         delBtn.setImageResource(R.drawable.deltbtn);
         delBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+        delBtn.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.darkFore4)));
         delBtn.setScaleType(android.widget.ImageView.ScaleType.CENTER_INSIDE);
         delBtn.setLayoutParams(new LinearLayout.LayoutParams(delbtnSize, delbtnSize));
 
@@ -298,6 +300,8 @@ public class EditActivity extends AppCompatActivity {
         delBtn.setImageResource(R.drawable.deltbtn);
         delBtn.setScaleType(android.widget.ImageView.ScaleType.CENTER_INSIDE);
         delBtn.setLayoutParams(new LinearLayout.LayoutParams(delbtnSize, delbtnSize));
+        delBtn.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.darkFore4)));
+        delBtn.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
 
         delBtn.setOnClickListener(new View.OnClickListener() {
             @Override

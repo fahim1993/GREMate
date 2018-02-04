@@ -119,6 +119,8 @@ public class ShowWordActivity extends AppCompatActivity {
 
         getSharedPrefValues();
 
+        setTitle("");
+
         wordTitle = (TextView) findViewById(R.id.wordTitle);
         descriptionText = (TextView) findViewById(R.id.showWordDescriptionText);
         extraInfoText = (TextView) findViewById(R.id.showWordExtraInfoText);

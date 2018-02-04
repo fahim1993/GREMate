@@ -108,7 +108,12 @@ public class WordDef {
         if(sentences.length()>0){
             sb.append("<br><b>*</b> ");
             String [] sents = getSentencesArray();
-            sb.append(sents[0]);
+            String st = sents[0];
+            if(st.length()>2 && st.charAt(0) == '‘' && st.charAt(st.length()-1) == '’'){
+                st = st.substring(1, st.length()-1);
+                st = st.substring(0, 1).toUpperCase() + st.substring(1, st.length());
+            }
+            sb.append(st);
         }
 
         return sb.toString();
@@ -132,10 +137,13 @@ public class WordDef {
             if(sb.length()>0)sb.append("<br>");
             sb.append("<b>Sentences:</b>");
             for(int i = 1; i< sents.length; i++) {
-                sb.append("<br><b>");
-                sb.append(i);
-                sb.append(". </b>");
-                sb.append(sents[i]);
+                sb.append("<br><b>*</b> ");
+                String st = sents[i];
+                if(st.length()>2 && st.charAt(0) == '‘' && st.charAt(st.length()-1) == '’'){
+                    st = st.substring(1, st.length()-1);
+                }
+                st = st.substring(0, 1).toUpperCase() + st.substring(1, st.length());
+                sb.append(st);
             }
         }
 
