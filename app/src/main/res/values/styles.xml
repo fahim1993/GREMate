@@ -14,10 +14,10 @@
     </style>
     <style name="MyDialog" parent="@style/Theme.AppCompat.Light.Dialog">
         <item name="windowNoTitle">true</item>
-        <item name="android:textColorSecondary">@color/darkFore1</item>
-        <item name="android:textColorPrimary">@color/darkFore1</item>
-        <item name="android:textColor">@color/darkFore1</item>
-        <item name="android:titleTextStyle">@color/darkFore1</item>
+        <item name="android:textColorSecondary">@color/darkFore4</item>
+        <item name="android:textColorPrimary">@color/darkFore4</item>
+        <item name="android:textColor">@color/darkFore4</item>
+        <item name="android:titleTextStyle">@color/darkFore4</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:textColorHint">@color/hintColor</item>

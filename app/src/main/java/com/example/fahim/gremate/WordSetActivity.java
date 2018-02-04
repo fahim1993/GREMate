@@ -68,7 +68,7 @@ public class WordSetActivity extends NavDrawerActivity {
         wordSetTitle = (TextView) findViewById(R.id.wordSetTitle);
 
         setWsTitle();
-        setTitle(Html.fromHtml("<font color='#95A3B2'>GREMate</font>"));
+        setTitle(Html.fromHtml("<font color='#BDCBDA'>GREMate</font>"));
 
         wsRecyclerView = (RecyclerView)findViewById(R.id.rvWordSet);
         wsRecyclerView.setHasFixedSize(true);

@@ -73,7 +73,7 @@ public class ListActivity extends NavDrawerActivity {
 
         ((TextView)findViewById(R.id.wordListTitle)).setText(wsTitle+ " lists: ");
 
-        setTitle(Html.fromHtml("<font color='#95A3B2'>GREMate</font>"));
+        setTitle(Html.fromHtml("<font color='#BDCBDA'>GREMate</font>"));
 
         listRecyclerView = (RecyclerView)findViewById(R.id.rvWordList);
         listRecyclerView.setHasFixedSize(true);

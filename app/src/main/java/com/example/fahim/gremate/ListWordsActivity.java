@@ -92,7 +92,7 @@ public class ListWordsActivity extends NavDrawerActivity {
         mainListId = extras.getString("mainListId");
         currentListName = extras.getString("listTitle");
 
-        setTitle(Html.fromHtml("<font color='#95A3B2'>"+currentListName.toUpperCase()+"</font>"));
+        setTitle(Html.fromHtml("<font color='#BDCBDA'>"+currentListName.toUpperCase()+"</font>"));
 
         wordsInListRV = (RecyclerView) findViewById(R.id.wordInListRV);
         wordsInListRV.setHasFixedSize(true);

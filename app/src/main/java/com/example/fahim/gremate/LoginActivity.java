@@ -79,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        setTitle(Html.fromHtml("<font color='#95A3B2'>GREMate</font>"));
+        setTitle(Html.fromHtml("<font color='#BDCBDA'>GREMate</font>"));
 
         login = (AppCompatButton)findViewById(R.id.login);
         login.setOnClickListener(new View.OnClickListener() {

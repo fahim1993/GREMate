@@ -123,7 +123,7 @@ public class PracticingActivity extends AppCompatActivity {
 
         diffRadioGroup = (RadioGroup) findViewById(R.id.diffRadioGroup);
 
-        setTitle(Html.fromHtml("<font color='#95A3B2'>SCORE: 0</font>"));
+        setTitle(Html.fromHtml("<font color='#BDCBDA'>SCORE: 0</font>"));
 
         randomizeWords();
         index = 0;
@@ -370,7 +370,7 @@ public class PracticingActivity extends AppCompatActivity {
         nextButton.setVisibility(View.VISIBLE);
         viewButton.setVisibility(View.VISIBLE);
         diffRadioGroup.setVisibility(View.VISIBLE);
-        setTitle(Html.fromHtml("<font color='#95A3B2'>SCORE: " + noCorrect + "/" + noQuestions +  " (" + words.size() + ") </font>"));
+        setTitle(Html.fromHtml("<font color='#BDCBDA'>SCORE: " + noCorrect + "/" + noQuestions +  " (" + words.size() + ") </font>"));
 
     }
 

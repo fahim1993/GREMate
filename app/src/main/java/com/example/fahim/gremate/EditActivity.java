@@ -88,7 +88,7 @@ public class EditActivity extends AppCompatActivity {
         eiLL = (LinearLayout) findViewById(R.id.WordOperationLLExtraInfo);
         ll1 = (LinearLayout) findViewById(R.id.WordOperationLL);
 
-        setTitle(Html.fromHtml("<font color='#95A3B2'>GREMate</font>"));
+        setTitle(Html.fromHtml("<font color='#BDCBDA'>GREMate</font>"));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

@@ -66,7 +66,7 @@ public class SignupActivity extends AppCompatActivity {
             }
         });
 
-        setTitle(Html.fromHtml("<font color='#95A3B2'>GREMate</font>"));
+        setTitle(Html.fromHtml("<font color='#BDCBDA'>GREMate</font>"));
 
         failText = (TextView) findViewById(R.id.suFailText);
         failText.setVisibility(View.GONE);

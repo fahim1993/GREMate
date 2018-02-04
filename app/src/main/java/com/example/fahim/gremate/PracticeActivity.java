@@ -85,7 +85,7 @@ public class PracticeActivity extends NavDrawerActivity {
 
         setupNavDrawerClick();
 
-        setTitle(Html.fromHtml("<font color='#95A3B2'>Practice</font>"));
+        setTitle(Html.fromHtml("<font color='#BDCBDA'>Practice</font>"));
 
         Bundle b = getIntent().getExtras();
         if (b != null) {

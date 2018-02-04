@@ -127,7 +127,7 @@ public class SearchActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-        setTitle(Html.fromHtml("<font color='#95A3B2'>Search</font>"));
+        setTitle(Html.fromHtml("<font color='#BDCBDA'>Search</font>"));
 
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -180,7 +180,7 @@ public class SearchActivity extends AppCompatActivity {
             wordId = _wordAllData.getWord().getCloneOf();
             loading = true;
             loadFlags = new boolean[2];
-            setTitle(_wordAllData.getWord().getValue().toUpperCase());
+            setTitle(Html.fromHtml("<font color='#BDCBDA'>"+ _wordAllData.getWord().getValue().toUpperCase() +"</font>"));
             viewWord = true;
 
             if(menu!=null){
