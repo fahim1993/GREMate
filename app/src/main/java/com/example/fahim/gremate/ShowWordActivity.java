@@ -742,9 +742,6 @@ public class ShowWordActivity extends AppCompatActivity {
                         if ((dialog.findViewById(android.R.id.message)) != null) {
                             ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                         }
-                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ShowWordActivity.this.getResources().getColor(R.color.darkFore4));
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ShowWordActivity.this.getResources().getColor(R.color.darkFore4));
-
                         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                     }
@@ -799,9 +796,6 @@ public class ShowWordActivity extends AppCompatActivity {
                         if ((dialog1.findViewById(android.R.id.message)) != null) {
                             ((TextView)dialog1.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                         }
-                        dialog1.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ShowWordActivity.this.getResources().getColor(R.color.darkFore4));
-                        dialog1.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ShowWordActivity.this.getResources().getColor(R.color.darkFore4));
-
                         dialog1.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                         dialog1.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                     }

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
+import android.text.Html;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -78,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
+        setTitle(Html.fromHtml("<font color='#95A3B2'>GREMate</font>"));
 
         login = (AppCompatButton)findViewById(R.id.login);
         login.setOnClickListener(new View.OnClickListener() {

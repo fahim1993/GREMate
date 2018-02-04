@@ -9,6 +9,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
@@ -72,7 +73,7 @@ public class ListActivity extends NavDrawerActivity {
 
         ((TextView)findViewById(R.id.wordListTitle)).setText(wsTitle+ " lists: ");
 
-        setTitle("GREMate");
+        setTitle(Html.fromHtml("<font color='#95A3B2'>GREMate</font>"));
 
         listRecyclerView = (RecyclerView)findViewById(R.id.rvWordList);
         listRecyclerView.setHasFixedSize(true);
@@ -170,9 +171,6 @@ public class ListActivity extends NavDrawerActivity {
                         if ((dialog.findViewById(android.R.id.message)) != null) {
                             ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                         }
-                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListActivity.this.getResources().getColor(R.color.darkFore4));
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListActivity.this.getResources().getColor(R.color.darkFore4));
-
                         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                     }
@@ -255,9 +253,6 @@ public class ListActivity extends NavDrawerActivity {
                                 if ((dialog.findViewById(android.R.id.message)) != null) {
                                     ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                                 }
-                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListActivity.this.getResources().getColor(R.color.darkFore4));
-                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListActivity.this.getResources().getColor(R.color.darkFore4));
-
                                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                             }

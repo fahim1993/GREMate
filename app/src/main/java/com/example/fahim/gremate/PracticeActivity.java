@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v7.widget.AppCompatButton;
+import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -84,7 +85,7 @@ public class PracticeActivity extends NavDrawerActivity {
 
         setupNavDrawerClick();
 
-        setTitle("Practice");
+        setTitle(Html.fromHtml("<font color='#95A3B2'>Practice</font>"));
 
         Bundle b = getIntent().getExtras();
         if (b != null) {
@@ -375,9 +376,6 @@ public class PracticeActivity extends NavDrawerActivity {
                             @Override
                             public void onShow(DialogInterface arg0) {
                                 ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
-                                dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(PracticeActivity.this.getResources().getColor(R.color.darkFore4));
-                                dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setTextColor(PracticeActivity.this.getResources().getColor(R.color.darkFore4));
-
                                 dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                                 dialog.getButton(android.support.v7.app.AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                             }

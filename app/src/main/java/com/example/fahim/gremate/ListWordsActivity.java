@@ -16,6 +16,7 @@ import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -91,7 +92,7 @@ public class ListWordsActivity extends NavDrawerActivity {
         mainListId = extras.getString("mainListId");
         currentListName = extras.getString("listTitle");
 
-        setTitle(currentListName.toUpperCase());
+        setTitle(Html.fromHtml("<font color='#95A3B2'>"+currentListName.toUpperCase()+"</font>"));
 
         wordsInListRV = (RecyclerView) findViewById(R.id.wordInListRV);
         wordsInListRV.setHasFixedSize(true);
@@ -157,9 +158,6 @@ public class ListWordsActivity extends NavDrawerActivity {
                 if ((dialog.findViewById(android.R.id.message)) != null) {
                     ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                 }
-                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
-
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
             }
@@ -217,9 +215,6 @@ public class ListWordsActivity extends NavDrawerActivity {
                 if ((dialog.findViewById(android.R.id.message)) != null) {
                     ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                 }
-                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
-
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
             }
@@ -297,9 +292,6 @@ public class ListWordsActivity extends NavDrawerActivity {
                 if ((dialog.findViewById(android.R.id.message)) != null) {
                     ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                 }
-                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
-
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
             }
@@ -371,9 +363,6 @@ public class ListWordsActivity extends NavDrawerActivity {
                 if ((dialog.findViewById(android.R.id.message)) != null) {
                     ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                 }
-                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
-
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
             }
@@ -430,9 +419,6 @@ public class ListWordsActivity extends NavDrawerActivity {
                 if ((dialog.findViewById(android.R.id.message)) != null) {
                     ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                 }
-                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
-
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
             }
@@ -631,9 +617,6 @@ public class ListWordsActivity extends NavDrawerActivity {
                                 if ((dialog.findViewById(android.R.id.message)) != null) {
                                     ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                                 }
-                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
-                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ListWordsActivity.this.getResources().getColor(R.color.darkFore4));
-
                                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                             }

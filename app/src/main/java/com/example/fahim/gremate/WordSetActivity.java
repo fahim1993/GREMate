@@ -162,9 +162,6 @@ public class WordSetActivity extends NavDrawerActivity {
                         if ((dialog.findViewById(android.R.id.message)) != null) {
                             ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                         }
-                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(WordSetActivity.this.getResources().getColor(R.color.darkFore4));
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(WordSetActivity.this.getResources().getColor(R.color.darkFore4));
-
                         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                     }
@@ -287,9 +284,6 @@ public class WordSetActivity extends NavDrawerActivity {
                                 if ((dialog.findViewById(android.R.id.message)) != null) {
                                     ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                                 }
-                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(WordSetActivity.this.getResources().getColor(R.color.darkFore4));
-                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(WordSetActivity.this.getResources().getColor(R.color.darkFore4));
-
                                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                             }
@@ -341,9 +335,6 @@ public class WordSetActivity extends NavDrawerActivity {
                         if ((dialog.findViewById(android.R.id.message)) != null) {
                             ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                         }
-                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(WordSetActivity.this.getResources().getColor(R.color.darkFore4));
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(WordSetActivity.this.getResources().getColor(R.color.darkFore4));
-
                         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                     }

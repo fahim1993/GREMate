@@ -93,7 +93,7 @@
                 android:layout_centerInParent="true"
                 android:layout_marginTop="10dp"
                 android:text="Load"
-                android:textColor="@color/darkFore1"
+                android:textColor="@color/darkFore4"
                 android:textSize="15sp"
                 app:backgroundTint="@color/colorAccent" />
 
@@ -150,7 +150,7 @@
                     android:background="@color/colorAccent"
                     android:padding="5dp"
                     android:text="Only words with definition(s) are practicable"
-                    android:textColor="@color/darkFore1"
+                    android:textColor="@color/darkFore4"
                     android:textSize="16sp" />
 
                 <android.support.v7.widget.AppCompatButton
@@ -161,7 +161,7 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="15dp"
                     android:text="Start Practice"
-                    android:textColor="@color/darkFore1"
+                    android:textColor="@color/darkFore4"
                     android:textSize="15sp"
                     app:backgroundTint="@color/colorAccent" />
             </LinearLayout>

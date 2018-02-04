@@ -141,9 +141,6 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                     if ((alert.findViewById(android.R.id.message)) != null) {
                                         ((TextView)alert.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                                     }
-                                    alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
-                                    alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
-
                                     alert.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                                     alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                                 }
@@ -191,9 +188,6 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                         if ((alert.findViewById(android.R.id.message)) != null) {
                                             ((TextView)alert.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                                         }
-                                        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
-                                        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
-
                                         alert.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                                         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                                     }
@@ -226,9 +220,6 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                             if ((alert.findViewById(android.R.id.message)) != null) {
                                                 ((TextView)alert.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                                             }
-                                            alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
-                                            alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
-
                                             alert.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                                             alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                                         }
@@ -267,9 +258,6 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                                             if ((alert.findViewById(android.R.id.message)) != null) {
                                                 ((TextView)alert.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                                             }
-                                            alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
-                                            alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
-
                                             alert.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                                             alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                                         }
@@ -288,9 +276,6 @@ public class WordAdapter extends RecyclerView.Adapter<WordAdapter.WordViewHolder
                         if ((alert.findViewById(android.R.id.message)) != null) {
                             ((TextView)alert.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                         }
-                        alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
-                        alert.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(context.getResources().getColor(R.color.darkFore4));
-
                         alert.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                         alert.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                     }

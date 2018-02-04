@@ -39,7 +39,7 @@
                 <android.support.v7.widget.AppCompatImageButton
                     android:id="@+id/addWordBtn"
                     app:backgroundTint="@color/colorPrimary"
-                    android:tint="@color/darkFore1"
+                    android:tint="@color/darkFore4"
                     android:src="@drawable/ic_ws_add_word"
                     android:scaleType="fitCenter"
                     android:layout_width="50dp"
@@ -51,7 +51,7 @@
                     android:src="@drawable/ic_ws_search"
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/colorPrimary"
-                    android:tint="@color/darkFore1"
+                    android:tint="@color/darkFore4"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:onClick="searchButtonClick"/>
@@ -61,7 +61,7 @@
                     android:src="@drawable/ic_ws_reorder"
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/colorPrimary"
-                    android:tint="@color/darkFore1"
+                    android:tint="@color/darkFore4"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:onClick="sortButtonClick"/>
@@ -73,7 +73,7 @@
                     android:src="@drawable/ic_ws_exercise"
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/colorPrimary"
-                    android:tint="@color/darkFore1"
+                    android:tint="@color/darkFore4"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:onClick="practiceButtonClick"/>
@@ -83,7 +83,7 @@
                     android:src="@drawable/details"
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/colorPrimary"
-                    android:tint="@color/darkFore1"
+                    android:tint="@color/darkFore4"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:onClick="detailsButtonClick"/>
@@ -93,7 +93,7 @@
                     android:src="@drawable/save"
                     android:scaleType="fitCenter"
                     app:backgroundTint="@color/colorPrimary"
-                    android:tint="@color/darkFore1"
+                    android:tint="@color/darkFore4"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:onClick="saveButtonClick"/>

@@ -44,7 +44,7 @@
         <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/webSearchBtn"
             app:backgroundTint="@color/colorPrimary"
-            android:tint="@color/darkFore1"
+            android:tint="@color/darkFore4"
             android:src="@drawable/ic_ws_search"
             android:scaleType="fitCenter"
             android:layout_width="50dp"

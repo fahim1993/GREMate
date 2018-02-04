@@ -45,6 +45,7 @@
             android:layout_width="40dp"
             android:layout_height="50dp"
             android:backgroundTint="@color/darkBack3"
+            android:tint="@color/darkFore1"
             />
 
     </RelativeLayout>

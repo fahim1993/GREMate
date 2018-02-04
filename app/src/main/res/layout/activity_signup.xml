@@ -59,7 +59,7 @@
             android:layout_below="@+id/suPassword"
             android:layout_centerInParent="true"
             app:backgroundTint="@color/colorAccent"
-            android:textColor="@color/darkFore1"
+            android:textColor="@color/darkFore4"
             android:id="@+id/suSignup"
             android:text="Sign up"
             android:textSize="15sp"

@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="darkBack1">#2B2B2B</color>
-    <color name="darkBack2">#323232</color>
-    <color name="darkBack3">#4F4F4F</color>
+    <!--<color name="darkBack1">#2B2B2B</color>-->
+    <!--<color name="darkBack2">#323232</color>-->
+    <!--<color name="darkBack3">#4F4F4F</color>-->
 
-    <color name="darkBack4">#383A3C</color>
-    <color name="darkBack5">#414446</color>
-    <color name="darkBack6">#505355</color>
+    <!--<color name="darkBack4">#383A3C</color>-->
+    <!--<color name="darkBack5">#414446</color>-->
+    <!--<color name="darkBack6">#505355</color>-->
 
-    <color name="darkFore1">#95A3B2</color>
-    <color name="darkFore2">#9FADBC</color>
-    <color name="darkFore3">#A9B7C6</color>
-    <color name="darkFore4">#B3C1D0</color>
+    <!--<color name="darkFore1">#95A3B2</color>-->
+    <!--<color name="darkFore2">#9FADBC</color>-->
+    <!--<color name="darkFore3">#A9B7C6</color>-->
+    <!--<color name="darkFore4">#B3C1D0</color>-->
+
+    <color name="darkBack1">#E3DAC9</color>
+    <color name="darkBack2">#EDE4D3</color>
+    <color name="darkBack3">#F2E9D8</color>
+
+    <color name="darkBack4">#F0EAD6</color>
+    <color name="darkBack5">#FAEFDB</color>
+    <color name="darkBack6">#FFF4E0</color>
+
+    <color name="darkFore1">#2B2B2B</color>
+    <color name="darkFore2">#323232</color>
+    <color name="darkFore3">#4F4F4F</color>
+    <color name="darkFore4">#95A3B2</color>
 
     <color name="easy">#4F7842</color>
     <color name="normal">#3E86A0</color>

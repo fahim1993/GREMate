@@ -75,6 +75,7 @@
                         android:background="@color/darkBack1"
                         android:scaleType="centerInside"
                         android:src="@drawable/up"
+                        android:tint="@color/darkFore1"
 
                         />
                 </RelativeLayout>
@@ -138,6 +139,7 @@
                         android:background="@color/darkBack1"
                         android:scaleType="centerInside"
                         android:src="@drawable/up"
+                        android:tint="@color/darkFore1"
 
                         />
 
@@ -193,6 +195,7 @@
                         android:background="@color/darkBack1"
                         android:scaleType="centerInside"
                         android:src="@drawable/up"
+                        android:tint="@color/darkFore1"
 
                         />
 

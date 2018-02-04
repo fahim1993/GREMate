@@ -127,8 +127,7 @@ public class SearchActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-
-        setTitle("Search");
+        setTitle(Html.fromHtml("<font color='#95A3B2'>Search</font>"));
 
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -163,7 +162,6 @@ public class SearchActivity extends AppCompatActivity {
                 showWordSV.setVisibility(View.GONE);
                 errorTextV.setVisibility(View.GONE);
                 loadingPB.setVisibility(View.VISIBLE);
-
             }
         });
 

@@ -81,6 +81,7 @@ public class NavDrawerActivity extends AppCompatActivity {
                     if (dataSnapshot.exists()) {
                         UserData user = dataSnapshot.getValue(UserData.class);
                         ((TextView) findViewById(R.id.menu_username)).setText(user.getUserName());
+                        ((TextView) findViewById(R.id.menu_username)).setTextColor(getResources().getColor(R.color.darkFore4));
                         userName = user.getUserName();
                     }
                 }
@@ -109,7 +110,7 @@ public class NavDrawerActivity extends AppCompatActivity {
             }
         };
 
-        mDrawerToggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.darkFore1));
+        mDrawerToggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.darkFore4));
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
     }

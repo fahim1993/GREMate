@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
+import android.text.Html;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -64,6 +65,8 @@ public class SignupActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        setTitle(Html.fromHtml("<font color='#95A3B2'>GREMate</font>"));
 
         failText = (TextView) findViewById(R.id.suFailText);
         failText.setVisibility(View.GONE);

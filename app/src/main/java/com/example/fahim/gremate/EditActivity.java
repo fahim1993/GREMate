@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -86,6 +87,8 @@ public class EditActivity extends AppCompatActivity {
         desLL = (LinearLayout) findViewById(R.id.WordOperationLLDes);
         eiLL = (LinearLayout) findViewById(R.id.WordOperationLLExtraInfo);
         ll1 = (LinearLayout) findViewById(R.id.WordOperationLL);
+
+        setTitle(Html.fromHtml("<font color='#95A3B2'>GREMate</font>"));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -397,9 +400,6 @@ public class EditActivity extends AppCompatActivity {
                     if ((dialog.findViewById(android.R.id.message)) != null) {
                         ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                     }
-                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(EditActivity.this.getResources().getColor(R.color.darkFore4));
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(EditActivity.this.getResources().getColor(R.color.darkFore4));
-
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                     dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                 }

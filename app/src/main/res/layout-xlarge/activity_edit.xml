@@ -49,7 +49,7 @@
                         android:id="@+id/WordOperationBtnDes"
                         android:onClick="addDesc"
                         android:backgroundTint="@color/colorAccent"
-                        android:textColor="@color/darkFore1"
+                        android:textColor="@color/darkFore4"
                         />
                 </LinearLayout>
 
@@ -67,7 +67,7 @@
                         android:id="@+id/WordOperationBtnDef"
                         android:onClick="addDefi"
                         android:backgroundTint="@color/colorAccent"
-                        android:textColor="@color/darkFore1"
+                        android:textColor="@color/darkFore4"
                         />
                 </LinearLayout>
 
@@ -85,7 +85,7 @@
                         android:id="@+id/WordOperationBtnEI"
                         android:onClick="addEi"
                         android:backgroundTint="@color/colorAccent"
-                        android:textColor="@color/darkFore1"
+                        android:textColor="@color/darkFore4"
                         />
                 </LinearLayout>
 
@@ -98,7 +98,7 @@
                     android:id="@+id/WordOperationBtnSave"
                     android:onClick="save"
                     android:backgroundTint="@color/colorAccent"
-                    android:textColor="@color/darkFore1"
+                    android:textColor="@color/darkFore4"
                     />
                 <Button
                     android:layout_width="wrap_content"

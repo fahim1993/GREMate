@@ -123,7 +123,7 @@ public class PracticingActivity extends AppCompatActivity {
 
         diffRadioGroup = (RadioGroup) findViewById(R.id.diffRadioGroup);
 
-        setTitle("SCORE: 0");
+        setTitle(Html.fromHtml("<font color='#95A3B2'>SCORE: 0</font>"));
 
         randomizeWords();
         index = 0;
@@ -370,7 +370,7 @@ public class PracticingActivity extends AppCompatActivity {
         nextButton.setVisibility(View.VISIBLE);
         viewButton.setVisibility(View.VISIBLE);
         diffRadioGroup.setVisibility(View.VISIBLE);
-        setTitle("SCORE: " + noCorrect + "/" + noQuestions +  " (" + words.size() + ")");
+        setTitle(Html.fromHtml("<font color='#95A3B2'>SCORE: " + noCorrect + "/" + noQuestions +  " (" + words.size() + ") </font>"));
 
     }
 
@@ -417,9 +417,6 @@ public class PracticingActivity extends AppCompatActivity {
                         if ((dialog.findViewById(android.R.id.message)) != null) {
                             ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                         }
-                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(PracticingActivity.this.getResources().getColor(R.color.darkFore4));
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(PracticingActivity.this.getResources().getColor(R.color.darkFore4));
-
                         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
                     }
@@ -485,9 +482,6 @@ public class PracticingActivity extends AppCompatActivity {
                 if ((dialog.findViewById(android.R.id.message)) != null) {
                     ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
                 }
-                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(PracticingActivity.this.getResources().getColor(R.color.darkFore4));
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(PracticingActivity.this.getResources().getColor(R.color.darkFore4));
-
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
                 dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
             }
