@@ -31,8 +31,8 @@
             android:layout_weight="5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:thumbTint="@color/CornflowerBlue"
-            android:progressTint="@color/CornflowerBlue"
+            android:thumbTint="@color/colorPrimary"
+            android:progressTint="@color/colorPrimary"
             android:max="9"
             />
         <LinearLayout

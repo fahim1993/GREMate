@@ -348,8 +348,9 @@ public class ShowWordActivity extends AppCompatActivity {
             nonTitlesTV.add(secondText);
 
             firstText.setText(fromHtml(def.getFirstHtml(tag)));
-            if(def.haveMoreData()){
-                secondText.setText(fromHtml(def.getSecondHtml()));
+            String secondTextStr = def.getSecondHtml();
+            if(secondTextStr.length()>0){
+                secondText.setText(fromHtml(secondTextStr));
 
                 (defView.findViewById(R.id.defShowMoreRL)).setOnClickListener(new View.OnClickListener() {
                     @Override

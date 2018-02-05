@@ -151,7 +151,6 @@ public class WordDef {
     }
 
     public boolean haveMoreData(){
-        if( (syns!=null && syns.length()>1) || (sentences!=null && sentences.length()>1) ) return true;
-        return false;
+        return (syns != null && syns.length() > 1) || (sentences != null && sentences.length() > 1);
     }
 }

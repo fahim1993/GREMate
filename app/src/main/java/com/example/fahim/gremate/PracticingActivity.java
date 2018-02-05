@@ -357,11 +357,13 @@ public class PracticingActivity extends AppCompatActivity {
         int ind = Integer.valueOf(v.getTag().toString());
         if (ind == ansIndex) {
             ansTVs[ind].setTextColor(getResources().getColor(R.color.easy));
+            ansTVs[ind].setTypeface(null, Typeface.BOLD);
             if (!thisJudged) {
                 noCorrect++;
             }
         } else {
-            ansTVs[ind].setTextColor(getResources().getColor(R.color.hard));
+            ansTVs[ind].setTextColor(getResources().getColor(R.color.vhard));
+            ansTVs[ind].setTypeface(null, Typeface.BOLD);
             if(!thisJudged){
                 wrongAns.add("<b>"+wordPractice.getWord().toUpperCase()+": </b>" + ans);
             }
