@@ -168,7 +168,10 @@ public class PracticingActivity extends AppCompatActivity {
                     randomizeWords();
                     createLevelMap();
                 }
-                for (int i = 0; i < 5; i++) ansTVs[i].setTextColor(getResources().getColor(R.color.darkFore1));
+                for (int i = 0; i < 5; i++) {
+                    ansTVs[i].setTextColor(getResources().getColor(R.color.darkFore1));
+                    ansTVs[i].setTypeface(null, Typeface.NORMAL);
+                }
 
                 nextButton.setVisibility(GONE);
                 viewButton.setVisibility(GONE);
@@ -320,13 +323,16 @@ public class PracticingActivity extends AppCompatActivity {
         else questionTV.setText("Meaning of the word " + wordPractice.getWord().toUpperCase() + " is?");
 
         ArrayList<String> otDefs = new ArrayList<>();
-        mp.put(words.get(index).getValue().toLowerCase(), 1);
+        String currentWord = words.get(index).getValue().toLowerCase();
+        mp.put(currentWord, 1);
         while (mp.size() != 5) {
             int ind = Math.abs(random.nextInt()) % 1536;
-            String w = OD[ind][0];
-            if (mp.containsKey(w.toLowerCase())) continue;
+            String w = OD[ind][0].toLowerCase();
+            if (mp.containsKey(w)) continue;
+            if(w.equals(currentWord))continue;
+
             otDefs.add(OD[ind][type]);
-            mp.put(w.toLowerCase(), 1);
+            mp.put(w, 1);
         }
 
         ansIndex = Math.abs(random.nextInt()) % 5;
@@ -398,34 +404,7 @@ public class PracticingActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                final AlertDialog dialog = new AlertDialog.Builder(PracticingActivity.this, R.style.AlertDialogTheme)
-                        .setTitle("End practice?")
-                        .setMessage("You correctly answered " + noCorrect + " out of " + noQuestions + ". Do you want to stop?")
-                        .setPositiveButton("STOP", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                finish();
-                            }
-                        })
-                        .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                            }
-                        }).create();
-
-                dialog.setOnShowListener( new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(DialogInterface arg0) {
-                        if ((dialog.findViewById(android.R.id.message)) != null) {
-                            ((TextView)dialog.findViewById(android.R.id.message)).setLineSpacing(0.0f, 1.15f);
-                        }
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTypeface(null, Typeface.BOLD);
-                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTypeface(null, Typeface.BOLD);
-                    }
-                });
-
-                dialog.show();
-
+                onBackPressed();
                 break;
 
             case R.id.pronounce:

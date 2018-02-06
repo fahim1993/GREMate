@@ -90,16 +90,16 @@
                 </LinearLayout>
 
                 <Button
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:text="SAVE"
                     android:id="@+id/WordOperationBtnSave"
-                    android:onClick="save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
                     android:backgroundTint="@color/colorAccent"
-                    android:textColor="@color/darkFore4"
-                    />
+                    android:onClick="save"
+                    android:text="SAVE"
+                    android:textColor="@color/darkFore4" />
+
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_gravity="center"

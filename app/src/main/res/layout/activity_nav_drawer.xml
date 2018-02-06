@@ -14,6 +14,7 @@ android:layout_height="match_parent">
 
 <!-- Side navigation drawer UI -->
     <android.support.design.widget.NavigationView
+        app:itemIconTint="@color/darkFore1"
         android:id="@+id/nav_view"
         android:layout_height="match_parent"
         android:layout_width="wrap_content"
