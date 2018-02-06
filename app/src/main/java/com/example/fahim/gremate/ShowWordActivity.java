@@ -598,7 +598,10 @@ public class ShowWordActivity extends AppCompatActivity {
                 }
                 _wordAllData.setWordData(wd);
                 if(loading) countLoaded(0);
-                else  setDes();
+                else  {
+                    setDes();
+                    setExtraInfo();
+                }
             }
 
             @Override
