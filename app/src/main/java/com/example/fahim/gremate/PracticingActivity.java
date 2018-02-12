@@ -1,8 +1,10 @@
 package com.example.fahim.gremate;
 
+import android.*;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioManager;
@@ -10,6 +12,9 @@ import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,6 +45,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -91,6 +98,13 @@ public class PracticingActivity extends AppCompatActivity {
     private HashMap<String, ArrayList<Integer>> levelMap;
 
     private PlaybackPronunciation playbackPronunciation;
+    private boolean pronunciationPlaying;
+    MediaPlayer mediaPlayer;
+
+    private static String[] PERMISSIONS_STORAGE = {
+            android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     Random random;
 
@@ -237,6 +251,10 @@ public class PracticingActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
+        pronunciationPlaying = false;
+        mediaPlayer = new MediaPlayer();
+
         createLevelMap();
         loadWordPracticeData(words.get(index).getCloneOf());
     }
@@ -271,6 +289,10 @@ public class PracticingActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(mediaPlayer!=null){
+            mediaPlayer.release();
+        }
+
         if(playbackPronunciation!=null){
             playbackPronunciation.cancel(true);
             playbackPronunciation = null;
@@ -408,9 +430,7 @@ public class PracticingActivity extends AppCompatActivity {
                 break;
 
             case R.id.pronounce:
-                if(playbackPronunciation != null) playbackPronunciation.cancel(true);
-                playbackPronunciation = new PlaybackPronunciation(this);
-                playbackPronunciation.execute(wordPractice.getPronunciation());
+                pronunciationInit(word.getValue().toLowerCase());
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -471,6 +491,66 @@ public class PracticingActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    private void pronunciationInit(String word){
+
+        int permission = ActivityCompat.checkSelfPermission(PracticingActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    PracticingActivity.this,
+                    PERMISSIONS_STORAGE, 0
+            );
+        } else{
+            pronunciationPlay(word);
+        }
+
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 0: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    try {
+                        pronunciationPlay(word.getValue().toLowerCase());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private void pronunciationPlay(String word){
+        if(!pronunciationPlaying) {
+            pronunciationPlaying = true;
+            File mp3File = new File(Environment.getExternalStorageDirectory(), "pmp3/" + word + ".mp3");
+            if (mp3File.exists()) {
+                try {
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(mp3File.getPath());
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+                            pronunciationPlaying = false;
+                        }
+                    });
+                } catch (IOException e) {
+                    if(playbackPronunciation != null) playbackPronunciation.cancel(true);
+                    playbackPronunciation = new PlaybackPronunciation(this);
+                    playbackPronunciation.execute(wordPractice.getPronunciation());
+                }
+            } else {
+                if(playbackPronunciation != null) playbackPronunciation.cancel(true);
+                playbackPronunciation = new PlaybackPronunciation(this);
+                playbackPronunciation.execute(wordPractice.getPronunciation());
+            }
+        }
+    }
+
     private static class PlaybackPronunciation extends AsyncTask<String, Void, String> {
 
         protected WeakReference<PracticingActivity> activityWeakReference;
@@ -508,10 +588,12 @@ public class PracticingActivity extends AppCompatActivity {
                             player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                                 @Override
                                 public void onCompletion(MediaPlayer mediaPlayer) {
+                                    if(activityWeakReference != null) activityWeakReference.get().pronunciationPlaying = false;
                                     mediaPlayer.release();
                                 }
                             });
                         } else {
+                            if(activityWeakReference != null) activityWeakReference.get().pronunciationPlaying = false;
                             activityWeakReference.get().runOnUiThread(new Runnable() {
                                 public void run() {
                                     Toast.makeText(activityWeakReference.get(), "Error...", Toast.LENGTH_SHORT).show();
@@ -522,6 +604,7 @@ public class PracticingActivity extends AppCompatActivity {
                         return "";
                     } catch (Exception e) {
                         e.printStackTrace();
+                        if(activityWeakReference != null) activityWeakReference.get().pronunciationPlaying = false;
                         activityWeakReference.get().runOnUiThread(new Runnable() {
                             public void run() {
                                 Toast.makeText(activityWeakReference.get(), "Error...", Toast.LENGTH_SHORT).show();
@@ -530,6 +613,7 @@ public class PracticingActivity extends AppCompatActivity {
                         return "";
                     }
                 } else {
+                    if(activityWeakReference != null) activityWeakReference.get().pronunciationPlaying = false;
                     activityWeakReference.get().runOnUiThread(new Runnable() {
                         public void run() {
                             Toast.makeText(activityWeakReference.get(), "Internet connection required!", Toast.LENGTH_SHORT).show();

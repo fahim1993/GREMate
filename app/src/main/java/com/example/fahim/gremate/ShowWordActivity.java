@@ -1,5 +1,7 @@
 package com.example.fahim.gremate;
 
+import android.*;
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
@@ -7,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.media.AudioManager;
@@ -14,7 +17,10 @@ import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -52,6 +58,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -98,6 +106,13 @@ public class ShowWordActivity extends AppCompatActivity {
 
     private FetchData fetchData;
     private PlaybackPronunciation playbackPronunciation;
+    private boolean pronunciationPlaying;
+    MediaPlayer mediaPlayer;
+
+    private static String[] PERMISSIONS_STORAGE = {
+            android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     DatabaseReference ref1;
     DatabaseReference ref2;
@@ -150,6 +165,8 @@ public class ShowWordActivity extends AppCompatActivity {
 
         refreshFlag = false;
 
+        pronunciationPlaying = false;
+        mediaPlayer = new MediaPlayer();
         loadWord();
     }
 
@@ -200,6 +217,7 @@ public class ShowWordActivity extends AppCompatActivity {
     private void getSharedPrefValues(){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         index = prefs.getInt("index", -1);
+        autoPronounce = prefs.getInt("autoPronounce", 0);
         if(index==-1)finish();
         if (prefs.getInt("defState", -1) != -1) {
             defState = prefs.getInt("defState", -1);
@@ -225,6 +243,9 @@ public class ShowWordActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(mediaPlayer!=null){
+            mediaPlayer.release();
+        }
         if(fetchData != null){
             fetchData.cancel(true);
             fetchData = null;
@@ -641,9 +662,7 @@ public class ShowWordActivity extends AppCompatActivity {
         setContents();
         loading = false;
         if(autoPronounce==1){
-            if(playbackPronunciation!= null) playbackPronunciation.cancel(true);
-            playbackPronunciation = new PlaybackPronunciation(this);
-            playbackPronunciation.execute(_wordAllData.getWordData().getPronunciation());
+            pronunciationInit(WORD.getValue().toLowerCase());
         }
         loadingPB.setVisibility(View.GONE);
         showWordSV.setVisibility(View.VISIBLE);
@@ -695,9 +714,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
             case R.id.pronounce:
                 if (loading) break;
-                if(playbackPronunciation!= null) playbackPronunciation.cancel(true);
-                playbackPronunciation = new PlaybackPronunciation(this);
-                playbackPronunciation.execute(_wordAllData.getWordData().getPronunciation());
+                pronunciationInit(WORD.getValue().toLowerCase());
                 break;
 
             case R.id.edit:
@@ -908,6 +925,66 @@ public class ShowWordActivity extends AppCompatActivity {
         }
     }
 
+    private void pronunciationInit(String word){
+
+        int permission = ActivityCompat.checkSelfPermission(ShowWordActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    ShowWordActivity.this,
+                    PERMISSIONS_STORAGE, 0
+            );
+        } else{
+            pronunciationPlay(word);
+        }
+
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 0: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    try {
+                        pronunciationPlay(WORD.getValue().toLowerCase());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private void pronunciationPlay(String word){
+        if(!pronunciationPlaying) {
+            pronunciationPlaying = true;
+            File mp3File = new File(Environment.getExternalStorageDirectory(), "pmp3/" + word + ".mp3");
+            if (mp3File.exists()) {
+                try {
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(mp3File.getPath());
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+                            pronunciationPlaying = false;
+                        }
+                    });
+                } catch (IOException e) {
+                    if(playbackPronunciation!= null) playbackPronunciation.cancel(true);
+                    playbackPronunciation = new PlaybackPronunciation(this);
+                    playbackPronunciation.execute(_wordAllData.getWordData().getPronunciation());
+                }
+            } else {
+                if(playbackPronunciation!= null) playbackPronunciation.cancel(true);
+                playbackPronunciation = new PlaybackPronunciation(this);
+                playbackPronunciation.execute(_wordAllData.getWordData().getPronunciation());
+            }
+        }
+    }
+
     private static class PlaybackPronunciation extends AsyncTask<String, Void, String> {
 
         protected WeakReference<ShowWordActivity> activityWeakReference;
@@ -937,7 +1014,6 @@ public class ShowWordActivity extends AppCompatActivity {
                         con.connect();
                         if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
                             MediaPlayer player = new MediaPlayer();
-                            player.reset();
                             player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                             player.setDataSource(link);
                             player.prepare();
@@ -946,9 +1022,11 @@ public class ShowWordActivity extends AppCompatActivity {
                                 @Override
                                 public void onCompletion(MediaPlayer mediaPlayer) {
                                     mediaPlayer.release();
+                                    if(activityWeakReference != null) activityWeakReference.get().pronunciationPlaying = false;
                                 }
                             });
                         } else {
+                            if(activityWeakReference != null) activityWeakReference.get().pronunciationPlaying = false;
                             activityWeakReference.get().runOnUiThread(new Runnable() {
                                 public void run() {
                                     Toast.makeText(activityWeakReference.get(), "Error...", Toast.LENGTH_SHORT).show();
@@ -959,6 +1037,7 @@ public class ShowWordActivity extends AppCompatActivity {
                         return "";
                     } catch (Exception e) {
                         e.printStackTrace();
+                        if(activityWeakReference != null) activityWeakReference.get().pronunciationPlaying = false;
                         activityWeakReference.get().runOnUiThread(new Runnable() {
                             public void run() {
                                 Toast.makeText(activityWeakReference.get(), "Error...", Toast.LENGTH_SHORT).show();
@@ -967,6 +1046,7 @@ public class ShowWordActivity extends AppCompatActivity {
                         return "";
                     }
                 } else {
+                    if(activityWeakReference != null) activityWeakReference.get().pronunciationPlaying = false;
                     activityWeakReference.get().runOnUiThread(new Runnable() {
                         public void run() {
                             Toast.makeText(activityWeakReference.get(), "Internet connection required!", Toast.LENGTH_SHORT).show();
