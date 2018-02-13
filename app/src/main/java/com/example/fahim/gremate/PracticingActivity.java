@@ -449,7 +449,7 @@ public class PracticingActivity extends AppCompatActivity {
     public void onBackPressed() {
         StringBuilder msg = new StringBuilder();
         if(wrongAns != null && wrongAns.size()>0) {
-            msg.append("<b>REVIEW</b>");
+            msg.append("<b><u>REVIEW</u></b>");
             for(String s: wrongAns){
                 msg.append("<br>");
                 msg.append(s);
