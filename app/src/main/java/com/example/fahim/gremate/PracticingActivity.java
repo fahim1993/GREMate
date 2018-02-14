@@ -565,6 +565,7 @@ public class PracticingActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... strings) {
             if(activityWeakReference != null) {
+                MediaPlayer player = activityWeakReference.get().mediaPlayer;
                 if (activityWeakReference.get().isNetworkConnected()) {
                     try {
                         String link = strings[0];
@@ -582,7 +583,6 @@ public class PracticingActivity extends AppCompatActivity {
                         con.setRequestMethod("HEAD");
                         con.connect();
                         if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                            MediaPlayer player = new MediaPlayer();
                             player.reset();
                             player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                             player.setDataSource(link);
@@ -592,7 +592,6 @@ public class PracticingActivity extends AppCompatActivity {
                                 @Override
                                 public void onCompletion(MediaPlayer mediaPlayer) {
                                     if(activityWeakReference != null) activityWeakReference.get().pronunciationPlaying = false;
-                                    mediaPlayer.release();
                                 }
                             });
                         } else {
