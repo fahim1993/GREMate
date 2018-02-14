@@ -339,6 +339,7 @@ public class PracticingActivity extends AppCompatActivity {
 
         Pair<String, Integer> ansPair = dns.get(random.nextInt(dns.size()));
         ans = ansPair.first.toLowerCase();
+        if(ans.charAt(ans.length()-1)=='.') ans = ans.substring(0, ans.length()-1);
         int type = ansPair.second;
 
         if(type == 0) questionTV.setText("Synonym of the word " + wordPractice.getWord().toUpperCase() + " is?");
