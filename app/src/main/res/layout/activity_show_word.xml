@@ -52,10 +52,12 @@
                     android:id="@+id/showWordDescriptionRL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
+                    android:padding="5dp"
                     android:clickable="true"
                     android:onClick="toggleDescription"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    >
 
                     <TextView
                         android:id="@+id/showWordDescription"
@@ -116,10 +118,12 @@
                     android:id="@+id/showWordDefinitionRL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
+                    android:padding="5dp"
                     android:clickable="true"
                     android:onClick="toggleDefinition"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    >
 
                     <TextView
                         android:id="@+id/showWordDefinition"
@@ -172,10 +176,12 @@
                     android:id="@+id/showWordExtraInfoRL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
+                    android:padding="5dp"
                     android:clickable="true"
                     android:onClick="toggleExtraInfo"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    >
 
                     <TextView
                         android:layout_margin="10dp"

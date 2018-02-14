@@ -11,6 +11,7 @@
         <item name="actionBarTheme">@color/darkFore1</item>
         <item name="android:textColorHint">@color/hintColor</item>
         <item name="android:popupMenuStyle">@color/darkBack1</item>
+        <item name="colorControlHighlight">@color/ripple</item>
     </style>
     <style name="MyDialog" parent="@style/Theme.AppCompat.Light.Dialog">
         <item name="windowNoTitle">true</item>
@@ -22,6 +23,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:textColorHint">@color/hintColor</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlHighlight">@color/ripple</item>
     </style>
 
     <style name="AlertDialogTheme" parent="@style/Theme.AppCompat.Light.Dialog">

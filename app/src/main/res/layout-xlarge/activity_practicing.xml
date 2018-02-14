@@ -47,6 +47,7 @@
                 android:clickable="true"
                 android:onClick="validateResult"
                 android:tag="0"
+                android:foreground="?android:attr/selectableItemBackground"
                 >
                 <TextView
                     android:id="@+id/ansTV1"
@@ -70,6 +71,7 @@
                 android:clickable="true"
                 android:onClick="validateResult"
                 android:tag="1"
+                android:foreground="?android:attr/selectableItemBackground"
                 >
                 <TextView
                     android:id="@+id/ansTV2"
@@ -93,6 +95,7 @@
                 android:clickable="true"
                 android:onClick="validateResult"
                 android:tag="2"
+                android:foreground="?android:attr/selectableItemBackground"
                 >
                 <TextView
                     android:id="@+id/ansTV3"
@@ -116,6 +119,7 @@
                 android:clickable="true"
                 android:onClick="validateResult"
                 android:tag="3"
+                android:foreground="?android:attr/selectableItemBackground"
                 >
                 <TextView
                     android:id="@+id/ansTV4"
@@ -139,6 +143,7 @@
                 android:clickable="true"
                 android:onClick="validateResult"
                 android:tag="4"
+                android:foreground="?android:attr/selectableItemBackground"
                 >
 
                 <TextView
