@@ -583,6 +583,9 @@ public class SearchActivity extends AppCompatActivity {
                     break;
                 }
 
+                mediaPlayer.reset();
+                pronunciationPlaying = false;
+
                 pronunciationInit(wordValue.toLowerCase());
                 break;
 

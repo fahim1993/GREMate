@@ -338,7 +338,7 @@ public class PracticingActivity extends AppCompatActivity {
         }
 
         Pair<String, Integer> ansPair = dns.get(random.nextInt(dns.size()));
-        ans = ansPair.first;
+        ans = ansPair.first.toLowerCase();
         int type = ansPair.second;
 
         if(type == 0) questionTV.setText("Synonym of the word " + wordPractice.getWord().toUpperCase() + " is?");
@@ -353,7 +353,7 @@ public class PracticingActivity extends AppCompatActivity {
             if (mp.containsKey(w)) continue;
             if(w.equals(currentWord))continue;
 
-            otDefs.add(OD[ind][type]);
+            otDefs.add(OD[ind][type].toLowerCase());
             mp.put(w, 1);
         }
 
@@ -430,6 +430,9 @@ public class PracticingActivity extends AppCompatActivity {
                 break;
 
             case R.id.pronounce:
+                mediaPlayer.reset();
+                pronunciationPlaying = false;
+
                 pronunciationInit(word.getValue().toLowerCase());
                 break;
         }

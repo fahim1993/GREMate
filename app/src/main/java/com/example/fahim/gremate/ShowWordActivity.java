@@ -107,6 +107,7 @@ public class ShowWordActivity extends AppCompatActivity {
     private FetchData fetchData;
     private PlaybackPronunciation playbackPronunciation;
     private boolean pronunciationPlaying;
+
     MediaPlayer mediaPlayer;
 
     private static String[] PERMISSIONS_STORAGE = {
@@ -692,6 +693,10 @@ public class ShowWordActivity extends AppCompatActivity {
                 break;
             case R.id.prevWord:
                 if (loading) break;
+
+                mediaPlayer.reset();
+                pronunciationPlaying = false;
+
                 if (wordLevel != _wordAllData.getWord().getLevel()) {
                     DB.setWordLevel(wordId, wordLevel);
                     words.get(index).setLevel(wordLevel);
@@ -703,6 +708,10 @@ public class ShowWordActivity extends AppCompatActivity {
 
             case R.id.nextWord:
                 if (loading) break;
+
+                mediaPlayer.reset();
+                pronunciationPlaying = false;
+
                 if ( WORD != null && wordLevel != WORD.getLevel()) {
                     DB.setWordLevel(wordId, wordLevel);
                     words.get(index).setLevel(wordLevel);
@@ -714,6 +723,8 @@ public class ShowWordActivity extends AppCompatActivity {
 
             case R.id.pronounce:
                 if (loading) break;
+                mediaPlayer.reset();
+                pronunciationPlaying = false;
                 pronunciationInit(WORD.getValue().toLowerCase());
                 break;
 
@@ -863,6 +874,10 @@ public class ShowWordActivity extends AppCompatActivity {
             case KeyEvent.KEYCODE_VOLUME_UP:
                 if(action == KeyEvent.ACTION_DOWN){
                     if (loading) break;
+
+                    mediaPlayer.reset();
+                    pronunciationPlaying = false;
+
                     if (wordLevel != _wordAllData.getWord().getLevel()) {
                         DB.setWordLevel(wordId, wordLevel);
                         words.get(index).setLevel(wordLevel);
@@ -875,6 +890,10 @@ public class ShowWordActivity extends AppCompatActivity {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
                 if(action == KeyEvent.ACTION_DOWN){
                     if (loading) break;
+
+                    mediaPlayer.reset();
+                    pronunciationPlaying = false;
+
                     if ( WORD != null && wordLevel != WORD.getLevel()) {
                         DB.setWordLevel(wordId, wordLevel);
                         words.get(index).setLevel(wordLevel);
@@ -996,6 +1015,7 @@ public class ShowWordActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... strings) {
             if(activityWeakReference != null) {
+                MediaPlayer player = activityWeakReference.get().mediaPlayer;
                 if (activityWeakReference.get().isNetworkConnected()) {
                     try {
                         String link = strings[0];
@@ -1013,7 +1033,7 @@ public class ShowWordActivity extends AppCompatActivity {
                         con.setRequestMethod("HEAD");
                         con.connect();
                         if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                            MediaPlayer player = new MediaPlayer();
+                            player.reset();
                             player.setAudioStreamType(AudioManager.STREAM_MUSIC);
                             player.setDataSource(link);
                             player.prepare();
@@ -1021,7 +1041,6 @@ public class ShowWordActivity extends AppCompatActivity {
                             player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                                 @Override
                                 public void onCompletion(MediaPlayer mediaPlayer) {
-                                    mediaPlayer.release();
                                     if(activityWeakReference != null) activityWeakReference.get().pronunciationPlaying = false;
                                 }
                             });
