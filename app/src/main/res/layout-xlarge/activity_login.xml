@@ -60,7 +60,7 @@
         <android.support.v7.widget.AppCompatButton
             android:layout_below="@+id/password"
             android:layout_centerInParent="true"
-            app:backgroundTint="@color/colorAccent"
+            app:backgroundTint="@color/colorPrimary"
             android:textColor="@color/darkFore4"
             android:id="@+id/login"
             android:text="Login"
@@ -108,7 +108,7 @@
         <android.support.v7.widget.AppCompatButton
             android:layout_below="@+id/noacc"
             android:layout_centerInParent="true"
-            app:backgroundTint="@color/colorAccent"
+            app:backgroundTint="@color/colorPrimary"
             android:textColor="@color/darkFore4"
             android:id="@+id/signup"
             android:text="singup"

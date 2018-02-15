@@ -101,7 +101,7 @@
                 android:text="Load"
                 android:textColor="@color/darkFore4"
                 android:textSize="15sp"
-                app:backgroundTint="@color/colorAccent" />
+                app:backgroundTint="@color/colorPrimary" />
 
             <ProgressBar
                 android:id="@+id/pracLoading"
@@ -169,7 +169,7 @@
                     android:text="Start Practice"
                     android:textColor="@color/darkFore4"
                     android:textSize="15sp"
-                    app:backgroundTint="@color/colorAccent" />
+                    app:backgroundTint="@color/colorPrimary" />
             </LinearLayout>
 
         </RelativeLayout>

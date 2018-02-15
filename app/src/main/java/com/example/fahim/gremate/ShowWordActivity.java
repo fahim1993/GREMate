@@ -59,10 +59,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 
 public class ShowWordActivity extends AppCompatActivity {
@@ -994,12 +998,12 @@ public class ShowWordActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     if(playbackPronunciation!= null) playbackPronunciation.cancel(true);
                     playbackPronunciation = new PlaybackPronunciation(this);
-                    playbackPronunciation.execute(_wordAllData.getWordData().getPronunciation());
+                    playbackPronunciation.execute(_wordAllData.getWordData().getPronunciation(), _wordAllData.getWord().getValue());
                 }
             } else {
                 if(playbackPronunciation!= null) playbackPronunciation.cancel(true);
                 playbackPronunciation = new PlaybackPronunciation(this);
-                playbackPronunciation.execute(_wordAllData.getWordData().getPronunciation());
+                playbackPronunciation.execute(_wordAllData.getWordData().getPronunciation(), _wordAllData.getWord().getValue());
             }
         }
     }
@@ -1019,6 +1023,7 @@ public class ShowWordActivity extends AppCompatActivity {
                 if (activityWeakReference.get().isNetworkConnected()) {
                     try {
                         String link = strings[0];
+                        String word = strings[1].toLowerCase();
                         if (link.length() < 1) {
                             activityWeakReference.get().runOnUiThread(new Runnable() {
                                 public void run() {
@@ -1028,30 +1033,27 @@ public class ShowWordActivity extends AppCompatActivity {
                             return "";
                         }
 
-                        URL url = new URL(link);
-                        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                        con.setRequestMethod("HEAD");
-                        con.connect();
-                        if (con.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                            player.reset();
-                            player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                            player.setDataSource(link);
-                            player.prepare();
-                            player.start();
-                            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                @Override
-                                public void onCompletion(MediaPlayer mediaPlayer) {
-                                    if(activityWeakReference != null) activityWeakReference.get().pronunciationPlaying = false;
-                                }
-                            });
-                        } else {
-                            if(activityWeakReference != null) activityWeakReference.get().pronunciationPlaying = false;
-                            activityWeakReference.get().runOnUiThread(new Runnable() {
-                                public void run() {
-                                    Toast.makeText(activityWeakReference.get(), "Error...", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                        URLConnection conn = new URL(link).openConnection();
+                        InputStream is = conn.getInputStream();
+                        File mp3File = new File(Environment.getExternalStorageDirectory(), "pmp3/" + word + ".mp3");
+                        OutputStream outStream = new FileOutputStream(mp3File);
+                        byte[] buffer = new byte[4096];
+                        int len;
+                        while ((len = is.read(buffer)) > 0) {
+                            outStream.write(buffer, 0, len);
                         }
+                        outStream.close();
+
+                        player.reset();
+                        player.setDataSource(mp3File.getPath());
+                        player.prepare();
+                        player.start();
+                        player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mediaPlayer) {
+                                if(activityWeakReference != null) activityWeakReference.get().pronunciationPlaying = false;
+                            }
+                        });
 
                         return "";
                     } catch (Exception e) {
