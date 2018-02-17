@@ -82,12 +82,10 @@
                     android:id="@+id/showWordDescriptionRL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
+                    android:layout_margin="5dp"
                     android:clickable="true"
                     android:onClick="toggleDescription"
-                    android:orientation="horizontal"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    >
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_margin="10dp"
@@ -145,12 +143,10 @@
                     android:id="@+id/showWordDefinitionRL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
+                    android:layout_margin="5dp"
                     android:clickable="true"
                     android:onClick="toggleDefinition"
-                    android:orientation="horizontal"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    >
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/showWordDefinition"

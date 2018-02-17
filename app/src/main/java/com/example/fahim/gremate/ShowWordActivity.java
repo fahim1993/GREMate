@@ -10,9 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
@@ -40,7 +38,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,7 +61,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -98,12 +94,13 @@ public class ShowWordActivity extends AppCompatActivity {
     private RadioGroup diffRadioGroup;
 
     private LinearLayout dummyFocus;
-    private ScrollView showWordSV;
+    private LinearLayout showWordLL;
     private ProgressBar loadingPB;
 
     private TextView errorTextV;
 
     private boolean[] showMoreStatus;
+    private boolean hideLayout;
 
     private ArrayList<TextView> nonTitlesTV;
     private ArrayList<TextView> titlesTV;
@@ -159,7 +156,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
         dummyFocus = (LinearLayout)findViewById(R.id.showWordDummyFocus);
 
-        showWordSV = (ScrollView) findViewById(R.id.showWordSV);
+        showWordLL = (LinearLayout) findViewById(R.id.showWordLL);
         loadingPB = (ProgressBar) findViewById(R.id.loadWordPB);
         errorTextV = (TextView) findViewById(R.id.errorTV);
 
@@ -169,6 +166,7 @@ public class ShowWordActivity extends AppCompatActivity {
         }
 
         refreshFlag = false;
+        hideLayout = false;
 
         pronunciationPlaying = false;
         mediaPlayer = new MediaPlayer();
@@ -267,9 +265,12 @@ public class ShowWordActivity extends AppCompatActivity {
         loading = true;
         loadFlags = new boolean[]{true, true};
 
-        showWordSV.setVisibility(View.GONE);
+        showWordLL.setVisibility(View.GONE);
         errorTextV.setVisibility(View.GONE);
         loadingPB.setVisibility(View.VISIBLE);
+
+        Log.d("VISIBILITY", "1");
+
 
         WORD = words.get(index);
         wordId = WORD.getCloneOf();
@@ -295,6 +296,7 @@ public class ShowWordActivity extends AppCompatActivity {
                 loading = false;
                 loadingPB.setVisibility(View.GONE);
                 errorTextV.setVisibility(View.VISIBLE);
+                Log.d("VISIBILITY", "2");
                 onToNext();
                 break;
         }
@@ -320,6 +322,7 @@ public class ShowWordActivity extends AppCompatActivity {
         }
 
         findViewById(R.id.showWordDesLL).setVisibility(View.VISIBLE);
+        Log.d("VISIBILITY", "3");
 
         descriptionText.setText(fromHtml(_wordAllData.getWordData().getDes().replaceAll("\\n", "<br>")));
 
@@ -327,6 +330,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
         if (desState == 1) {
             descriptionText.setVisibility(View.VISIBLE);
+            Log.d("VISIBILITY", "4");
             desButton.setImageResource(R.drawable.up);
         } else {
             descriptionText.setVisibility(View.GONE);
@@ -337,12 +341,14 @@ public class ShowWordActivity extends AppCompatActivity {
     }
 
     private void setDef() {
+
         if (_wordAllData.getWordDefs().size() == 0) {
             findViewById(R.id.showWordDefiLL).setVisibility(View.GONE);
             return;
         }
 
         findViewById(R.id.showWordDefiLL).setVisibility(View.VISIBLE);
+        Log.d("VISIBILITY", "5");
 
         showMoreStatus = new boolean[_wordAllData.getWordDefs().size()];
         for(int i=0; i<showMoreStatus.length; i++) showMoreStatus[i] = true;
@@ -368,6 +374,7 @@ public class ShowWordActivity extends AppCompatActivity {
             secondText.setLineSpacing(0, 1.135f);
 
             secondText.setVisibility(View.VISIBLE);
+            Log.d("VISIBILITY", "6 "+tag);
             secondText.setTag(tag++);
 
             nonTitlesTV.add(firstText);
@@ -397,6 +404,7 @@ public class ShowWordActivity extends AppCompatActivity {
 
         if (defState == 1) {
             defDataLL.setVisibility(View.VISIBLE);
+            Log.d("VISIBILITY", "7");
             defButton.setImageResource(R.drawable.up);
         } else {
             defDataLL.setVisibility(View.GONE);
@@ -417,11 +425,13 @@ public class ShowWordActivity extends AppCompatActivity {
         extraInfoText.setText(extraInfo);
 
         findViewById(R.id.showWordExtraInfoLL).setVisibility(View.VISIBLE);
+        Log.d("VISIBILITY", "8");
 
         ImageView extraInfoButton = (ImageView) findViewById(R.id.showWordExtraInfoIB);
 
         if (extraInfoState == 1) {
             extraInfoText.setVisibility(View.VISIBLE);
+            Log.d("VISIBILITY", "9");
             extraInfoButton.setImageResource(R.drawable.up);
         } else {
             extraInfoText.setVisibility(View.GONE);
@@ -580,6 +590,7 @@ public class ShowWordActivity extends AppCompatActivity {
     private void showView(final View v) {
         v.animate().translationY(0).setDuration(300);
         v.setVisibility(View.VISIBLE);
+        Log.d("VISIBILITY", "10");
     }
 
     private void hideView(final View v) {
@@ -623,10 +634,12 @@ public class ShowWordActivity extends AppCompatActivity {
                     wd = ds.getValue(WordData.class);
                 }
                 _wordAllData.setWordData(wd);
-                if(loading) countLoaded(0);
-                else  {
-                    setDes();
-                    setExtraInfo();
+                if(!hideLayout) {
+                    if (loading) countLoaded(0);
+                    else{
+                        setDes();
+                        setExtraInfo();
+                    }
                 }
             }
 
@@ -644,8 +657,10 @@ public class ShowWordActivity extends AppCompatActivity {
                     wordDefs.add(w);
                 }
                 _wordAllData.setWordDefs(wordDefs);
-                if(loading) countLoaded(1);
-                else setDef();
+                if(!hideLayout) {
+                    if (loading) countLoaded(1);
+                    else setDef();
+                }
             }
 
             @Override
@@ -670,7 +685,8 @@ public class ShowWordActivity extends AppCompatActivity {
             pronunciationInit(WORD.getValue().toLowerCase());
         }
         loadingPB.setVisibility(View.GONE);
-        showWordSV.setVisibility(View.VISIBLE);
+        showWordLL.setVisibility(View.VISIBLE);
+        Log.d("VISIBILITY", "11");
         onToNext();
     }
 
@@ -750,18 +766,26 @@ public class ShowWordActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialogInterface, int i) {
 
                                 try {
-                                    DB.deleteWord(wordId, true);
-
+                                    hideLayout = true;
                                     loading = true;
-                                    showWordSV.setVisibility(View.GONE);
+                                    showWordLL.setVisibility(View.GONE);
                                     errorTextV.setVisibility(View.GONE);
                                     loadingPB.setVisibility(View.VISIBLE);
+                                    Log.d("VISIBILITY", "12");
 
                                     if (isNetworkConnected()) {
-                                        loading = true;
+                                        DB.deleteWord(wordId, true);
                                         if(fetchData != null)fetchData.cancel(true);
                                         fetchData = new FetchData(ShowWordActivity.this);
                                         fetchData.execute(WORD.getValue(), wordId);
+                                    }
+                                    else {
+                                        Toast.makeText(ShowWordActivity.this, "Internet connection required", Toast.LENGTH_LONG).show();
+                                        showWordLL.setVisibility(View.VISIBLE);
+                                        errorTextV.setVisibility(View.GONE);
+                                        loadingPB.setVisibility(View.GONE);
+                                        Log.d("VISIBILITY", "13");
+                                        hideLayout = false;
                                     }
                                 }catch (Exception e){
                                     e.printStackTrace();
@@ -859,6 +883,12 @@ public class ShowWordActivity extends AppCompatActivity {
                 editor.apply();
                 break;
 
+            case R.id.example_sentences:
+                Intent intent2 = new Intent(this, ExampleSentencesActivity.class);
+                intent2.putExtra("word", WORD.getValue());
+                startActivity(intent2);
+                break;
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -922,15 +952,18 @@ public class ShowWordActivity extends AppCompatActivity {
 
             DB.setWordData(_wordAllData, wordPractice, wordId);
 
+            hideLayout = false;
             allLoaded();
 
         } else {
             loadingPB.setVisibility(View.GONE);
-            showWordSV.setVisibility(View.GONE);
+            showWordLL.setVisibility(View.GONE);
             errorTextV.setVisibility(View.VISIBLE);
+            Log.d("VISIBILITY", "14");
             WORD.setValidity(Word.INVALID);
             DB.setWordValidity(wordId, Word.INVALID);
             loading = false;
+            hideLayout = false;
         }
     }
 

@@ -39,4 +39,9 @@
         android:id="@+id/auto_pronounce"
         app:showAsAction="never"
         android:title="Auto pronounce"/>
+
+    <item
+        android:id="@+id/example_sentences"
+        app:showAsAction="never"
+        android:title="Example Sentences"/>
 </menu>

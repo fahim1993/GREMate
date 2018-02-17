@@ -143,11 +143,6 @@ public class SearchActivity extends AppCompatActivity {
         }
         setTitle(Html.fromHtml("<font color='#BDCBDA'>Search</font>"));
 
-        if (getSupportActionBar() != null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-
         webSearchButton = (AppCompatImageButton) findViewById(R.id.webSearchBtn);
 
         input = (EditText) findViewById(R.id.searchWordET);
