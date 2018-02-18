@@ -39,6 +39,7 @@
 
             <LinearLayout
                 android:layout_marginTop="10dp"
+                android:paddingBottom="20dp"
                 android:id="@+id/sentencesLL"
                 android:visibility="gone"
                 android:orientation="vertical"

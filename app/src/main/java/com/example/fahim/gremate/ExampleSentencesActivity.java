@@ -98,8 +98,11 @@ public class ExampleSentencesActivity extends AppCompatActivity {
             TextView sentTV = (TextView) sentView.findViewById(R.id.sentence);
             TextView srcTV = (TextView) sentView.findViewById(R.id.source);
 
+            sentTV.setTextIsSelectable(true);
+            srcTV.setTextIsSelectable(true);
+
             sentTV.setTextSize(textSize);
-            srcTV.setTextSize(textSize-3);
+            srcTV.setTextSize(textSize-5);
 
             sentTV.setText(fromHtml(sentence));
             srcTV.setText(fromHtml(source));
@@ -176,19 +179,50 @@ public class ExampleSentencesActivity extends AppCompatActivity {
 
                     JSONObject src = (JSONObject) ith.get("volume");
 
-                    String source = "<i>" + ((JSONObject)src.get("corpus")).get("name").toString() + "</i>";
-                    String dateTmp = src.getString("datePublished");
-                    dateTmp = dateTmp.substring(0, 10);   // 2001-03-16
+                    String source = "", date = "", dateTmp, title = "";
 
-                    int month = Integer.parseInt(dateTmp.substring(5, 7));
+                    try {
+                        source = "<i>" + ((JSONObject)src.get("corpus")).get("name").toString() + "</i>";
+                    } catch (Exception e){
 
-                    String year = dateTmp.substring(0, 4);
-                    String mon = mnts[month-1];
-                    String day = String.valueOf(Integer.parseInt(dateTmp.substring(8, 10)));
+                    }
 
-                    String date = day + " " + mon+ ", " + year;
+                    try{
+                        dateTmp = src.getString("datePublished");
+                        dateTmp = dateTmp.substring(0, 10);   // 2001-03-16
+                        int month = Integer.parseInt(dateTmp.substring(5, 7));
 
-                    Pair<String, String> mp = new Pair<>(finalSentence, source + "&nbsp;&nbsp;&nbsp;&nbsp;" + date);
+                        String year = dateTmp.substring(0, 4);
+                        String mon = mnts[month-1];
+                        String day = String.valueOf(Integer.parseInt(dateTmp.substring(8, 10)));
+
+                        date = day + " " + mon+ ", " + year;
+                    }catch (Exception e){
+
+                    }
+
+                    try{
+                        title = src.getString("title");
+                    } catch (Exception e){
+
+                    }
+
+                    Pair<String, String> mp;
+                    if(source.length()>0 || date.length()>0 || title.length()>0) {
+                        String tmp = "";
+                        if(title.length()>0) tmp += title;
+                        if(source.length()>0){
+                            if(tmp.length()>0) tmp += " &mdash; ";
+                            tmp += source;
+                        }
+                        if(date.length()>0){
+                            if(tmp.length()>0) tmp+="&nbsp;&nbsp;&nbsp;&nbsp;";
+                            tmp += date;
+                        }
+
+                        mp = new Pair<>(finalSentence, tmp);
+                    }
+                    else mp = new Pair<>(finalSentence, "");
                     sentences.add(mp);
                 }
 

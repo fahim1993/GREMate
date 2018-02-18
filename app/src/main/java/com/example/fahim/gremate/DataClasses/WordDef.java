@@ -106,7 +106,7 @@ public class WordDef {
         }
 
         if(sentences.length()>0){
-            sb.append("<br>● ");
+            sb.append("<br>&bull; ");
             String [] sents = getSentencesArray();
             String st = sents[0];
             if(st.length()>2 && st.charAt(0) == '‘' && st.charAt(st.length()-1) == '’'){
@@ -137,7 +137,7 @@ public class WordDef {
             if(sb.length()>0)sb.append("<br>");
             sb.append("<b>Sentences:</b>");
             for(int i = 1; i< sents.length; i++) {
-                sb.append("<br>● ");
+                sb.append("<br>&bull; ");
                 String st = sents[i];
                 if(st.length()>2 && st.charAt(0) == '‘' && st.charAt(st.length()-1) == '’'){
                     st = st.substring(1, st.length()-1);
