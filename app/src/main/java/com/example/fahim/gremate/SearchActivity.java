@@ -329,8 +329,9 @@ public class SearchActivity extends AppCompatActivity {
             nonTitlesTV.add(secondText);
 
             firstText.setText(fromHtml(def.getFirstHtml(tag)));
-            if(def.haveMoreData()){
-                secondText.setText(fromHtml(def.getSecondHtml()));
+            String secondTextStr = def.getSecondHtml();
+            if(secondTextStr.length()>0){
+                secondText.setText(fromHtml(secondTextStr));
 
                 (defView.findViewById(R.id.defShowMoreRL)).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -574,7 +575,6 @@ public class SearchActivity extends AppCompatActivity {
                 if (loading) break;
 
                 if(wordValue == null || wordValue.length()<1){
-                    Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
                     break;
                 }
 
@@ -590,6 +590,15 @@ public class SearchActivity extends AppCompatActivity {
                 intent.putExtra("wsId", wsId);
                 intent.putExtra("wordId", wordId);
                 startActivity(intent);
+                break;
+
+            case R.id.example_sentences:
+                if(wordValue != null && wordValue.length()>0) {
+                    Intent intent2 = new Intent(this, ExampleSentencesActivity.class);
+                    intent2.putExtra("word", wordValue);
+                    startActivity(intent2);
+                    break;
+                }
         }
 
         return super.onOptionsItemSelected(item);

@@ -24,6 +24,12 @@
         android:title="Edit"/>
 
     <item
+        android:id="@+id/example_sentences"
+        android:icon="@drawable/mexamples"
+        app:showAsAction="always"
+        android:title="Example Sentences"/>
+
+    <item
         android:id="@+id/reload"
         android:icon="@drawable/reload"
         app:showAsAction="ifRoom"
@@ -39,9 +45,4 @@
         android:id="@+id/auto_pronounce"
         app:showAsAction="never"
         android:title="Auto pronounce"/>
-
-    <item
-        android:id="@+id/example_sentences"
-        app:showAsAction="never"
-        android:title="Example Sentences"/>
 </menu>

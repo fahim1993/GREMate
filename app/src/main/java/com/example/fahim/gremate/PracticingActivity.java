@@ -130,9 +130,11 @@ public class PracticingActivity extends AppCompatActivity {
         wsId = b.getString("wsId");
 
         ArrayList<Word> temp = new ArrayList<>();
-        for(int i = 0; i<words.size(); i++){
-            for(int j=0; j<=words.get(i).getLevel(); j++){
-                temp.add(words.get(i));
+        for(int lvl=0; lvl<=Word.LVL_VHARD; lvl++) {
+            for (int i = 0; i < words.size(); i++) {
+                if(words.get(i).getLevel()<=lvl) {
+                    temp.add(words.get(i));
+                }
             }
         }
         words = temp;
@@ -341,7 +343,8 @@ public class PracticingActivity extends AppCompatActivity {
             if(s!=null && s.length()>0) dns.add(new Pair<>(s, 1));
         }
 
-        Pair<String, Integer> ansPair = dns.get(random.nextInt(dns.size()));
+        int rv = (int)(System.currentTimeMillis()%((long)dns.size()));
+        Pair<String, Integer> ansPair = dns.get(rv);
         ans = ansPair.first.toLowerCase();
         if(ans.charAt(ans.length()-1)=='.') ans = ans.substring(0, ans.length()-1);
         int type = ansPair.second;
@@ -382,7 +385,7 @@ public class PracticingActivity extends AppCompatActivity {
     }
 
     private void randomizeWords() {
-        for(int i=0; i<4; i++)
+        for(int i=0; i<5; i++)
             Collections.shuffle(words);
     }
 

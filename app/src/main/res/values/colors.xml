@@ -37,7 +37,7 @@
     <color name="colorPrimaryDark">#002000</color>
     <color name="colorAccent">#002800</color>
 
-    <color name="ripple">#60FFFFFF</color>
+    <color name="ripple">#65808080</color>
 
     <color name="cardviewBackground">#f4f4f4</color>
     <color name="cardviewItem">#f8f8f8</color>
