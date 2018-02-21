@@ -132,7 +132,7 @@ public class PracticingActivity extends AppCompatActivity {
         ArrayList<Word> temp = new ArrayList<>();
         for(int lvl=0; lvl<=Word.LVL_VHARD; lvl++) {
             for (int i = 0; i < words.size(); i++) {
-                if(words.get(i).getLevel()<=lvl) {
+                if(words.get(i).getLevel()>=lvl) {
                     temp.add(words.get(i));
                 }
             }
