@@ -24,6 +24,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,12 +37,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.FetchDataAsync;
+import com.example.fahim.gremate.DataClasses.PracticePreviousQuestions;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordAllData;
 import com.example.fahim.gremate.DataClasses.WordData;
@@ -52,6 +57,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
@@ -63,7 +69,6 @@ public class SearchActivity extends AppCompatActivity {
     private WordAllData _wordAllData;
     private int index;
     private String wordId;
-    private String wsId;
     private String wordValue;
 
     private ArrayList<TextView> nonTitlesTV;
@@ -75,6 +80,10 @@ public class SearchActivity extends AppCompatActivity {
     private TextView errorTextV;
 
     private TextView descriptionText;
+    private TextView extraInfoText;
+
+    private RadioGroup diffRadioGroup;
+    private int wordLevel;
 
     private AppCompatImageButton webSearchButton;
     private EditText input;
@@ -84,6 +93,7 @@ public class SearchActivity extends AppCompatActivity {
     private boolean[] showMoreStatus;
     private int defState;
     private int desState;
+    private int extraInfoState;
     private float textSize;
 
     DatabaseReference ref1;
@@ -123,6 +133,7 @@ public class SearchActivity extends AppCompatActivity {
         errorTextV = (TextView)findViewById(R.id.errorTV);
 
         descriptionText = (TextView) findViewById(R.id.showWordDescriptionText);
+        extraInfoText = (TextView) findViewById(R.id.showWordExtraInfoText);
 
         titlesTV = new ArrayList<>();
         titlesTV.add((TextView) findViewById(R.id.showWordDescription));
@@ -133,6 +144,7 @@ public class SearchActivity extends AppCompatActivity {
 
         defState = 1;
         desState = 1;
+        extraInfoState = 1;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -182,7 +194,6 @@ public class SearchActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             words = extras.getParcelableArrayList("words");
-            wsId = extras.getString("wsId");
             _wordAllData = new WordAllData();
             _wordAllData.setWord(words.get(0));
             wordValue = _wordAllData.getWord().getValue().toLowerCase();
@@ -190,6 +201,8 @@ public class SearchActivity extends AppCompatActivity {
             loadingPB.setVisibility(View.VISIBLE);
             index = 0;
             wordId = _wordAllData.getWord().getCloneOf();
+            wordLevel  = _wordAllData.getWord().getLevel();
+            setLevel();
             loading = true;
             loadFlags = new boolean[2];
             setTitle(Html.fromHtml("<font color='#BDCBDA'>"+ _wordAllData.getWord().getValue().toUpperCase() +"</font>"));
@@ -202,6 +215,9 @@ public class SearchActivity extends AppCompatActivity {
             retrieveData();
         }
         else {
+            findViewById(R.id.showWordExtraInfoLL).setVisibility(View.GONE);
+            findViewById(R.id.diffRadioGroup).setVisibility(View.GONE);
+
             if(menu!=null){
                 menu.findItem(R.id.edit).setVisible(false);
                 menu.findItem(R.id.pronounce).setVisible(true);
@@ -224,6 +240,23 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        if (wordId != null && wordId.length()>0 &&  _wordAllData != null && wordLevel != _wordAllData.getWord().getLevel()) {
+            Log.d("SearchActivity", "word level changed ");
+            String filename = "levelChange";
+            FileOutputStream outputStream;
+
+            try {
+                outputStream = openFileOutput(filename, Context.MODE_APPEND);
+                String toWrite = wordId + DB.DELIM + wordLevel + "\n";
+                outputStream.write(toWrite.getBytes());
+                outputStream.close();
+            } catch (Exception e) {
+                Log.d("PracticingActivityFile", "write fail 1 ");
+                e.printStackTrace();
+            }
+            DB.setWordLevel(wordId, wordLevel);
+        }
+
         if(listener1!=null && ref1!=null) ref1.removeEventListener(listener1);
         if(listener2!=null && ref2!=null) ref2.removeEventListener(listener2);
     }
@@ -361,6 +394,62 @@ public class SearchActivity extends AppCompatActivity {
         defButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
     }
 
+    private void setExtraInfo() {
+
+        if (_wordAllData.getWordData().getExtraInfo().length() < 1) {
+            findViewById(R.id.showWordExtraInfoLL).setVisibility(View.GONE);
+            return;
+        }
+
+        String extraInfo = _wordAllData.getWordData().getExtraInfo();
+        extraInfoText.setText(extraInfo);
+
+        findViewById(R.id.showWordExtraInfoLL).setVisibility(View.VISIBLE);
+        Log.d("VISIBILITY", "8");
+
+        ImageView extraInfoButton = (ImageView) findViewById(R.id.showWordExtraInfoIB);
+
+        if (extraInfoState == 1) {
+            extraInfoText.setVisibility(View.VISIBLE);
+            Log.d("VISIBILITY", "9");
+            extraInfoButton.setImageResource(R.drawable.up);
+        } else {
+            extraInfoText.setVisibility(View.GONE);
+            extraInfoText.setTranslationY(-getHeight(extraInfoText));
+            extraInfoButton.setImageResource(R.drawable.down);
+        }
+        extraInfoButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+    }
+
+    private void setLevel() {
+
+        if(diffRadioGroup!=null){
+            ((RadioButton)diffRadioGroup.getChildAt(wordLevel)).setChecked(true);
+            return;
+        }
+
+        diffRadioGroup = (RadioGroup) findViewById(R.id.diffRadioGroup);
+        diffRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.radio1:
+                        wordLevel = 0;
+                        break;
+                    case R.id.radio2:
+                        wordLevel = 1;
+                        break;
+                    case R.id.radio3:
+                        wordLevel = 2;
+                        break;
+                    case R.id.radio4:
+                        wordLevel = 3;
+                }
+            }
+        });
+        ((RadioButton)diffRadioGroup.getChildAt(wordLevel)).setChecked(true);
+    }
+
     private void setContents() {
         try {
             nonTitlesTV.clear();
@@ -430,6 +519,24 @@ public class SearchActivity extends AppCompatActivity {
         desButton.getParent().requestChildFocus(desButton, desButton);
     }
 
+    public void toggleExtraInfo(View v) {
+        TextView extraInfoTV = (TextView) findViewById(R.id.showWordExtraInfoText);
+        ImageView extraInfoButton = (ImageView) findViewById(R.id.showWordExtraInfoIB);
+
+        if (extraInfoState == 1) {
+            extraInfoState = 0;
+            hideView(extraInfoTV);
+            extraInfoButton.setImageResource(R.drawable.down);
+        } else {
+            extraInfoState = 1;
+            showView(extraInfoTV);
+            extraInfoButton.setImageResource(R.drawable.up);
+
+        }
+        extraInfoButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        extraInfoButton.getParent().requestChildFocus(extraInfoButton, extraInfoButton);
+    }
+
     public void toggleShowMore(View v){
         LinearLayout pl = (LinearLayout) v.getParent();
         TextView toToggle = (TextView) pl.findViewById(R.id.defSecondTV);
@@ -491,7 +598,10 @@ public class SearchActivity extends AppCompatActivity {
                 }
                 _wordAllData.setWordData(wd);
                 if(loading) countLoaded(0);
-                else  setDes();
+                else  {
+                    setDes();
+                    setExtraInfo();
+                }
             }
 
             @Override
@@ -587,7 +697,6 @@ public class SearchActivity extends AppCompatActivity {
             case R.id.edit:
                 Intent intent = new Intent(this, EditActivity.class);
                 intent.putExtra("word", words.get(0));
-                intent.putExtra("wsId", wsId);
                 intent.putExtra("wordId", wordId);
                 startActivity(intent);
                 break;
@@ -636,7 +745,12 @@ public class SearchActivity extends AppCompatActivity {
     private void pronunciationPlay(String word){
         if(!pronunciationPlaying) {
             pronunciationPlaying = true;
-            File mp3File = new File(Environment.getExternalStorageDirectory(), "pmp3/" + word + ".mp3");
+            File dir = new File(Environment.getExternalStorageDirectory(), "GREMate" + File.separator + "Word Pronunciations");
+            if(!dir.exists()) dir.mkdirs();
+
+            String mp3Dir = "GREMate" + File.separator + "Word Pronunciations" + File.separator + word + ".mp3";
+
+            File mp3File = new File(Environment.getExternalStorageDirectory(), mp3Dir);
             if (mp3File.exists()) {
                 try {
                     mediaPlayer.reset();

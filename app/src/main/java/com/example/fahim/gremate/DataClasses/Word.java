@@ -44,6 +44,27 @@ public class Word implements Parcelable{
         this.level = level;
     }
 
+    public Word(String fileLine){
+        String []str = fileLine.split(DB.DELIM);
+
+        this.cloneOf = str[0];
+        this.value = str[1];
+        this.sourceListName = str[2];
+        this.practicable = str[3].equals("true");
+        this.validity = Integer.valueOf(str[4]);
+        this.level = Integer.valueOf(str[5]);
+    }
+
+    public String getStringForm(){
+        String regex = DB.DELIM;
+        return getCloneOf() + regex +
+                getValue() + regex +
+                getSourceListName() + regex +
+                isPracticable() + regex +
+                getValidity() + regex +
+                getLevel() + "\n";
+    }
+
     public String getSourceListName() {
         return sourceListName;
     }

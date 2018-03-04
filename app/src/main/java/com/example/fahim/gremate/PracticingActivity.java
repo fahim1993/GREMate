@@ -1,18 +1,18 @@
 package com.example.fahim.gremate;
 
-import android.*;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.os.PersistableBundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -21,23 +21,23 @@ import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.FeedTestData;
+import com.example.fahim.gremate.DataClasses.PracticePreviousQuestions;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordPractice;
 import com.google.firebase.database.DataSnapshot;
@@ -45,19 +45,19 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.ref.WeakReference;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Random;
 
 import static android.view.View.GONE;
@@ -69,7 +69,7 @@ public class PracticingActivity extends AppCompatActivity {
     private String ans;
     private String[][] OD;
 
-    private String wsId;
+    private String type;
 
     private TextView[] ansTVs;
     private TextView questionTV;
@@ -77,9 +77,6 @@ public class PracticingActivity extends AppCompatActivity {
     private int ansIndex;
     private int noQuestions;
     private int noCorrect;
-
-    private int prvCorrect;
-    private String prvTitle;
 
     private WordPractice wordPractice;
 
@@ -97,20 +94,30 @@ public class PracticingActivity extends AppCompatActivity {
 
     private ProgressBar practicingLoading;
 
-    private ArrayList<String> wrongAns;
+    private ArrayList<PracticePreviousQuestions> previousQuestions;
 
     private HashMap<String, ArrayList<Integer>> levelMap;
+    private HashMap<String, HashSet<String>> answerMap;
 
     private PlaybackPronunciation playbackPronunciation;
     private boolean pronunciationPlaying;
     MediaPlayer mediaPlayer;
+
+    private int autoPronounce;
 
     private static String[] PERMISSIONS_STORAGE = {
             android.Manifest.permission.READ_EXTERNAL_STORAGE,
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    Random random;
+    private Random random;
+
+    private PracticePreviousQuestions prevQues;
+
+    FileOutputStream fileQuestions;
+
+    private static final String FILENAME_QUESTIONS = "previousQuestionsDescription";
+    private static final String FILENAME_WORDS = "practiceWords";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,35 +133,64 @@ public class PracticingActivity extends AppCompatActivity {
         wordPractice = null;
 
         Bundle b = getIntent().getExtras();
-        words = b.getParcelableArrayList("words");
-        wsId = b.getString("wsId");
 
-        ArrayList<Word> temp = new ArrayList<>();
-        for(int lvl=0; lvl<=Word.LVL_VHARD; lvl++) {
-            for (int i = 0; i < words.size(); i++) {
-                if(words.get(i).getLevel()>=lvl) {
-                    temp.add(words.get(i));
-                }
-            }
-        }
-        words = temp;
-
+        setTitle(Html.fromHtml("<font color='#BDCBDA'>0 </font>"));
         random = new Random();
-
         diffRadioGroup = (RadioGroup) findViewById(R.id.diffRadioGroup);
 
-        setTitle(Html.fromHtml("<font color='#BDCBDA'>SCORE: 0</font>"));
-
-        randomizeWords();
         index = 0;
         noQuestions = 0;
         noCorrect = 0;
-        prvCorrect = 0;
-        prvTitle = "SCORE: 0";
 
-        OD = new FeedTestData().getPracticeWords();
+        OD = new FeedTestData().getPracticeWords(this);
 
-        wrongAns = new ArrayList<>();
+        deleteFile("levelChange");
+
+        type = b.getString("type");
+        if(type.equals("resume") || savedInstanceState != null){
+            restoreStateFromFile();
+        }
+        else {
+            words = b.getParcelableArrayList("words");
+            ArrayList<Word> temp = new ArrayList<>();
+            for(int lvl=0; lvl<=Word.LVL_VHARD; lvl++) {
+                for (int i = 0; i < words.size(); i++) {
+                    if(words.get(i).getLevel()>=lvl) {
+                        temp.add(words.get(i));
+                    }
+                }
+                if(type.equals("short"))break;
+            }
+            words = temp;
+
+            previousQuestions = new ArrayList<>();
+
+            try {
+                deleteFile(FILENAME_QUESTIONS);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            randomizeWords();
+        }
+
+        try {
+            fileQuestions = openFileOutput(FILENAME_QUESTIONS, MODE_APPEND);
+
+            if(savedInstanceState == null) {
+
+                FileOutputStream fileWords = openFileOutput(FILENAME_WORDS, MODE_PRIVATE);
+                for (int i = 0; i < words.size(); i++) {
+                    fileWords.write(words.get(i).getStringForm().getBytes());
+                }
+                fileWords.close();
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        autoPronounce = prefs.getInt("pracAutoPronounce", 0);
 
         ansTVs = new TextView[5];
 
@@ -172,6 +208,42 @@ public class PracticingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                nextButton.setVisibility(GONE);
+                viewButton.setVisibility(GONE);
+
+                practicingSV.setVisibility(GONE);
+                diffRadioGroup.setVisibility(GONE);
+                practicingLoading.setVisibility(View.VISIBLE);
+
+                previousQuestions.add(prevQues);
+
+                index++;
+                if (index == words.size()) {
+                    index = 0;
+                    randomizeWords();
+                    createLevelMap();
+
+                    try {
+                        FileOutputStream fileWords = openFileOutput(FILENAME_WORDS, MODE_PRIVATE);
+                        for (int i = 0; i < words.size(); i++) {
+                            fileWords.write(words.get(i).getStringForm().getBytes());
+                        }
+                        fileWords.close();
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+
+                try{
+                    String toWrite = "" + index + " " + noQuestions + " " + noCorrect + "\n";
+                    fileQuestions.write(prevQues.getStringForm().getBytes());
+                    fileQuestions.write(toWrite.getBytes());
+                    fileQuestions.flush();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 wordPractice = null;
 
                 if (wordLevel != word.getLevel()) {
@@ -182,23 +254,12 @@ public class PracticingActivity extends AppCompatActivity {
                     ArrayList<Integer> al = levelMap.get(word.getCloneOf());
                     for(int i: al) words.get(i).setLevel(wordLevel);
                 }
-                index++;
-                if (index == words.size()) {
-                    index = 0;
-                    randomizeWords();
-                    createLevelMap();
-                }
+
                 for (int i = 0; i < 5; i++) {
                     ansTVs[i].setTextColor(getResources().getColor(R.color.darkFore1));
                     ansTVs[i].setTypeface(null, Typeface.NORMAL);
                 }
 
-                nextButton.setVisibility(GONE);
-                viewButton.setVisibility(GONE);
-
-                practicingSV.setVisibility(GONE);
-                diffRadioGroup.setVisibility(GONE);
-                practicingLoading.setVisibility(View.VISIBLE);
                 loadWordPracticeData(words.get(index).getCloneOf());
 
             }
@@ -241,22 +302,7 @@ public class PracticingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        if(savedInstanceState != null){
-            try {
-                ArrayList<Word> ws = savedInstanceState.getParcelableArrayList("words");
-                if(ws != null) {
-                    words = ws;
-                    index = savedInstanceState.getInt("index");
-                    setTitle(savedInstanceState.getString("prvTitle"));
-                    noQuestions = savedInstanceState.getInt("noQuestions");
-                    noCorrect = savedInstanceState.getInt("prvCorrect");
-                    wrongAns = savedInstanceState.getStringArrayList("wrongAns");
-                }
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-        }
+        answerMap = new HashMap<>();
 
         pronunciationPlaying = false;
         mediaPlayer = new MediaPlayer();
@@ -266,15 +312,58 @@ public class PracticingActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        restoreStateFromFile();
+    }
 
-        outState.putParcelableArrayList("words", words);
-        outState.putInt("index", index);
-        outState.putInt("noQuestions", noQuestions - 1);
-        outState.putInt("prvCorrect", prvCorrect);
-        outState.putString("prvTitle", prvTitle);
-        outState.putStringArrayList("wrongAns", wrongAns);
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putString("type", "restore");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        String []files = fileList();
+        int flag = 0;
+        for (String file : files) {
+            if (file.equals("levelChange")) {
+                flag = 1;
+                break;
+            }
+        }
+
+        if(flag == 1){
+            String filename = "levelChange";
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader( openFileInput(filename) ) );
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if(line.length()>0){
+                        String [] st = line.split(DB.DELIM);
+                        int level = Integer.valueOf(st[1]);
+                        if(levelMap == null || !levelMap.containsKey(st[0])){
+                            createLevelMap();
+                        }
+                        ArrayList<Integer> al = levelMap.get(st[0]);
+                        for(int i: al) words.get(i).setLevel(level);
+
+                        if(word != null && word.getCloneOf().equals(st[0])){
+                            word.setLevel(level);
+                            ((RadioButton)diffRadioGroup.getChildAt(level)).setChecked(true);
+                            wordLevel = level;
+                        }
+                    }
+                }
+                br.close();
+                deleteFile(filename);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -297,6 +386,11 @@ public class PracticingActivity extends AppCompatActivity {
         super.onDestroy();
         if(mediaPlayer!=null){
             mediaPlayer.release();
+        }
+        try {
+            fileQuestions.close();
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
         if(playbackPronunciation!=null){
@@ -330,22 +424,51 @@ public class PracticingActivity extends AppCompatActivity {
 
     private void setupQuestion() {
 
+        prevQues = new PracticePreviousQuestions();
+        prevQues.setValue(word.getValue());
+        prevQues.setId(word.getCloneOf());
+
+        if(answerMap == null) answerMap = new HashMap<>();
+        if(!answerMap.containsKey(wordPractice.getWord())){
+            answerMap.put(wordPractice.getWord(), new HashSet<String>());
+        }
+        HashSet<String> ansSet = answerMap.get(wordPractice.getWord());
+
         HashMap<String, Integer> mp = new HashMap<>();
 
         String [] defs = wordPractice.getDefinitions().split(DB.DELIM);
         String [] syns = wordPractice.getSynonyms().split(DB.DELIM);
 
-        ArrayList<Pair<String, Integer>> dns = new ArrayList<>();
+        ArrayList<Pair<String, Integer>> oldAns = new ArrayList<>();
+        ArrayList<Pair<String, Integer>> newAns = new ArrayList<>();
+
         for(String s: syns) {
-            if(s!=null && s.length()>0) dns.add(new Pair<>(s, 0));
+            if(s!=null && s.length()>0){
+                s = s.toLowerCase();
+                if(ansSet.contains(s)) oldAns.add(new Pair<>(s, 0));
+                else newAns.add(new Pair<>(s, 0));
+            }
         }
         for(String s: defs) {
-            if(s!=null && s.length()>0) dns.add(new Pair<>(s, 1));
+            if(s!=null && s.length()>0){
+                s = s.toLowerCase();
+                if(ansSet.contains(s)) oldAns.add(new Pair<>(s, 1));
+                else newAns.add(new Pair<>(s, 1));
+            }
         }
 
-        int rv = (int)(System.currentTimeMillis()%((long)dns.size()));
-        Pair<String, Integer> ansPair = dns.get(rv);
-        ans = ansPair.first.toLowerCase();
+        if(newAns.size() == 0){
+            ansSet.clear();
+            newAns = oldAns;
+        }
+
+        Pair<String, Integer> ansPair;
+
+        int rv = random.nextInt(newAns.size());
+        ansPair = newAns.get(rv);
+        ansSet.add(ansPair.first);
+
+        ans = ansPair.first;
         if(ans.charAt(ans.length()-1)=='.') ans = ans.substring(0, ans.length()-1);
         int type = ansPair.second;
 
@@ -365,7 +488,8 @@ public class PracticingActivity extends AppCompatActivity {
             mp.put(w, 1);
         }
 
-        ansIndex = Math.abs(random.nextInt()) % 5;
+        ansIndex = random.nextInt(5);
+        prevQues.setCorrectIndex(ansIndex);
         ansTVs[ansIndex].setText(fromHtml("<b>" + (ansIndex + 1) + ".</b> " + ans));
 
         int j = 0;
@@ -374,19 +498,37 @@ public class PracticingActivity extends AppCompatActivity {
             ansTVs[i].setText(fromHtml("<b>" + (i + 1) + ".</b> " + otDefs.get(j++)));
         }
 
+        prevQues.setWasCorrect(false);
+        prevQues.setAns1(ansTVs[0].getText().toString().substring(3));
+        prevQues.setAns2(ansTVs[1].getText().toString().substring(3));
+        prevQues.setAns3(ansTVs[2].getText().toString().substring(3));
+        prevQues.setAns4(ansTVs[3].getText().toString().substring(3));
+        prevQues.setAns5(ansTVs[4].getText().toString().substring(3));
+
         practicingLoading.setVisibility(GONE);
         practicingSV.setVisibility(View.VISIBLE);
 
         thisJudged = false;
 
-        prvTitle = getTitle().toString();
-        prvCorrect = noCorrect;
+        setTitle(Html.fromHtml("<font color='#BDCBDA'>" + noCorrect + "/" + noQuestions +  " (" + words.size() + ") </font>"));
         noQuestions++;
+
+        if(autoPronounce == 1) {
+            mediaPlayer.reset();
+            pronunciationPlaying = false;
+            pronunciationInit(word.getValue().toLowerCase());
+        }
     }
 
     private void randomizeWords() {
-        for(int i=0; i<5; i++)
-            Collections.shuffle(words);
+        int index;
+        Word temp;
+        for (int i = words.size() - 1; i > 0; i--) {
+            index = random.nextInt(i + 1);
+            temp = words.get(index);
+            words.set(index, words.get(i));
+            words.set(i, temp);
+        }
     }
 
     public void validateResult(View v) {
@@ -395,21 +537,20 @@ public class PracticingActivity extends AppCompatActivity {
             ansTVs[ind].setTextColor(getResources().getColor(R.color.easy));
             ansTVs[ind].setTypeface(null, Typeface.BOLD);
             if (!thisJudged) {
+                prevQues.setWasCorrect(true);
                 noCorrect++;
             }
         } else {
             ansTVs[ind].setTextColor(getResources().getColor(R.color.vhard));
             ansTVs[ind].setTypeface(null, Typeface.BOLD);
-            if(!thisJudged){
-                wrongAns.add("<b>"+wordPractice.getWord().toUpperCase()+": </b>" + ans);
-            }
+        }
+        if(!thisJudged){
+            setTitle(Html.fromHtml("<font color='#BDCBDA'>" + noCorrect + "/" + noQuestions +  " (" + words.size() + ") </font>"));
         }
         thisJudged = true;
         nextButton.setVisibility(View.VISIBLE);
         viewButton.setVisibility(View.VISIBLE);
         diffRadioGroup.setVisibility(View.VISIBLE);
-        setTitle(Html.fromHtml("<font color='#BDCBDA'>SCORE: " + noCorrect + "/" + noQuestions +  " (" + words.size() + ") </font>"));
-
     }
 
     public void createLevelMap(){
@@ -443,6 +584,29 @@ public class PracticingActivity extends AppCompatActivity {
 
                 pronunciationInit(word.getValue().toLowerCase());
                 break;
+
+            case R.id.prevQues:
+                Intent intent = new Intent(this, PreviousQuestionActivity.class);
+                intent.putParcelableArrayListExtra("previousQuestions", previousQuestions);
+                intent.putParcelableArrayListExtra("words", words);
+
+                startActivity(intent);
+                break;
+
+            case R.id.auto_pronounce:
+                if(autoPronounce == 0){
+                    autoPronounce = 1;
+                    item.setTitle("Stop auto pronounce");
+                }
+                else {
+                    autoPronounce = 0;
+                    item.setTitle("Auto pronounce");
+                }
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("pracAutoPronounce", autoPronounce);
+                editor.apply();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -459,7 +623,16 @@ public class PracticingActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         StringBuilder msg = new StringBuilder();
-        if(wrongAns != null && wrongAns.size()>0) {
+
+        ArrayList<String> wrongAns = new ArrayList<>();
+
+        for(PracticePreviousQuestions pq: previousQuestions){
+            if(!pq.getWasCorrect()){
+                wrongAns.add("<b>"+pq.getValue().toUpperCase()+": </b>" + pq.getCorrectAns());
+            }
+        }
+
+        if(wrongAns.size()>0) {
             msg.append("<b><u>REVIEW</u></b>");
             for(String s: wrongAns){
                 msg.append("<br>");
@@ -536,7 +709,12 @@ public class PracticingActivity extends AppCompatActivity {
     private void pronunciationPlay(String word){
         if(!pronunciationPlaying) {
             pronunciationPlaying = true;
-            File mp3File = new File(Environment.getExternalStorageDirectory(), "pmp3/" + word + ".mp3");
+            File dir = new File(Environment.getExternalStorageDirectory(), "GREMate" + File.separator + "Word Pronunciations");
+            if(!dir.exists()) dir.mkdirs();
+
+            String mp3Dir = "GREMate" + File.separator + "Word Pronunciations" + File.separator + word + ".mp3";
+
+            File mp3File = new File(Environment.getExternalStorageDirectory(), mp3Dir);
             if (mp3File.exists()) {
                 try {
                     mediaPlayer.reset();
@@ -589,7 +767,12 @@ public class PracticingActivity extends AppCompatActivity {
 
                         URLConnection conn = new URL(link).openConnection();
                         InputStream is = conn.getInputStream();
-                        File mp3File = new File(Environment.getExternalStorageDirectory(), "pmp3/" + word + ".mp3");
+                        File dir = new File(Environment.getExternalStorageDirectory(), "GREMate" + File.separator + "Word Pronunciations");
+                        if(!dir.exists()) dir.mkdirs();
+
+                        String mp3Dir = "GREMate" + File.separator + "Word Pronunciations" + File.separator + word + ".mp3";
+
+                        File mp3File = new File(Environment.getExternalStorageDirectory(), mp3Dir);
                         OutputStream outStream = new FileOutputStream(mp3File);
                         byte[] buffer = new byte[4096];
                         int len;
@@ -638,6 +821,103 @@ public class PracticingActivity extends AppCompatActivity {
     private boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null;
+    }
+
+//    private void writePreviousQuestionsToFile(){
+//
+//        if(previousQuestions == null) return;
+//
+//        String filename = "prevQuestions";
+//        FileOutputStream outputStream;
+//
+//        try {
+//            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+//            for(int i = 0; i < previousQuestions.size(); i++){
+//                outputStream.write(previousQuestions.get(i).getStringForm().getBytes());
+//            }
+//            outputStream.close();
+//        } catch (Exception e) {
+//            Log.d("PracticingActivityFile", "write fail 1 ");
+//            e.printStackTrace();
+//        }
+//
+//        filename = "prevQuestionsWords";
+//        try {
+//            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+//            for(int i = 0; i < words.size(); i++){
+//                outputStream.write(words.get(i).getStringForm().getBytes());
+//            }
+//            outputStream.close();
+//        } catch (Exception e) {
+//            Log.d("PracticingActivityFile", "write fail 2 ");
+//            e.printStackTrace();
+//        }
+//
+//        filename = "prevQuestionsData";
+//        try {
+//            outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+//            outputStream.write(String.valueOf(index).getBytes()); outputStream.write('\n');
+//            outputStream.write(String.valueOf(noQuestions-1).getBytes()); outputStream.write('\n');
+//            outputStream.write(String.valueOf(prvCorrect).getBytes());
+//
+//            outputStream.close();
+//        } catch (Exception e) {
+//            Log.d("PracticingActivityFile", "write fail 3 ");
+//            e.printStackTrace();
+//        }
+//
+//        Log.d("PracticingActivityFile", "write end");
+//    }
+
+    private void restoreStateFromFile(){
+        previousQuestions = new ArrayList<>();
+        words = new ArrayList<>();
+        answerMap = new HashMap<>();
+        String line1, line2="";
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader( openFileInput(FILENAME_QUESTIONS) ) );
+            while ((line1 = br.readLine()) != null) {
+                if(line1.length()>0){
+                    PracticePreviousQuestions previousQuestion = new PracticePreviousQuestions(line1);
+                    previousQuestions.add(previousQuestion);
+
+                    if(!answerMap.containsKey(previousQuestion.getValue())){
+                        answerMap.put(previousQuestion.getValue(), new HashSet<String>());
+                    }
+                    HashSet<String> ansSet = answerMap.get(previousQuestion.getValue());
+
+                    ansSet.add(previousQuestion.getCorrectAns());
+
+                    line2 = br.readLine();
+                }
+            }
+            String[] states = line2.split(" ");
+            index = Integer.valueOf(states[0]);
+            noQuestions = Integer.valueOf(states[1]);
+            noCorrect = Integer.valueOf(states[2]);
+            br.close();
+        }
+        catch (IOException e) {
+            Log.d("PracticingActivityFile", "read fail 1 ");
+            e.printStackTrace();
+        }
+
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader( openFileInput(FILENAME_WORDS) ) );
+            String line;
+            while ((line = br.readLine()) != null) {
+                if(line.length()>0){
+                    words.add(new Word(line));
+                }
+            }
+            br.close();
+        }
+        catch (IOException e) {
+            Log.d("PracticingActivityFile", "read fail 3 ");
+            e.printStackTrace();
+        }
+
+        Log.d("PracticingActivityFile", "read end");
     }
 
 }

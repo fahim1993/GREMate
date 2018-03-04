@@ -50,7 +50,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if(auth.getCurrentUser()!=null){
-
             Intent intent = new Intent(LoginActivity.this, WordSetActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
@@ -103,7 +102,6 @@ public class LoginActivity extends AppCompatActivity {
                             String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             ref = FirebaseDatabase.getInstance().getReference().child("UserWords").child(userId);
                             ref.keepSynced(true);
-
 
                             Intent intent = new Intent(LoginActivity.this, WordSetActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -698,7 +698,7 @@ public class ShowWordActivity extends AppCompatActivity {
 //        index++;
 //        if (index >= words.size()) index = 0;
 //        try {
-//            Thread.sleep(100);
+//            Thread.sleep(50);
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
@@ -1015,7 +1015,14 @@ public class ShowWordActivity extends AppCompatActivity {
     private void pronunciationPlay(String word){
         if(!pronunciationPlaying) {
             pronunciationPlaying = true;
-            File mp3File = new File(Environment.getExternalStorageDirectory(), "pmp3/" + word + ".mp3");
+
+            File dir = new File(Environment.getExternalStorageDirectory(), "GREMate" + File.separator + "Word Pronunciations");
+            if(!dir.exists()) dir.mkdirs();
+
+            String mp3Dir = "GREMate" + File.separator + "Word Pronunciations" + File.separator + word + ".mp3";
+
+            File mp3File = new File(Environment.getExternalStorageDirectory(), mp3Dir);
+
             if (mp3File.exists()) {
                 try {
                     mediaPlayer.reset();
@@ -1068,7 +1075,14 @@ public class ShowWordActivity extends AppCompatActivity {
 
                         URLConnection conn = new URL(link).openConnection();
                         InputStream is = conn.getInputStream();
-                        File mp3File = new File(Environment.getExternalStorageDirectory(), "pmp3/" + word + ".mp3");
+
+                        File dir = new File(Environment.getExternalStorageDirectory(), "GREMate" + File.separator + "Word Pronunciations");
+                        if(!dir.exists()) dir.mkdirs();
+
+                        String mp3Dir = "GREMate" + File.separator + "Word Pronunciations" + File.separator + word + ".mp3";
+
+                        File mp3File = new File(Environment.getExternalStorageDirectory(), mp3Dir);
+
                         OutputStream outStream = new FileOutputStream(mp3File);
                         byte[] buffer = new byte[4096];
                         int len;

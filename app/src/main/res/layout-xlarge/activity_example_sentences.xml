@@ -33,22 +33,21 @@
             style="@style/ProgressBarStyle"
             />
 
-        <ScrollView
+        <LinearLayout
+            android:padding="5dp"
+            android:id="@+id/sentencesLL"
+            android:visibility="gone"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:paddingBottom="20dp"
-                android:id="@+id/sentencesLL"
-                android:visibility="gone"
-                android:orientation="vertical"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/sentencesRV"
+                android:scrollbars="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent" />
 
-            </LinearLayout>
-
-        </ScrollView>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/errorTV"

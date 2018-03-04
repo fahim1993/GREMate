@@ -40,6 +40,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 public class WordSetActivity extends NavDrawerActivity {
 
@@ -81,7 +82,6 @@ public class WordSetActivity extends NavDrawerActivity {
 
         wsRecyclerView.setVisibility(View.GONE);
         loadWordSet.setVisibility(View.VISIBLE);
-
 
         setWordSet();
     }
@@ -219,7 +219,13 @@ public class WordSetActivity extends NavDrawerActivity {
                     wordSets.add(wordSetWithId);
                 }
                 Log.d("WordSetActivity ", "setWordSet(), wordSets size = " + wordSets.size());
-                Collections.reverse(wordSets);
+
+                Collections.sort(wordSets, new Comparator<WordSetWithId>() {
+                    @Override
+                    public int compare(WordSetWithId wordSetWithId, WordSetWithId t1) {
+                        return wordSetWithId.getName().compareTo(t1.getName());
+                    }
+                });
                 wsRecyclerView.setAdapter(new WordSetAdapter(wordSets, WordSetActivity.this, lastSetId));
                 scrollToLastId();
                 wsRecyclerView.setVisibility(View.VISIBLE);

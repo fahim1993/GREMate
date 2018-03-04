@@ -13,10 +13,13 @@ import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -44,6 +47,7 @@ import java.util.HashMap;
 import java.util.jar.Attributes;
 
 import static android.view.View.GONE;
+import static android.view.View.generateViewId;
 
 public class PracticeActivity extends NavDrawerActivity {
 
@@ -68,6 +72,7 @@ public class PracticeActivity extends NavDrawerActivity {
     private ArrayList<NameIdPair> wordLists;
 
     private ArrayList<Word> words;
+    private ArrayList<Word> tempWords;
 
     private AppCompatButton loadButton;
 
@@ -77,6 +82,8 @@ public class PracticeActivity extends NavDrawerActivity {
     private ProgressBar loadPracPB;
 
     private LinearLayout ll3;
+
+    private boolean []selectedFlags;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +99,8 @@ public class PracticeActivity extends NavDrawerActivity {
             wsId = b.getString("wsId");
             listId = b.getString("listId");
         }
+
+        selectedFlags =  new boolean[]{true, true, true, true};
 
         ll3 = (LinearLayout) findViewById(R.id.ll3);
         ll3.setVisibility(GONE);
@@ -125,7 +134,22 @@ public class PracticeActivity extends NavDrawerActivity {
             }
         });
 
-        findViewById(R.id.startPracBtn)
+        findViewById(R.id.startCompPracBtn)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (tempWords.size() == 0) {
+                            Toast.makeText(PracticeActivity.this, "No words selected!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        Intent intent = new Intent(PracticeActivity.this, PracticingActivity.class);
+                        intent.putParcelableArrayListExtra("words", tempWords);
+                        intent.putExtra("type", "complete");
+                        startActivity(intent);
+                    }
+                });
+
+        findViewById(R.id.startShortPracBtn)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -134,8 +158,8 @@ public class PracticeActivity extends NavDrawerActivity {
                             return;
                         }
                         Intent intent = new Intent(PracticeActivity.this, PracticingActivity.class);
-                        intent.putParcelableArrayListExtra("words", words);
-                        intent.putExtra("wsId", wsId);
+                        intent.putParcelableArrayListExtra("words", tempWords);
+                        intent.putExtra("type", "short");
                         startActivity(intent);
                     }
                 });
@@ -177,6 +201,33 @@ public class PracticeActivity extends NavDrawerActivity {
         listWordMap = new HashMap<>();
 
         getWordSet();
+
+        checkPreviousPractice();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(checkPreviousPractice()){
+            findViewById(R.id.startResumePracBtn)
+                    .setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (words.size() == 0) {
+                                Toast.makeText(PracticeActivity.this, "No words selected!", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            Intent intent = new Intent(PracticeActivity.this, PracticingActivity.class);
+                            intent.putExtra("type", "resume");
+                            startActivity(intent);
+                        }
+                    });
+
+            findViewById(R.id.startResumePracBtn).setVisibility(View.VISIBLE);
+        }
+        else {
+            findViewById(R.id.startResumePracBtn).setVisibility(GONE);
+        }
     }
 
     @Override
@@ -288,8 +339,6 @@ public class PracticeActivity extends NavDrawerActivity {
         }
         if (ref3 != null) {ref3.removeEventListener(listener3);}
 
-        if(listId==null)return;
-
         if(listWordMap.containsKey(listId)){
             words = listWordMap.get(listId);
             wordsPostProcess();
@@ -325,9 +374,15 @@ public class PracticeActivity extends NavDrawerActivity {
 
     private void wordsPostProcess(){
 
+        tempWords = new ArrayList<>();
+        for(Word w: words){
+            int level = w.getLevel();
+            if(selectedFlags[level]) tempWords.add(w);
+        }
+
         String s = "";
         int i = 1;
-        for(Word w: words){
+        for(Word w: tempWords){
             s += ""+i+". "+w.getValue()+"\n";
             i++;
         }
@@ -400,6 +455,49 @@ public class PracticeActivity extends NavDrawerActivity {
         });
     }
 
+    public void onCheckboxClicked(View view) {
+        boolean checked = ((CheckBox) view).isChecked();
+
+        switch(view.getId()) {
+            case R.id.easy:
+                selectedFlags[0] = checked;
+                break;
+
+            case R.id.normal:
+                selectedFlags[1] = checked;
+                break;
+
+            case R.id.hard:
+                selectedFlags[2] = checked;
+                break;
+
+            case R.id.vhard:
+                selectedFlags[3] = checked;
+                break;
+        }
+
+        tempWords = new ArrayList<>();
+        for(Word w: words){
+            int level = w.getLevel();
+            if(selectedFlags[level]) tempWords.add(w);
+        }
+
+        wordsPostProcess();
+    }
+
+    boolean checkPreviousPractice(){
+        String FILENAME_QUESTIONS = "previousQuestionsDescription";
+        String FILENAME_WORDS = "practiceWords";
+
+        String []files = fileList();
+        for (String file : files) {
+            if (file.equals(FILENAME_QUESTIONS) || file.equals(FILENAME_WORDS)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -412,6 +510,23 @@ public class PracticeActivity extends NavDrawerActivity {
         }
         return true;
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.practice_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.back:
+                onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
     public ArrayList<String> getNames(ArrayList<NameIdPair> nameIdPairs) {
         ArrayList<String> ret = new ArrayList<>();

@@ -6,6 +6,8 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
@@ -17,6 +19,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.fahim.gremate.Adapters.ExampleSentenceAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -90,25 +94,12 @@ public class ExampleSentencesActivity extends AppCompatActivity {
             return;
         }
 
-        for(int i=0; i<sentences.size(); i++){
-            String sentence = sentences.get(i).first;
-            String source = sentences.get(i).second;
-
-            View sentView = getLayoutInflater().inflate(R.layout.exmp_sent, null);
-            TextView sentTV = (TextView) sentView.findViewById(R.id.sentence);
-            TextView srcTV = (TextView) sentView.findViewById(R.id.source);
-
-            sentTV.setTextIsSelectable(true);
-            srcTV.setTextIsSelectable(true);
-
-            sentTV.setTextSize(textSize);
-            srcTV.setTextSize(textSize-5);
-
-            sentTV.setText(fromHtml(sentence));
-            srcTV.setText(fromHtml(source));
-
-            sentencesLL.addView(sentView);
-        }
+        RecyclerView sentencesRV = (RecyclerView)findViewById(R.id.sentencesRV);
+        sentencesRV.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        sentencesRV.setLayoutManager(llm);
+        sentencesRV.setAdapter(new ExampleSentenceAdapter(sentences, textSize));
 
         sentencesLL.setVisibility(View.VISIBLE);
         loadSentencePB.setVisibility(View.GONE);

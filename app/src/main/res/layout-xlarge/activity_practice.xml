@@ -13,7 +13,7 @@
     android:background="@color/darkBack1"
     >
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -131,7 +131,52 @@
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <ScrollView
+                <LinearLayout
+                    android:paddingStart="100dp"
+                    android:orientation="horizontal"
+                    android:weightSum="4.7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <CheckBox android:id="@+id/easy"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:checked="true"
+                        android:buttonTint="@color/colorPrimary"
+                        android:text="Easy"
+                        android:onClick="onCheckboxClicked"/>
+
+                    <CheckBox android:id="@+id/normal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.2"
+                        android:checked="true"
+                        android:buttonTint="@color/colorPrimary"
+                        android:text="Normal"
+                        android:onClick="onCheckboxClicked"/>
+
+                    <CheckBox android:id="@+id/hard"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:checked="true"
+                        android:buttonTint="@color/colorPrimary"
+                        android:text="Hard"
+                        android:onClick="onCheckboxClicked"/>
+
+                    <CheckBox android:id="@+id/vhard"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.5"
+                        android:checked="true"
+                        android:buttonTint="@color/colorPrimary"
+                        android:text="Very Hard"
+                        android:onClick="onCheckboxClicked"/>
+
+                </LinearLayout>
+
+                <android.support.v4.widget.NestedScrollView
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:layout_marginTop="8dp">
@@ -143,7 +188,7 @@
                         android:background="@color/darkBack2"
                         android:textColor="@color/darkFore1"
                         android:textSize="16sp" />
-                </ScrollView>
+                </android.support.v4.widget.NestedScrollView>
 
                 <TextView
                     android:id="@+id/textView2"
@@ -157,22 +202,71 @@
                     android:textColor="@color/darkFore4"
                     android:textSize="16sp" />
 
-                <android.support.v7.widget.AppCompatButton
-                    android:id="@+id/startPracBtn"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/ll3"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="15dp"
-                    android:text="Start Practice"
-                    android:textColor="@color/darkFore4"
-                    android:textSize="15sp"
-                    app:backgroundTint="@color/colorPrimary" />
+                    android:orientation="horizontal"
+                    android:weightSum="4">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content">
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <android.support.v7.widget.AppCompatButton
+                            android:id="@+id/startCompPracBtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="20dp"
+                            android:text="Start Complete Practice"
+                            android:textColor="@color/darkFore4"
+                            android:textSize="15sp"
+                            app:backgroundTint="@color/colorPrimary" />
+
+                        <android.support.v7.widget.AppCompatButton
+                            android:id="@+id/startShortPracBtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Start Short Practice"
+                            android:textColor="@color/darkFore4"
+                            android:textSize="15sp"
+                            app:backgroundTint="@color/colorPrimary" />
+
+                        <android.support.v7.widget.AppCompatButton
+                            android:id="@+id/startResumePracBtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Resume Practice"
+                            android:textColor="@color/darkFore4"
+                            android:textSize="15sp"
+                            app:backgroundTint="@color/colorPrimary" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content">
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
             </LinearLayout>
 
         </RelativeLayout>
 
-    </ScrollView>
-
+    </android.support.v4.widget.NestedScrollView>
 
 </RelativeLayout>

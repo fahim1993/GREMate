@@ -381,7 +381,6 @@ public class DB {
                     db.setWordClone(listId, wordId, cloneId);
                     db.setWordClone(mainListId, wordId, wordId);
 
-                    if(index == 0) return;
                     try {
                         Log.d("INIT", ""+index + " " + wordValue);
                         Thread.sleep(50);
@@ -394,6 +393,49 @@ public class DB {
         }
     }
 
+    public static void tempAddWords(String uId, Context context){
+
+        DBRef db = new DBRef(uId);
+        final String mainListName = "All Words";
+        ArrayList<String> initWords = new FeedTestData().getNewWords(context);
+        int index = initWords.size()-1;
+
+        int wordsetCount = 1;
+        int listInWordset = 8;
+        int wordsInList = 40;
+
+        for (int wsi = wordsetCount; wsi >= 1; wsi--) {
+
+            String wsId = db.getWordSetKey();
+            String mainListId = db.getListKey(wsId);
+
+            db.setWordSetData(wsId, new WordSet("GRE: Word Set 6", mainListId));
+            db.setListData(wsId, mainListId, new List(mainListName));
+
+            for (int ls = listInWordset; ls >= 1; ls--) {
+                String listId = db.getListKey(wsId);
+                db.setListData(wsId, listId, new List("List "+ls));
+                for (int i = 0; i < wordsInList; i++) {
+                    String wordValue = initWords.get(index-39+i);
+                    String wordId = db.getWordId(mainListId);
+                    String cloneId = db.getWordId(listId);
+                    db.setWordData(mainListId, wordId, Word.newWord(mainListName, wordId, wordValue));
+                    db.setWordData(listId, cloneId, Word.newWord(mainListName, wordId, wordValue));
+                    db.setWordClone(listId, wordId, cloneId);
+                    db.setWordClone(mainListId, wordId, wordId);
+
+                    if(index == 0) return;
+                    try {
+                        Log.d("INIT", ""+index + " " + wordValue);
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                index -= 40;
+            }
+        }
+    }
 
     public static void pronunciationInPractice(){
         final DBRef db = new DBRef();

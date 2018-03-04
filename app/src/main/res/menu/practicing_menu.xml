@@ -8,4 +8,14 @@
         app:showAsAction="always"
         android:title="Pronounce"/>
 
+    <item
+        android:id="@+id/prevQues"
+        app:showAsAction="never"
+        android:title="Previous Questions"/>
+
+    <item
+        android:id="@+id/auto_pronounce"
+        app:showAsAction="never"
+        android:title="Auto pronounce"/>
+
 </menu>

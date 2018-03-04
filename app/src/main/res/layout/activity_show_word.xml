@@ -43,8 +43,6 @@
                 android:id="@+id/showWordDesLL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
                 android:background="@drawable/bottomline"
                 android:orientation="vertical">
 
@@ -226,62 +224,62 @@
             </LinearLayout>
 
             <RadioGroup
-                android:id="@+id/diffRadioGroup"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginStart="3dp"
-                android:layout_marginEnd="3dp"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <RadioButton
-                    android:id="@+id/radio1"
-                    android:textColor="@color/easy"
-                    android:buttonTint="@color/easy"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="Easy"
-                    android:textSize="12sp"
-                    android:tag="0"
-                    />
-                <RadioButton
-                    android:id="@+id/radio2"
-                    android:textColor="@color/normal"
-                    android:buttonTint="@color/normal"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="Normal"
-                    android:textSize="12sp"
-                    android:tag="1"
-                    />
+            android:id="@+id/diffRadioGroup"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/radio1"
+                android:textColor="@color/easy"
+                android:buttonTint="@color/easy"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Easy"
+                android:textSize="12sp"
+                android:tag="0"
+                />
+            <RadioButton
+                android:id="@+id/radio2"
+                android:textColor="@color/normal"
+                android:buttonTint="@color/normal"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Normal"
+                android:textSize="12sp"
+                android:tag="1"
+                />
 
-                <RadioButton
-                    android:id="@+id/radio3"
-                    android:textColor="@color/hard"
-                    android:buttonTint="@color/hard"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="Hard"
-                    android:textSize="12sp"
-                    android:tag="2"
-                    />
+            <RadioButton
+                android:id="@+id/radio3"
+                android:textColor="@color/hard"
+                android:buttonTint="@color/hard"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Hard"
+                android:textSize="12sp"
+                android:tag="2"
+                />
 
-                <RadioButton
-                    android:id="@+id/radio4"
-                    android:textColor="@color/vhard"
-                    android:buttonTint="@color/vhard"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="Very Hard"
-                    android:textSize="12sp"
-                    android:tag="3"
-                    />
+            <RadioButton
+                android:id="@+id/radio4"
+                android:textColor="@color/vhard"
+                android:buttonTint="@color/vhard"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Very Hard"
+                android:textSize="12sp"
+                android:tag="3"
+                />
 
-            </RadioGroup>
+        </RadioGroup>
 
         </LinearLayout>
 
