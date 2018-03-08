@@ -1,5 +1,7 @@
 package com.example.fahim.gremate.DataClasses;
 
+import android.util.Log;
+
 import com.google.firebase.database.Exclude;
 
 /**
@@ -68,6 +70,7 @@ public class WordDef {
 
     @Exclude
     public String[] getSentencesArray(){
+        if(sentences == null || sentences.length()==0) return null;
         return sentences.split(DB.DELIM);
     }
 
@@ -82,71 +85,98 @@ public class WordDef {
     }
 
     @Exclude
-    public String getFirstHtml(int no){
+    public String getDefinationHtml(int no){
+
+        return "<b>" +
+                String.valueOf(no) +
+                ". " +
+                getTitle() +
+                "</b><br>" +
+                "<i>" +
+                getDef() +
+                "</i>";
+    }
+
+    @Exclude
+    public String getSynonymHtml(){
         StringBuilder sb = new StringBuilder();
 
-        sb.append("<b>");
-        sb.append(String.valueOf(no));
-        sb.append(". ");
-        sb.append(getTitle());
-        sb.append("</b><br>");
-
-        sb.append("<i>");
-        sb.append(getDef());
-        sb.append("</i>");
-
         if(boldSyns.length()>0){
-            sb.append("<br><b>Synonyms:</b> ");
+            sb.append("<b>Synonyms:<br>");
             String [] boldSynsArray = getBoldSynsArray();
             for(int i=0; i<boldSynsArray.length; i++){
                 if(i>0) sb.append(", ");
                 sb.append(boldSynsArray[i]);
             }
-            sb.append(".");
+            sb.append("</b>");
         }
-
-        if(sentences.length()>0){
-            sb.append("<br>&bull; ");
-            String [] sents = getSentencesArray();
-            String st = sents[0];
-            if(st.length()>2 && st.charAt(0) == '‘' && st.charAt(st.length()-1) == '’'){
-                st = st.substring(1, st.length()-1);
-                st = st.substring(0, 1).toUpperCase() + st.substring(1, st.length());
-            }
-            sb.append(st);
-        }
-
-        return sb.toString();
-    }
-
-    @Exclude
-    public String getSecondHtml(){
-        StringBuilder sb = new StringBuilder();
 
         if(syns.length() > 0){
+            if(sb.length()>0) sb.append(", ");
+            else sb.append("<b>Synonyms:</b><br> ");
+
             String [] synsArray = getSynsArray();
-            sb.append("<b>More Synonyms:</b> ");
             for(int i=0; i<synsArray.length; i++){
                 if(i>0) sb.append(", ");
                 sb.append(synsArray[i]);
             }
         }
 
+        return sb.toString();
+    }
+
+    @Exclude
+    public String getSentenceHtml(){
+
+        StringBuilder sb = new StringBuilder();
         String [] sents = getSentencesArray();
-        if(sents.length > 1) {
-            if(sb.length()>0)sb.append("<br>");
+        if(sents != null && sents.length > 0) {
             sb.append("<b>Sentences:</b>");
-            for(int i = 1; i< sents.length; i++) {
-                sb.append("<br>&bull; ");
-                String st = sents[i];
-                if(st.length()>2 && st.charAt(0) == '‘' && st.charAt(st.length()-1) == '’'){
-                    st = st.substring(1, st.length()-1);
+            for (int i=0; i<sents.length; i++) {
+                String sent = sents[i];
+                if(sent.length()>0) {
+                    sb.append("<br>");
+                    sb.append(i+1);
+                    sb.append(". ");
+                    String st = sent;
+                    if (st.length() > 2 && st.charAt(0) == '‘' && st.charAt(st.length() - 1) == '’') {
+                        st = st.substring(1, st.length() - 1);
+                    }
+                    st = st.substring(0, 1).toUpperCase() + st.substring(1, st.length());
+                    sb.append(st);
                 }
-                st = st.substring(0, 1).toUpperCase() + st.substring(1, st.length());
-                sb.append(st);
             }
         }
+        return sb.toString();
+    }
 
+    @Exclude
+    public String getHighlightedSentenceHtml(String highlightWord){
+        StringBuilder sb = new StringBuilder();
+        try {
+            String[] sents = getSentencesArray();
+            if(sents != null && sents.length > 0) {
+                sb.append("<b>Sentences:</b>");
+                for (int i=0; i<sents.length; i++) {
+                    String sent = sents[i];
+                    if(sent.length()>0) {
+                        sb.append("<br><b>");
+                        sb.append(i+1);
+                        sb.append(".</b> ");
+                        String st = sent;
+                        if (st.length() > 2 && st.charAt(0) == '‘' && st.charAt(st.length() - 1) == '’') {
+                            st = st.substring(1, st.length() - 1);
+                        }
+                        st = Highlighter.highlight(st, highlightWord);
+                        st = st.substring(0, 1).toUpperCase() + st.substring(1, st.length());
+                        sb.append(st);
+                    }
+                }
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
         return sb.toString();
     }
 

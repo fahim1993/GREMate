@@ -1,5 +1,7 @@
 package com.example.fahim.gremate.DataClasses;
 
+import com.google.firebase.database.Exclude;
+
 /**
  * Created by fahim on 12/23/16.
  */
@@ -21,6 +23,19 @@ public class WordData {
 
     public String getDes() {
         return des;
+    }
+
+    @Exclude
+    public String getHighlightedDes(String word){
+        try {
+            String textRaw = des;
+            return Highlighter.highlight(textRaw, word);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return "";
     }
 
     public void setDes(String des) {

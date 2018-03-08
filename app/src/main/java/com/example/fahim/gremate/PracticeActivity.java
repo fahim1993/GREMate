@@ -1,6 +1,5 @@
 package com.example.fahim.gremate;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v7.widget.AppCompatButton;
 import android.text.Html;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -26,28 +24,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.DBRef;
-import com.example.fahim.gremate.DataClasses.List;
-import com.example.fahim.gremate.DataClasses.ListWithId;
 import com.example.fahim.gremate.DataClasses.Word;
-import com.example.fahim.gremate.DataClasses.WordSet;
-import com.example.fahim.gremate.DataClasses.WordSetWithId;
-import com.example.fahim.gremate.DataClasses.WordWithId;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.jar.Attributes;
 
 import static android.view.View.GONE;
-import static android.view.View.generateViewId;
 
 public class PracticeActivity extends NavDrawerActivity {
 
@@ -85,10 +74,14 @@ public class PracticeActivity extends NavDrawerActivity {
 
     private boolean []selectedFlags;
 
+    private boolean reload;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_practice);
+
+        selectedFlags =  new boolean[]{true, true, true, true};
 
         setupNavDrawerClick();
 
@@ -100,10 +93,7 @@ public class PracticeActivity extends NavDrawerActivity {
             listId = b.getString("listId");
         }
 
-        selectedFlags =  new boolean[]{true, true, true, true};
-
         ll3 = (LinearLayout) findViewById(R.id.ll3);
-        ll3.setVisibility(GONE);
 
         wsSpinner = (Spinner) findViewById(R.id.wsSpinner);
         listSpinner = (Spinner) findViewById(R.id.listSpinner);
@@ -113,15 +103,6 @@ public class PracticeActivity extends NavDrawerActivity {
 
         loadButton = (AppCompatButton) findViewById(R.id.loadPracBtn);
         loadPracPB = (ProgressBar) findViewById(R.id.pracLoading);
-
-        wsSpinner.setVisibility(GONE);
-        listSpinner.setVisibility(GONE);
-
-        wsPB.setVisibility(View.VISIBLE);
-        listPB.setVisibility(View.VISIBLE);
-
-        loadButton.setVisibility(GONE);
-        loadPracPB.setVisibility(GONE);
 
         loadButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,6 +123,8 @@ public class PracticeActivity extends NavDrawerActivity {
                             Toast.makeText(PracticeActivity.this, "No words selected!", Toast.LENGTH_SHORT).show();
                             return;
                         }
+                        reload = true;
+
                         Intent intent = new Intent(PracticeActivity.this, PracticingActivity.class);
                         intent.putParcelableArrayListExtra("words", tempWords);
                         intent.putExtra("type", "complete");
@@ -157,6 +140,8 @@ public class PracticeActivity extends NavDrawerActivity {
                             Toast.makeText(PracticeActivity.this, "No words selected!", Toast.LENGTH_SHORT).show();
                             return;
                         }
+                        reload = true;
+
                         Intent intent = new Intent(PracticeActivity.this, PracticingActivity.class);
                         intent.putParcelableArrayListExtra("words", tempWords);
                         intent.putExtra("type", "short");
@@ -197,17 +182,35 @@ public class PracticeActivity extends NavDrawerActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        wordSetListMap = new HashMap<>();
-        listWordMap = new HashMap<>();
+        reload = true;
 
-        getWordSet();
-
-        checkPreviousPractice();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        if(reload) {
+
+            ll3.setVisibility(GONE);
+
+            wsSpinner.setVisibility(GONE);
+            listSpinner.setVisibility(GONE);
+
+            wsPB.setVisibility(View.VISIBLE);
+            listPB.setVisibility(View.VISIBLE);
+
+            loadButton.setVisibility(GONE);
+            loadPracPB.setVisibility(GONE);
+
+            wordSetListMap = new HashMap<>();
+            listWordMap = new HashMap<>();
+
+            getWordSet();
+
+            reload = false;
+        }
+
         if(checkPreviousPractice()){
             findViewById(R.id.startResumePracBtn)
                     .setOnClickListener(new View.OnClickListener() {
@@ -217,6 +220,8 @@ public class PracticeActivity extends NavDrawerActivity {
                                 Toast.makeText(PracticeActivity.this, "No words selected!", Toast.LENGTH_SHORT).show();
                                 return;
                             }
+                            reload = true;
+
                             Intent intent = new Intent(PracticeActivity.this, PracticingActivity.class);
                             intent.putExtra("type", "resume");
                             startActivity(intent);

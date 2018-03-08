@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
@@ -46,7 +45,6 @@ import android.widget.Toast;
 import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.FetchDataAsync;
-import com.example.fahim.gremate.DataClasses.PracticePreviousQuestions;
 import com.example.fahim.gremate.DataClasses.Word;
 import com.example.fahim.gremate.DataClasses.WordAllData;
 import com.example.fahim.gremate.DataClasses.WordData;
@@ -138,6 +136,7 @@ public class SearchActivity extends AppCompatActivity {
         titlesTV = new ArrayList<>();
         titlesTV.add((TextView) findViewById(R.id.showWordDescription));
         titlesTV.add((TextView) findViewById(R.id.showWordDefinition));
+        titlesTV.add((TextView) findViewById(R.id.showWordExtraInfo));
 
         nonTitlesTV = new ArrayList<>();
         nonTitlesTV.add(descriptionText);
@@ -313,7 +312,8 @@ public class SearchActivity extends AppCompatActivity {
 
         findViewById(R.id.showWordDesLL).setVisibility(View.VISIBLE);
 
-        descriptionText.setText(fromHtml(_wordAllData.getWordData().getDes().replaceAll("\\n", "<br>")));
+        String desStr = _wordAllData.getWordData().getHighlightedDes(_wordAllData.getWord().getValue());
+        descriptionText.setText(fromHtml(desStr.replaceAll("\\n", "<br>")));
 
         ImageView desButton = (ImageView) findViewById(R.id.showWordDescriptionIB);
 
@@ -342,41 +342,36 @@ public class SearchActivity extends AppCompatActivity {
         for(WordDef def: _wordAllData.getWordDefs()){
             View defView = getLayoutInflater().inflate(R.layout.def_view, null);
             if(tag%2 == 0) {
-                defView.findViewById(R.id.showWordDefinitionIB)
-                        .setBackgroundColor(getResources().getColor(R.color.darkBack2));
                 defView.setBackgroundColor(getResources().getColor(R.color.darkBack2));
             }
-            TextView firstText = (TextView)defView.findViewById(R.id.defFirstTV);
-            TextView secondText = (TextView)defView.findViewById(R.id.defSecondTV);
-
-            firstText.setTextSize(textSize);
-            secondText.setTextSize(textSize);
-
-            firstText.setLineSpacing(0, 1.135f);
-            secondText.setLineSpacing(0, 1.135f);
-
-            secondText.setVisibility(View.VISIBLE);
-            secondText.setTag(tag++);
-
-            nonTitlesTV.add(firstText);
-            nonTitlesTV.add(secondText);
-
-            firstText.setText(fromHtml(def.getFirstHtml(tag)));
-            String secondTextStr = def.getSecondHtml();
-            if(secondTextStr.length()>0){
-                secondText.setText(fromHtml(secondTextStr));
-
-                (defView.findViewById(R.id.defShowMoreRL)).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        toggleShowMore(view);
-                    }
-                });
-            }
             else {
-                (defView.findViewById(R.id.defShowMoreRL)).setVisibility(View.GONE);
-                secondText.setVisibility(View.GONE);
+                defView.setBackgroundColor(getResources().getColor(R.color.darkBack3));
             }
+            TextView defText = (TextView)defView.findViewById(R.id.defDefTV);
+            TextView synText = (TextView)defView.findViewById(R.id.defSynTV);
+            TextView senText = (TextView)defView.findViewById(R.id.defSentTV);
+
+            defText.setTextSize(textSize);
+            synText.setTextSize(textSize);
+            senText.setTextSize(textSize);
+
+            defText.setLineSpacing(0, 1.135f);
+            synText.setLineSpacing(0, 1.135f);
+            senText.setLineSpacing(0, 1.135f);
+
+            nonTitlesTV.add(defText);
+            nonTitlesTV.add(synText);
+            nonTitlesTV.add(senText);
+
+            defText.setText(fromHtml(def.getDefinationHtml(++tag)));
+            String synStr = def.getSynonymHtml();
+            String senStr = def.getHighlightedSentenceHtml(_wordAllData.getWord().getValue());
+
+            if(synStr.length()>0) synText.setText(fromHtml(synStr));
+            else synText.setVisibility(View.GONE);
+
+            if(senStr.length()>0) senText.setText(fromHtml(senStr));
+            else senText.setVisibility(View.GONE);
 
             defDataLL.addView(defView);
         }
@@ -403,6 +398,9 @@ public class SearchActivity extends AppCompatActivity {
 
         String extraInfo = _wordAllData.getWordData().getExtraInfo();
         extraInfoText.setText(extraInfo);
+        extraInfoText.setTextSize(textSize);
+
+        nonTitlesTV.add(extraInfoText);
 
         findViewById(R.id.showWordExtraInfoLL).setVisibility(View.VISIBLE);
         Log.d("VISIBILITY", "8");
@@ -535,26 +533,6 @@ public class SearchActivity extends AppCompatActivity {
         }
         extraInfoButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         extraInfoButton.getParent().requestChildFocus(extraInfoButton, extraInfoButton);
-    }
-
-    public void toggleShowMore(View v){
-        LinearLayout pl = (LinearLayout) v.getParent();
-        TextView toToggle = (TextView) pl.findViewById(R.id.defSecondTV);
-        ImageView toggleButton = (ImageView) pl.findViewById(R.id.showWordDefinitionIB);
-
-        int tag = (int)toToggle.getTag();
-        if(showMoreStatus[tag]){
-            ((TextView)pl.findViewById(R.id.defShowMoreTV)).setText("Show more...");
-            showMoreStatus[tag] = false;
-            hideView(toToggle);
-            toggleButton.setImageResource(R.drawable.down);
-        }
-        else{
-            ((TextView)pl.findViewById(R.id.defShowMoreTV)).setText("Hide...");
-            showMoreStatus[tag] = true;
-            showView(toToggle);
-            toggleButton.setImageResource(R.drawable.up);
-        }
     }
 
     private void showView(final View v) {

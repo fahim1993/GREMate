@@ -293,7 +293,7 @@ public class EditActivity extends AppCompatActivity {
             dv.edPrimSyn.setText(defi.getBoldSyns().replaceAll(DB.DELIM, ", "));
             dv.edSyn.setText(defi.getSyns().replaceAll(DB.DELIM, ", "));
             String [] sents = defi.getSentencesArray();
-            for(int i=0; i<sents.length; i++)dv.edSents[i].setText(sents[i]);
+            if(sents != null) for(int i=0; i<sents.length; i++)dv.edSents[i].setText(sents[i]);
         }
 
         ImageButton delBtn = new ImageButton(EditActivity.this);

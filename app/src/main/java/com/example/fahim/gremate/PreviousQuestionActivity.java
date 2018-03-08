@@ -1,6 +1,5 @@
 package com.example.fahim.gremate;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +13,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.example.fahim.gremate.Adapters.QuestionAdapter;
 import com.example.fahim.gremate.DataClasses.DB;

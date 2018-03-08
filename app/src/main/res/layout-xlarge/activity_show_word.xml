@@ -16,6 +16,7 @@
         android:textSize="30sp"
         android:textStyle="bold"
         android:gravity="center"
+        android:textIsSelectable="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -50,13 +51,12 @@
                     android:id="@+id/showWordDescriptionRL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
                     android:clickable="true"
                     android:onClick="toggleDescription"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_margin="15dp"
+                        android:padding="15dp"
                         android:id="@+id/showWordDescription"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -89,9 +89,8 @@
                         android:id="@+id/showWordDescriptionText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="15dp"
-                        android:layout_marginLeft="15dp"
-                        android:layout_marginRight="15dp"
+                        android:background="@color/darkBack2"
+                        android:padding="12dp"
                         android:clickable="true"
                         android:textColor="@color/darkFore1"
                         android:textIsSelectable="true"
@@ -114,13 +113,12 @@
                     android:id="@+id/showWordDefinitionRL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
                     android:clickable="true"
                     android:onClick="toggleDefinition"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_margin="15dp"
+                        android:padding="15dp"
                         android:id="@+id/showWordDefinition"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -154,7 +152,9 @@
                         android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
+
                     </LinearLayout>
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -170,13 +170,12 @@
                     android:id="@+id/showWordExtraInfoRL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
                     android:clickable="true"
                     android:onClick="toggleExtraInfo"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_margin="15dp"
+                        android:padding="15dp"
                         android:id="@+id/showWordExtraInfo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -210,9 +209,8 @@
                         android:id="@+id/showWordExtraInfoText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="15dp"
-                        android:layout_marginLeft="15dp"
-                        android:layout_marginRight="15dp"
+                        android:background="@color/darkBack2"
+                        android:padding="12dp"
                         android:clickable="true"
                         android:textColor="@color/darkFore1"
                         android:textIsSelectable="true"
@@ -222,8 +220,6 @@
                 </LinearLayout>
 
             </LinearLayout>
-
-
 
             <RadioGroup
                 android:id="@+id/diffRadioGroup"

@@ -58,7 +58,7 @@
         android:layout_below="@id/searchLL">
 
         <LinearLayout
-
+            android:id="@+id/showWordLL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -82,30 +82,31 @@
                     android:id="@+id/showWordDescriptionRL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
                     android:clickable="true"
                     android:onClick="toggleDescription"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_margin="10dp"
+                        android:padding="15dp"
                         android:id="@+id/showWordDescription"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="Description"
                         android:textColor="@color/darkFore1"
-                        android:textSize="20sp"
+                        android:textSize="28sp"
                         android:textStyle="bold" />
 
                     <ImageView
                         android:id="@+id/showWordDescriptionIB"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
+                        android:background="@color/darkBack1"
                         android:scaleType="centerInside"
                         android:src="@drawable/up"
+                        android:tint="@color/darkFore1"
 
                         />
                 </RelativeLayout>
@@ -119,13 +120,12 @@
                         android:id="@+id/showWordDescriptionText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="15dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
+                        android:background="@color/darkBack2"
+                        android:padding="12dp"
                         android:clickable="true"
                         android:textColor="@color/darkFore1"
                         android:textIsSelectable="true"
-                        android:textSize="16sp"
+                        android:textSize="22sp"
                         android:visibility="gone" />
 
                 </LinearLayout>
@@ -135,39 +135,40 @@
 
             <LinearLayout
                 android:id="@+id/showWordDefiLL"
-                android:background="@drawable/bottomline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bottomline"
                 android:orientation="vertical">
 
                 <RelativeLayout
                     android:id="@+id/showWordDefinitionRL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
                     android:clickable="true"
                     android:onClick="toggleDefinition"
                     android:orientation="horizontal">
 
                     <TextView
+                        android:padding="15dp"
                         android:id="@+id/showWordDefinition"
-                        android:layout_margin="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="Definitions"
                         android:textColor="@color/darkFore1"
-                        android:textSize="20sp"
+                        android:textSize="28sp"
                         android:textStyle="bold" />
 
                     <ImageView
                         android:id="@+id/showWordDefinitionIB"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
+                        android:background="@color/darkBack1"
                         android:scaleType="centerInside"
                         android:src="@drawable/up"
+                        android:tint="@color/darkFore1"
 
                         />
 
@@ -180,9 +181,9 @@
                     <LinearLayout
                         android:id="@+id/showWordDefDataLL"
                         android:orientation="vertical"
-                        android:layout_marginTop="5dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
+
                     </LinearLayout>
 
                 </LinearLayout>
@@ -200,20 +201,19 @@
                     android:id="@+id/showWordExtraInfoRL"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
                     android:clickable="true"
                     android:onClick="toggleExtraInfo"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_margin="15dp"
+                        android:padding="15dp"
                         android:id="@+id/showWordExtraInfo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:text="Extra Information"
                         android:textColor="@color/darkFore1"
-                        android:textSize="20sp"
+                        android:textSize="28sp"
                         android:textStyle="bold" />
 
                     <ImageView
@@ -240,13 +240,12 @@
                         android:id="@+id/showWordExtraInfoText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="15dp"
-                        android:layout_marginLeft="15dp"
-                        android:layout_marginRight="15dp"
+                        android:background="@color/darkBack2"
+                        android:padding="12dp"
                         android:clickable="true"
                         android:textColor="@color/darkFore1"
                         android:textIsSelectable="true"
-                        android:textSize="16sp"
+                        android:textSize="22sp"
                         android:visibility="gone" />
 
                 </LinearLayout>
@@ -311,10 +310,6 @@
                     />
 
             </RadioGroup>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="10dp" />
 
         </LinearLayout>
 

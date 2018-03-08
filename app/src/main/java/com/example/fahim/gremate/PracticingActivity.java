@@ -173,6 +173,8 @@ public class PracticingActivity extends AppCompatActivity {
             randomizeWords();
         }
 
+        loadWordPracticeDataPreFetch(words.get(index).getCloneOf());
+
         try {
             fileQuestions = openFileOutput(FILENAME_QUESTIONS, MODE_APPEND);
 
@@ -234,6 +236,8 @@ public class PracticingActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+
+                loadWordPracticeDataPreFetch(words.get(index).getCloneOf());
 
                 try{
                     String toWrite = "" + index + " " + noQuestions + " " + noCorrect + "\n";
@@ -422,6 +426,22 @@ public class PracticingActivity extends AppCompatActivity {
         });
     }
 
+    private void loadWordPracticeDataPreFetch(final String id) {
+        DBRef db = new DBRef();
+
+        final DatabaseReference ref = db.wordPracticeRef(id);
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ref.removeEventListener(this);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
     private void setupQuestion() {
 
         prevQues = new PracticePreviousQuestions();
@@ -433,8 +453,6 @@ public class PracticingActivity extends AppCompatActivity {
             answerMap.put(wordPractice.getWord(), new HashSet<String>());
         }
         HashSet<String> ansSet = answerMap.get(wordPractice.getWord());
-
-        HashMap<String, Integer> mp = new HashMap<>();
 
         String [] defs = wordPractice.getDefinitions().split(DB.DELIM);
         String [] syns = wordPractice.getSynonyms().split(DB.DELIM);
@@ -477,15 +495,16 @@ public class PracticingActivity extends AppCompatActivity {
 
         ArrayList<String> otDefs = new ArrayList<>();
         String currentWord = words.get(index).getValue().toLowerCase();
-        mp.put(currentWord, 1);
-        while (mp.size() != 5) {
-            int ind = Math.abs(random.nextInt()) % 1536;
-            String w = OD[ind][0].toLowerCase();
-            if (mp.containsKey(w)) continue;
-            if(w.equals(currentWord))continue;
+
+        HashSet<String> mp = new HashSet<>();
+        mp.add(currentWord);
+        while (otDefs.size() < 4) {
+            int ind = Math.abs(random.nextInt()) % OD.length;
+            if(mp.contains(OD[ind][0].toLowerCase()) || mp.contains(OD[ind][1].toLowerCase())) continue;
 
             otDefs.add(OD[ind][type].toLowerCase());
-            mp.put(w, 1);
+            mp.add(OD[ind][0].toLowerCase());
+            mp.add(OD[ind][1].toLowerCase());
         }
 
         ansIndex = random.nextInt(5);
@@ -521,13 +540,24 @@ public class PracticingActivity extends AppCompatActivity {
     }
 
     private void randomizeWords() {
+        HashMap<String, Integer> map = new HashMap<>();
+        for(Word w: words) map.put(w.getCloneOf(), -1);
+
         int index;
         Word temp;
         for (int i = words.size() - 1; i > 0; i--) {
-            index = random.nextInt(i + 1);
-            temp = words.get(index);
-            words.set(index, words.get(i));
-            words.set(i, temp);
+            for(int j=0; j<5; j++) {
+                index = random.nextInt(i + 1);
+                temp = words.get(index);
+
+                int lastIndex = map.get(temp.getCloneOf());
+                if(j<4 && lastIndex != -1 && lastIndex - i < 5) continue;
+
+                words.set(index, words.get(i));
+                words.set(i, temp);
+                map.put(temp.getCloneOf(), i);
+                break;
+            }
         }
     }
 
@@ -891,10 +921,12 @@ public class PracticingActivity extends AppCompatActivity {
                     line2 = br.readLine();
                 }
             }
-            String[] states = line2.split(" ");
-            index = Integer.valueOf(states[0]);
-            noQuestions = Integer.valueOf(states[1]);
-            noCorrect = Integer.valueOf(states[2]);
+            if(line2 != null && line2.length()>0) {
+                String[] states = line2.split(" ");
+                index = Integer.valueOf(states[0]);
+                noQuestions = Integer.valueOf(states[1]);
+                noCorrect = Integer.valueOf(states[2]);
+            }
             br.close();
         }
         catch (IOException e) {

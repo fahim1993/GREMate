@@ -15,8 +15,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.fahim.gremate.DataClasses.DB;
-import com.example.fahim.gremate.DataClasses.DBRef;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
