@@ -9,6 +9,7 @@
 
     <TextView
         android:padding="8dp"
+        android:background="@color/darkBack2"
         android:layout_below="@id/toolbar"
         android:id="@+id/wordTitle"
         android:textColor="@color/darkFore1"

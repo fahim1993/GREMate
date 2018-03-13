@@ -312,7 +312,8 @@ public class SearchActivity extends AppCompatActivity {
 
         findViewById(R.id.showWordDesLL).setVisibility(View.VISIBLE);
 
-        String desStr = _wordAllData.getWordData().getHighlightedDes(_wordAllData.getWord().getValue());
+
+        String desStr = _wordAllData.getWordData().getHighlightedDes(wordValue);
         descriptionText.setText(fromHtml(desStr.replaceAll("\\n", "<br>")));
 
         ImageView desButton = (ImageView) findViewById(R.id.showWordDescriptionIB);
@@ -365,7 +366,7 @@ public class SearchActivity extends AppCompatActivity {
 
             defText.setText(fromHtml(def.getDefinationHtml(++tag)));
             String synStr = def.getSynonymHtml();
-            String senStr = def.getHighlightedSentenceHtml(_wordAllData.getWord().getValue());
+            String senStr = def.getHighlightedSentenceHtml(wordValue);
 
             if(synStr.length()>0) synText.setText(fromHtml(synStr));
             else synText.setVisibility(View.GONE);
