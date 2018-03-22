@@ -417,7 +417,7 @@ public class ShowWordActivity extends AppCompatActivity {
         }
 
         String extraInfo = _wordAllData.getWordData().getExtraInfo();
-        extraInfoText.setText(extraInfo);
+        extraInfoText.setText(fromHtml(extraInfo));
         extraInfoText.setTextSize(textSize);
 
         nonTitlesTV.add(extraInfoText);

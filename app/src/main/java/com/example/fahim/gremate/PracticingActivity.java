@@ -374,6 +374,14 @@ public class PracticingActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.practicing_menu, menu);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        autoPronounce = prefs.getInt("autoPronounce", 0);
+        if(autoPronounce == 0){
+            menu.findItem(R.id.auto_pronounce).setTitle("Auto pronounce");
+        }
+        else {
+            menu.findItem(R.id.auto_pronounce).setTitle("Stop auto pronounce");
+        }
         return super.onCreateOptionsMenu(menu);
     }
 

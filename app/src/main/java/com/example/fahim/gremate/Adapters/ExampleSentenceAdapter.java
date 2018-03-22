@@ -54,9 +54,6 @@ public class ExampleSentenceAdapter extends RecyclerView.Adapter<ExampleSentence
         TextView sentTV = holder.sentence;
         TextView srcTV = holder.source;
 
-        sentTV.setTextIsSelectable(true);
-        srcTV.setTextIsSelectable(true);
-
         sentTV.setTextSize(textSize);
         srcTV.setTextSize(textSize-5);
 
