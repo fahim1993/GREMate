@@ -28,12 +28,13 @@
         </LinearLayout>
         <SeekBar
             android:id="@+id/textSizeSB"
-            android:layout_weight="5"
+            android:layout_weight="30"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:thumbTint="@color/colorPrimary"
-            android:progressTint="@color/colorPrimary"
-            android:max="9"
+            style="@style/MySeekBar"
+            android:max="14"
+            android:progress="5"
+            android:padding="15dp"
             />
         <LinearLayout
             android:layout_weight="1"

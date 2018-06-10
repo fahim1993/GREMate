@@ -63,23 +63,13 @@ public class WordWithId extends Word {
 
     public static Comparator<WordWithId> difficulty_Asc = new Comparator<WordWithId>() {
         public int compare(WordWithId w1, WordWithId w2) {
-            if(w1.getLevel() == w2.getLevel()){
-                return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
-            }
-            else{
-                return w1.getLevel() - w2.getLevel();
-            }
+            return w1.getLevel() - w2.getLevel();
         }
     };
 
     public static Comparator<WordWithId> difficulty_Dsc = new Comparator<WordWithId>() {
         public int compare(WordWithId w1, WordWithId w2) {
-            if(w1.getLevel() == w2.getLevel()){
-                return w1.getValue().toUpperCase().compareTo(w2.getValue().toUpperCase());
-            }
-            else{
-                return w2.getLevel() - w1.getLevel();
-            }
+            return w2.getLevel() - w1.getLevel();
         }
     };
 

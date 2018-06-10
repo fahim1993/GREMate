@@ -27,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -37,8 +38,11 @@ import android.widget.Toast;
 import com.example.fahim.gremate.DataClasses.DB;
 import com.example.fahim.gremate.DataClasses.DBRef;
 import com.example.fahim.gremate.DataClasses.FeedTestData;
+import com.example.fahim.gremate.DataClasses.Highlighter;
 import com.example.fahim.gremate.DataClasses.PracticePreviousQuestions;
+import com.example.fahim.gremate.DataClasses.ShortData;
 import com.example.fahim.gremate.DataClasses.Word;
+import com.example.fahim.gremate.DataClasses.WordDef;
 import com.example.fahim.gremate.DataClasses.WordPractice;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -73,6 +77,7 @@ public class PracticingActivity extends AppCompatActivity {
 
     private TextView[] ansTVs;
     private TextView questionTV;
+    private TextView postAnswerInfo;
 
     private int ansIndex;
     private int noQuestions;
@@ -116,6 +121,11 @@ public class PracticingActivity extends AppCompatActivity {
 
     FileOutputStream fileQuestions;
 
+    DatabaseReference ref;
+    ValueEventListener listener;
+
+    private Typeface romanType;
+
     private static final String FILENAME_QUESTIONS = "previousQuestionsDescription";
     private static final String FILENAME_WORDS = "practiceWords";
 
@@ -124,10 +134,17 @@ public class PracticingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_practicing);
 
-        practicingSV = (ScrollView) findViewById(R.id.practicingSV);
+        romanType = Typeface.createFromAsset(getAssets(),"fonts/times.ttf");
+
+        practicingSV = findViewById(R.id.practicingSV);
         practicingSV.setVisibility(GONE);
 
-        practicingLoading = (ProgressBar) findViewById(R.id.practicingLoading);
+        postAnswerInfo = findViewById(R.id.postAnswerInfo);
+        postAnswerInfo.setVisibility(GONE);
+        postAnswerInfo.setLineSpacing(0, 1.133f);
+        postAnswerInfo.setTypeface(romanType);
+
+        practicingLoading = findViewById(R.id.practicingLoading);
         practicingLoading.setVisibility(View.VISIBLE);
 
         wordPractice = null;
@@ -136,7 +153,7 @@ public class PracticingActivity extends AppCompatActivity {
 
         setTitle(Html.fromHtml("<font color='#BDCBDA'>0 </font>"));
         random = new Random();
-        diffRadioGroup = (RadioGroup) findViewById(R.id.diffRadioGroup);
+        diffRadioGroup = findViewById(R.id.diffRadioGroup);
 
         index = 0;
         noQuestions = 0;
@@ -196,15 +213,20 @@ public class PracticingActivity extends AppCompatActivity {
 
         ansTVs = new TextView[5];
 
-        ansTVs[0] = (TextView) findViewById(R.id.ansTV1);
-        ansTVs[1] = (TextView) findViewById(R.id.ansTV2);
-        ansTVs[2] = (TextView) findViewById(R.id.ansTV3);
-        ansTVs[3] = (TextView) findViewById(R.id.ansTV4);
-        ansTVs[4] = (TextView) findViewById(R.id.ansTV5);
+        ansTVs[0] = findViewById(R.id.ansTV1);
+        ansTVs[1] = findViewById(R.id.ansTV2);
+        ansTVs[2] = findViewById(R.id.ansTV3);
+        ansTVs[3] = findViewById(R.id.ansTV4);
+        ansTVs[4] = findViewById(R.id.ansTV5);
 
-        questionTV = (TextView) findViewById(R.id.questionTv);
+        for(int i=0; i<5; i++){
+            ansTVs[i].setTypeface(romanType);
+        }
 
-        nextButton = (AppCompatButton) findViewById(R.id.nextBtn);
+        questionTV = findViewById(R.id.questionTv);
+        questionTV.setTypeface(romanType);
+
+        nextButton = findViewById(R.id.nextBtn);
         nextButton.setVisibility(GONE);
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -212,6 +234,7 @@ public class PracticingActivity extends AppCompatActivity {
 
                 nextButton.setVisibility(GONE);
                 viewButton.setVisibility(GONE);
+                postAnswerInfo.setVisibility(GONE);
 
                 practicingSV.setVisibility(GONE);
                 diffRadioGroup.setVisibility(GONE);
@@ -261,7 +284,7 @@ public class PracticingActivity extends AppCompatActivity {
 
                 for (int i = 0; i < 5; i++) {
                     ansTVs[i].setTextColor(getResources().getColor(R.color.darkFore1));
-                    ansTVs[i].setTypeface(null, Typeface.NORMAL);
+                    ansTVs[i].setTypeface(romanType);
                 }
 
                 loadWordPracticeData(words.get(index).getCloneOf());
@@ -409,6 +432,10 @@ public class PracticingActivity extends AppCompatActivity {
             playbackPronunciation.cancel(true);
             playbackPronunciation = null;
         }
+
+        if(ref!=null && listener!=null){
+            ref.removeEventListener(listener);
+        }
     }
 
     private void loadWordPracticeData(final String id) {
@@ -425,6 +452,7 @@ public class PracticingActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 wordPractice = dataSnapshot.getValue(WordPractice.class);
                 setupQuestion();
+                setupPostAnswerInfo(word.getCloneOf());
                 ref.removeEventListener(this);
             }
 
@@ -433,6 +461,65 @@ public class PracticingActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void setupPostAnswerInfo(String wordId) {
+        if(ref!=null && listener!=null){
+            ref.removeEventListener(listener);
+        }
+
+        practicingSV.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+
+        DBRef db = new DBRef();
+        ref = db.shortDataRef(wordId);
+        listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("<b>Short Review: </b>");
+
+                ShortData shortData = dataSnapshot.getValue(ShortData.class);
+                if(shortData == null) return;
+                if(shortData.getDes()!=null && shortData.getDes().length()>0){
+                    stringBuilder.append("<br>");
+                    stringBuilder.append(Highlighter.highlight(shortData.getDes(), word.getValue()));
+                }
+
+                if(shortData.getSyns()!=null && shortData.getSyns().length()>0){
+                    stringBuilder.append("<br><b>Synonyms: ");
+                    String[] syns = shortData.getSyns().split(DB.DELIM);
+                    for (int i = 0; i < syns.length; i++) {
+                        if(syns[i].length()<1)continue;
+                        if (i > 0) stringBuilder.append(", ");
+                        stringBuilder.append(syns[i]);
+                    }
+                    stringBuilder.append("</b>");
+                }
+
+                if(shortData.getSentences()!=null && shortData.getSentences().length()>0){
+                    String[] sents = shortData.getSentences().split(DB.DELIM);
+                    for (int i = 0; i < sents.length; i++) {
+                        if(sents[i].length()<1)continue;
+                        stringBuilder.append("<br><b>");
+                        stringBuilder.append(i+1);
+                        stringBuilder.append(". </b>");
+                        if (sents[i].length() > 2 && sents[i].charAt(0) == '‘' && sents[i].charAt(sents[i].length() - 1) == '’') {
+                            sents[i] = sents[i].substring(1, sents[i].length() - 1);
+                        }
+                        sents[i] = sents[i].substring(0, 1).toUpperCase() + sents[i].substring(1, sents[i].length());
+                        stringBuilder.append(sents[i]);
+                    }
+                }
+                postAnswerInfo.setText(fromHtml(stringBuilder.toString()));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+
+        ref.addValueEventListener(listener);
+    }
+
 
     private void loadWordPracticeDataPreFetch(final String id) {
         DBRef db = new DBRef();
@@ -498,8 +585,8 @@ public class PracticingActivity extends AppCompatActivity {
         if(ans.charAt(ans.length()-1)=='.') ans = ans.substring(0, ans.length()-1);
         int type = ansPair.second;
 
-        if(type == 0) questionTV.setText("Synonym of the word " + wordPractice.getWord().toUpperCase() + " is?");
-        else questionTV.setText("Meaning of the word " + wordPractice.getWord().toUpperCase() + " is?");
+        if(type == 0) questionTV.setText("Synonym of the word " + wordPractice.getWord().toLowerCase() + " is?");
+        else questionTV.setText("Meaning of the word " + wordPractice.getWord().toLowerCase() + " is?");
 
         ArrayList<String> otDefs = new ArrayList<>();
         String currentWord = words.get(index).getValue().toLowerCase();
@@ -547,6 +634,27 @@ public class PracticingActivity extends AppCompatActivity {
         }
     }
 
+    private boolean checkPlacement(int prevPos, int newPos){
+
+        String wordId = words.get(prevPos).getCloneOf();
+        for(int i=1; i<5; i++){
+            int rv = newPos + i;
+            int lv = newPos - i;
+            if(rv<words.size() && words.get(rv).getCloneOf().equals(wordId)) return false;
+            if(lv>=0 && words.get(lv).getCloneOf().equals(wordId)) return false;
+        }
+
+        wordId = words.get(newPos).getCloneOf();
+        for(int i=1; i<5; i++){
+            int rv = prevPos + i;
+            int lv = prevPos - i;
+            if(rv<words.size() && words.get(rv).getCloneOf().equals(wordId)) return false;
+            if(lv>=0 && words.get(lv).getCloneOf().equals(wordId)) return false;
+        }
+
+        return true;
+    }
+
     private void randomizeWords() {
         HashMap<String, Integer> map = new HashMap<>();
         for(Word w: words) map.put(w.getCloneOf(), -1);
@@ -567,28 +675,58 @@ public class PracticingActivity extends AppCompatActivity {
                 break;
             }
         }
+
+        for(int i=0; i<5 && i<words.size(); i++){
+            if(!checkPlacement(i, i)){
+                boolean flag = false;
+                for(int j=0; j<5; j++) {
+                    index = random.nextInt(words.size());
+                    if(checkPlacement(i, index)){
+                        Word tm = words.get(i);
+                        words.set(i, words.get(index));
+                        words.set(index, tm);
+                        flag = true;
+                        break;
+                    }
+                }
+                if(flag) continue;
+
+                for(int j = 0; j<words.size(); j++){
+                    if(checkPlacement(i, j)){
+                        Word tm = words.get(i);
+                        words.set(i, words.get(j));
+                        words.set(j, tm);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     public void validateResult(View v) {
         int ind = Integer.valueOf(v.getTag().toString());
         if (ind == ansIndex) {
             ansTVs[ind].setTextColor(getResources().getColor(R.color.easy));
-            ansTVs[ind].setTypeface(null, Typeface.BOLD);
+            ansTVs[ind].setTypeface(romanType, Typeface.BOLD);
             if (!thisJudged) {
                 prevQues.setWasCorrect(true);
                 noCorrect++;
             }
         } else {
             ansTVs[ind].setTextColor(getResources().getColor(R.color.vhard));
-            ansTVs[ind].setTypeface(null, Typeface.BOLD);
+            ansTVs[ind].setTypeface(romanType, Typeface.BOLD);
         }
         if(!thisJudged){
             setTitle(Html.fromHtml("<font color='#BDCBDA'>" + noCorrect + "/" + noQuestions +  " (" + words.size() + ") </font>"));
         }
         thisJudged = true;
+
         nextButton.setVisibility(View.VISIBLE);
         viewButton.setVisibility(View.VISIBLE);
+        postAnswerInfo.setVisibility(View.VISIBLE);
         diffRadioGroup.setVisibility(View.VISIBLE);
+        practicingSV.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
+        postAnswerInfo.setTextIsSelectable(true);
     }
 
     public void createLevelMap(){

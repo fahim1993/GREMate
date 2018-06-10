@@ -44,6 +44,12 @@ UserWords:
 					extraInfo:
 					pronunciation:
 
+	    ShortData:
+	        word:
+	            des:
+	            syns:
+	            sentences:
+
 	    Practice:
 	        word:
 	            word:

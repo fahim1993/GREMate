@@ -72,7 +72,7 @@ public class PreviousQuestionActivity extends AppCompatActivity {
         setTitle(Html.fromHtml("<font color='#BDCBDA'>Previous Questions</font>"));
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        textSize = prefs.getFloat("textSize", 20);
+        textSize = prefs.getFloat("textSize", 16);
 
         Log.d("PrvQsActv", ""+ previousQuestions.size()+"  "+words.size());
 

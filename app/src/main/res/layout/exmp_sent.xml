@@ -10,7 +10,7 @@
         android:id="@+id/sentence"
         android:textColor="@color/darkFore1"
         android:textIsSelectable="true"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <TextView
@@ -19,7 +19,7 @@
         android:paddingBottom="10dp"
         android:textIsSelectable="true"
         android:textColor="@color/Gray"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
 

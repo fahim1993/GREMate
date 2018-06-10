@@ -65,6 +65,7 @@ public class DBRef {
     private final String WORD_DEF = "WordDef";
     private final String PRACTICE = "Practice";
     private final String WORD_CLONES = "WordClones";
+    private final String SHORT_DATA = "ShortData";
     private final String LAST_LIST = "LastListId";
     private final String LAST_SET = "LastWordSetId";
 
@@ -162,6 +163,18 @@ public class DBRef {
         userWord.child(WORD_CLONES).child(wordId).setValue(null);
     }
 
+    void setShortData(ShortData shortData, String wordId) {
+        userWord.child(SHORT_DATA).child(wordId).setValue(shortData);
+    }
+
+    public DatabaseReference shortDataRef(String wordId) {
+        return userWord.child(SHORT_DATA).child(wordId);
+    }
+
+    void deleteShortData(String wordId) {
+        userWord.child(SHORT_DATA).child(wordId).setValue(null);
+    }
+
     void deleteWordSingleClone(String wordId, String cloneKey) {
         userWord.child(WORD_CLONES).child(wordId).child(cloneKey).setValue(null);
     }
@@ -231,11 +244,16 @@ public class DBRef {
         return userWord.child(WORD_SET);
     }
 
-    public DatabaseReference wordRef(){
-        return userWord.child(WORD);
-    }
+//    public DatabaseReference wordRef(){
+//        return userWord.child(WORD);
+//    }
+//
+//    public DatabaseReference wordDataRef(){
+//        return userWord.child(WORD_DATA);
+//    }
+//
+//    public DatabaseReference sdRef(){
+//        return userWord.child(WORD_DEF);
+//    }
 
-    public DatabaseReference wordDataRef(){
-        return userWord.child(WORD_DATA);
-    }
 }

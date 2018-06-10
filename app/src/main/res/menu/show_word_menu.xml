@@ -45,4 +45,9 @@
         android:id="@+id/auto_pronounce"
         app:showAsAction="never"
         android:title="Auto pronounce"/>
+
+    <item
+        android:id="@+id/sync"
+        app:showAsAction="never"
+        android:title="Sync"/>
 </menu>

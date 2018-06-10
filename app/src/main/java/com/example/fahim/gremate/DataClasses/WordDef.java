@@ -180,6 +180,63 @@ public class WordDef {
         return sb.toString();
     }
 
+    @Exclude
+    public String getHighlightedFirstSentence(String highlightWord, int index){
+        StringBuilder sb = new StringBuilder();
+        try {
+            String[] sents = getSentencesArray();
+            if(sents != null && sents.length > 0) {
+                for (int i=0; i<1; i++) {
+                    String sent = sents[i];
+                    if(sent.length()>0) {
+                        sb.append("<b>");
+                        sb.append(index);
+                        sb.append(".</b> ");
+                        String st = sent;
+                        if (st.length() > 2 && st.charAt(0) == '‘' && st.charAt(st.length() - 1) == '’') {
+                            st = st.substring(1, st.length() - 1);
+                        }
+                        st = Highlighter.highlight(st, highlightWord);
+                        st = st.substring(0, 1).toUpperCase() + st.substring(1, st.length());
+                        sb.append(st);
+                    }
+                }
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
+
+    @Exclude
+    public String getFirstSentence(int index){
+        StringBuilder sb = new StringBuilder();
+        try {
+            String[] sents = getSentencesArray();
+            if(sents != null && sents.length > 0) {
+                for (int i=0; i<1; i++) {
+                    String sent = sents[i];
+                    if(sent.length()>0) {
+                        sb.append("<b>");
+                        sb.append(index);
+                        sb.append(".</b> ");
+                        String st = sent;
+                        if (st.length() > 2 && st.charAt(0) == '‘' && st.charAt(st.length() - 1) == '’') {
+                            st = st.substring(1, st.length() - 1);
+                        }
+                        st = st.substring(0, 1).toUpperCase() + st.substring(1, st.length());
+                        sb.append(st);
+                    }
+                }
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
+
     public boolean haveMoreData(){
         return (syns != null && syns.length() > 1) || (sentences != null && sentences.length() > 1);
     }

@@ -188,7 +188,7 @@ public class SearchActivity extends AppCompatActivity {
         });
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        textSize = prefs.getFloat("textSize", 20);
+        textSize = prefs.getFloat("textSize", 16);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -398,7 +398,7 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         String extraInfo = _wordAllData.getWordData().getExtraInfo();
-        extraInfoText.setText(extraInfo);
+        extraInfoText.setText(fromHtml(extraInfo));
         extraInfoText.setTextSize(textSize);
 
         nonTitlesTV.add(extraInfoText);

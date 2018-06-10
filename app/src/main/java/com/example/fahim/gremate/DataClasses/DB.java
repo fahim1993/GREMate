@@ -147,6 +147,9 @@ public class DB {
         if(isPracticable){
             db.setWordPracticeData(wordId, practice);
         }
+
+        ShortData shortData = new ShortData(wordAllData);
+        db.setShortData(shortData, wordId);
     }
 
     public static void setWordLevel(final String wordId, final int level) {
@@ -232,6 +235,7 @@ public class DB {
 
         final DBRef db = new DBRef();
         db.deleteWordData(wordId);
+        db.deleteShortData(wordId);
         if (isEdit) return;
 
         listIds1 = new ArrayList<>();
@@ -349,6 +353,11 @@ public class DB {
         db.setLastWordSet(wsId);
     }
 
+    public static void setShortData(ShortData shortData, String wordId){
+        DBRef db = new DBRef();
+        db.setShortData(shortData, wordId);
+    }
+
     public static void initNewUser(String uId, Context context){
 
         DBRef db = new DBRef(uId);
@@ -401,7 +410,7 @@ public class DB {
         int index = initWords.size()-1;
 
         int wordsetCount = 1;
-        int listInWordset = 8;
+        int listInWordset = 9;
         int wordsInList = 40;
 
         for (int wsi = wordsetCount; wsi >= 1; wsi--) {
@@ -436,6 +445,167 @@ public class DB {
             }
         }
     }
+
+    public static void initShortData(){
+
+//        final DBRef dbRef = new DBRef();
+//        DatabaseReference ref = dbRef.sdRef();
+//        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for(DataSnapshot sn1: dataSnapshot.getChildren()){
+//                    StringBuilder sbSyn = new StringBuilder();
+//                    StringBuilder sbSen = new StringBuilder();
+//                    String key = sn1.getKey();
+//                    Log.d("Short Data", key);
+//
+//                    for(DataSnapshot sn2: sn1.getChildren()){
+//                        WordDef def = sn2.getValue(WordDef.class);
+//                        String syn = def.getBoldSyns();
+//                        String[] sen = def.getSentencesArray();
+//
+//                        if(syn!=null && syn.length()>0) {
+//                            if(sbSyn.length()>0)sbSyn.append(DELIM);
+//                            sbSyn.append(syn);
+//                        }
+//
+//                        if(sen!=null && sen[0]!=null && sen[0].length()>0) {
+//                            if(sbSen.length()>0)sbSen.append(DELIM);
+//                            sbSen.append(sen[0]);
+//                        }
+//                    }
+//                    DatabaseReference rf = dbRef.shortDataRef(key);
+//                    rf.child("syns").setValue(sbSyn.toString());
+//                    rf.child("sentences").setValue(sbSen.toString());
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//        DatabaseReference ref1 = dbRef.wordDataRef();
+//        ref1.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for(DataSnapshot sn1: dataSnapshot.getChildren()){
+//                    String shortDes="";
+//                    String key = sn1.getKey();
+//                    Log.d("Short Data", key);
+//                    for(DataSnapshot sn2: sn1.getChildren()){
+//                        WordData dt = sn2.getValue(WordData.class);
+//                        shortDes = dt.getDes().split("[\\r\\n]+")[0];
+//                    }
+//                    DatabaseReference rf = dbRef.shortDataRef(key);
+//                    rf.child("des").setValue(shortDes);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+    }
+
+    public static void move_temp(){
+        DBRef db = new DBRef();
+
+        /*
+
+        Set 1= -L3hMKkDqlPAEOF33V6a
+        Set 1 list = -L3hMKkDqlPAEOF33V6b
+
+        Set 2 = -L3hMFiEirhMr3iVJ4aF
+        Set 2 list = -L3hMFiEirhMr3iVJ4aG
+
+        Set 6 = -L94OXaaUBHRuoqVdMGo
+        Set 6 list = -L94OXaaUBHRuoqVdMGp
+
+        Set All = -LA6rpF9LX0vwOYCO74n
+        Set All list = -LA6rpF9LX0vwOYCO74o
+
+         */
+
+        final DatabaseReference ref1 =  db.listWordsRef("-L3hMKkDqlPAEOF33V6b");
+        ValueEventListener listener1 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Word word = ds.getValue(Word.class);
+                    addWordToAnotherList("-LA6rpF9LX0vwOYCO74n", "-LA6rpF9LX0vwOYCO74o", word);
+                    try {
+                        Thread.sleep(40);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                Log.d("DONE", "DONE 1");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        ref1.addValueEventListener(listener1);
+
+        final DatabaseReference ref2 =  db.listWordsRef("-L3hMFiEirhMr3iVJ4aG");
+        ValueEventListener listener2 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Word word = ds.getValue(Word.class);
+                    addWordToAnotherList("-LA6rpF9LX0vwOYCO74n", "-LA6rpF9LX0vwOYCO74o", word);
+                    try {
+                        Thread.sleep(40);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                Log.d("DONE", "DONE 2");
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        ref2.addValueEventListener(listener2);
+
+        final DatabaseReference ref3 =  db.listWordsRef("-L94OXaaUBHRuoqVdMGp");
+        ValueEventListener listener3 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    Word word = ds.getValue(Word.class);
+                    addWordToAnotherList("-LA6rpF9LX0vwOYCO74n", "-LA6rpF9LX0vwOYCO74o", word);
+                    try {
+                        Thread.sleep(40);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                Log.d("DONE", "DONE 3");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+        ref3.addValueEventListener(listener3);
+
+    }
+
 
     public static void pronunciationInPractice(){
         final DBRef db = new DBRef();

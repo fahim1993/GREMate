@@ -467,7 +467,6 @@ public class ListWordsActivity extends NavDrawerActivity {
     }
 
     public void getListWords() {
-        Log.d("ListWordsActivityLOG ", "getListWords() start");
         DBRef db = new DBRef();
         ref1 =  db.listWordsRef(currentListId);
         listener1 = new ValueEventListener() {
@@ -480,7 +479,6 @@ public class ListWordsActivity extends NavDrawerActivity {
                     WordWithId wordWithId = new WordWithId(word, ds.getKey(), ++serial);
                     words.add(wordWithId);
                 }
-                Log.d("ListWordsActivityLOG ", "getListWords(), words size = " + words.size());
                 sortWords(false);
             }
 

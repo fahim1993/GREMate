@@ -48,7 +48,7 @@ public class ExampleSentencesActivity extends AppCompatActivity {
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        textSize = prefs.getFloat("textSize", 25);
+        textSize = prefs.getFloat("textSize", 16);
 
         Bundle extras = getIntent().getExtras();
         if(extras!=null)

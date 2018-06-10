@@ -49,9 +49,11 @@ import com.example.fahim.gremate.DataClasses.WordAllData;
 import com.example.fahim.gremate.DataClasses.WordData;
 import com.example.fahim.gremate.DataClasses.WordDef;
 import com.example.fahim.gremate.DataClasses.WordPractice;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
@@ -225,7 +227,7 @@ public class ShowWordActivity extends AppCompatActivity {
             defState = prefs.getInt("defState", -1);
             desState = prefs.getInt("desState", -1);
             extraInfoState = prefs.getInt("extraInfoState", -1);
-            textSize = prefs.getFloat("textSize", 25);
+            textSize = prefs.getFloat("textSize", 16);
         } else {
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt("defState", 0);
@@ -235,7 +237,7 @@ public class ShowWordActivity extends AppCompatActivity {
             editor.putInt("extraInfoState", 0);
             extraInfoState = 0;
 
-            textSize = 25;
+            textSize = 16;
             editor.putFloat("textSize", textSize);
 
             editor.apply();
@@ -735,6 +737,12 @@ public class ShowWordActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
 
+            case R.id.sync:
+                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("UserWords").child(userId);
+                ref.keepSynced(true);
+                break;
+
             case R.id.reload:
                 final AlertDialog dialog = new AlertDialog.Builder(this, R.style.AlertDialogTheme)
                         .setTitle("Confirm Reload")
@@ -796,17 +804,17 @@ public class ShowWordActivity extends AppCompatActivity {
 
                 builder.setTitle("Set Text Size");
                 final View layout = inflater.inflate(R.layout.text_size_view, null);
-                final SeekBar textSizePB = (SeekBar) layout.findViewById(R.id.textSizeSB);
-                final TextView exampleTV = (TextView) layout.findViewById(R.id.exampleText);
+                final SeekBar textSizePB = layout.findViewById(R.id.textSizeSB);
+                final TextView exampleTV = layout.findViewById(R.id.exampleText);
 
-                textSizePB.setProgress((int)((textSize-10)/3));
+                textSizePB.setProgress((int)((textSize-10)/1.5));
                 exampleTV.setTextSize(textSize);
 
                 textSizePB.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                         if(fromUser){
-                            textSize = (float) ((progress*3.0)+10);
+                            textSize = (float) ((progress*1.5)+10);
                             exampleTV.setTextSize(textSize);
                         }
                     }
