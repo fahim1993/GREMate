@@ -190,19 +190,8 @@ public class ShowWordActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        if(listener1!=null && ref1!=null) ref1.addValueEventListener(listener1);
-        if(listener2!=null && ref2!=null) ref2.addValueEventListener(listener2);
-
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
-        if(listener1!=null && ref1!=null) ref1.removeEventListener(listener1);
-        if(listener2!=null && ref2!=null) ref2.removeEventListener(listener2);
 
         if (WORD!=null && _wordAllData!=null && WORD.getValidity() != 2 && wordLevel != _wordAllData.getWord().getLevel()) {
             DB.setWordLevel(wordId, wordLevel);
@@ -247,6 +236,11 @@ public class ShowWordActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        if(listener1!=null && ref1!=null) ref1.removeEventListener(listener1);
+        if(listener2!=null && ref2!=null) ref2.removeEventListener(listener2);
+
+
         if(mediaPlayer!=null){
             mediaPlayer.release();
         }
